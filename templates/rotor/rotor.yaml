@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "jitsu.fullname" . }}-rotor
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.rotor.service.type }}
+  ports:
+    - port: {{ .Values.rotor.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "jitsu.selectorLabels" . | nindent 4 }}
+    {{- include "jitsu.rotor.selectorLabels" . | nindent 4 }}

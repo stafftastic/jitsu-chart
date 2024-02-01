@@ -1,0 +1,174 @@
+nameOverride: ""
+
+fullnameOverride: ""
+
+jitsu:
+  environment:
+    DATABASE_URL:
+      # postgres://username:password@host:port/database?options
+      value: ""
+    REDIS_URL:
+      # redis://username:password@host:port
+      value: ""
+    BULKER_URL:
+      value: "http://jitsu-bulker:3042"
+
+global:
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+console:
+  replicaCount: 1
+  image:
+    repository: jitsucom/console
+    pullPolicy: IfNotPresent
+    tag: "latest"
+  service:
+    type: ClusterIP
+    port: 3000
+  ingress:
+    enabled: true
+    className: ''
+    annotations: {}
+    hosts: []
+    # - host: jitsu.example.org
+    #   paths:
+    #     - path: /
+    #       pathType: Prefix
+    tls: []
+    # - secretName: jitsu-example-org-tls
+    #   hosts:
+    #     - jitsu.example.org
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+  environment:
+    NEXTAUTH_URL:
+      value: ""
+    JITSU_PUBLIC_URL:
+      value: ""
+    ROTOR_URL:
+      value: "http://jitsu-rotor:3401"
+    BULKER_AUTH_KEY:
+      # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_auth_tokens
+      value: ""
+    UPDATE_DB:
+      value: "true"
+    DISABLE_SIGNUP:
+      value: "false"
+    GITHUB_CLIENT_ID:
+      value: ""
+    GITHUB_CLIENT_SECRET:
+      value: ""
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+bulker:
+  replicaCount: 1
+  image:
+    repository: jitsucom/bulker
+    pullPolicy: IfNotPresent
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: "latest"
+  service:
+    type: ClusterIP
+    port: 3042
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+  environment:
+    BULKER_AUTH_TOKENS:
+      # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_auth_tokens
+      value: ""
+    BULKER_KAFKA_BOOTSTRAP_SERVERS:
+      value: ""
+    BULKER_CONFIG_SOURCE:
+      value: "redis"
+    BULKER_INTERNAL_TASK_LOG:
+      value: |
+        {
+        "id": "task_log",
+        "metricsKeyPrefix": "syncs",
+        "usesBulker": true,
+        "type": "postgres",
+        "options":{
+          "mode": "stream"
+        },
+        "credentials":{
+          "host": "",
+          "port": 5432,
+          "sslMode": "disable",
+          "database": "",
+          "password": "",
+          "username": "",
+          "defaultSchema":"public"
+          }
+        }
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+rotor:
+  replicaCount: 1
+  image:
+    repository: jitsucom/rotor
+    pullPolicy: IfNotPresent
+    tag: "latest"
+  service:
+    type: ClusterIP
+    port: 3401
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+  environment:
+    MONGODB_URL:
+      # mongodb://username:password@host:port
+      value: ""
+    KAFKA_BOOTSTRAP_SERVERS:
+      # host:port
+      value: ""
+    BULKER_AUTH_KEY:
+      # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_auth_tokens
+      value: ""
+    CONFIG_STORE_DATABASE_URL:
+      # postgres://username:password@host:port/database?options
+      value: ""
+    UPDATE_DB:
+      value: "true"
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+imagePullSecrets: []
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""

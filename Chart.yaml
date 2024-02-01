@@ -1,0 +1,9 @@
+apiVersion: v2
+name: jitsu
+
+type: application
+
+# Set automatically as part of the release process
+version: 0.0.0
+
+appVersion: 1.44.8
