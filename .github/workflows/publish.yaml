@@ -10,7 +10,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Publish
-        uses: stafftastic/helm-publish-action@main
+        uses: stafftastic/helm-publish-action@v2.0.0
         with:
           registry: registry-1.docker.io
           repository: stafftasticcharts
