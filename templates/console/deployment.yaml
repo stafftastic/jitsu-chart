@@ -45,7 +45,7 @@ spec:
               containerPort: {{ .Values.console.service.port }}
               protocol: TCP
           env:
-            {{- $env := merge (deepCopy .Values.console.environment) .Values.global.environment -}}
+            {{- $env := merge (deepCopy .Values.console.environment) .Values.jitsu.environment -}}
             {{- range $k, $v := $env }}
               - name: {{ $k | quote }}
                 {{- toYaml $v | nindent 16 }}

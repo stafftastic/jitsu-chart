@@ -45,7 +45,7 @@ spec:
               containerPort: {{ .Values.rotor.service.port }}
               protocol: TCP
           env:
-            {{- $env := merge (deepCopy .Values.rotor.environment) .Values.global.environment -}}
+            {{- $env := merge (deepCopy .Values.rotor.environment) .Values.jitsu.environment -}}
             {{- range $k, $v := $env }}
               - name: {{ $k | quote }}
                 {{- toYaml $v | nindent 16 }}
