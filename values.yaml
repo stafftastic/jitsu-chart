@@ -23,6 +23,7 @@ global:
   affinity: {}
 
 console:
+  enabled: true
   replicaCount: 1
   image:
     repository: jitsucom/console
@@ -50,6 +51,9 @@ console:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
+  podDisruptionBudget:
+    enabled: false
+    minAvailable: 1
   environment:
     NEXTAUTH_URL:
       value: ""
@@ -77,6 +81,7 @@ console:
   affinity: {}
 
 bulker:
+  enabled: true
   replicaCount: 1
   image:
     repository: jitsucom/bulker
@@ -92,6 +97,9 @@ bulker:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
+  podDisruptionBudget:
+    enabled: false
+    minAvailable: 1
   environment:
     BULKER_AUTH_TOKENS:
       # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_auth_tokens
@@ -129,6 +137,7 @@ bulker:
   affinity: {}
 
 rotor:
+  enabled: true
   replicaCount: 1
   image:
     repository: jitsucom/rotor
@@ -158,6 +167,9 @@ rotor:
       value: ""
     UPDATE_DB:
       value: "true"
+  podDisruptionBudget:
+    enabled: false
+    minAvailable: 1
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}

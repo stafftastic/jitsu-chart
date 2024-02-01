@@ -1,0 +1,15 @@
+{{- if and .Values.bulker.podDisruptionBudget.enabled .Values.bulker.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "jitsu.fullname" . }}-bulker
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+    {{- include "jitsu.bulker.selectorLabels" . | nindent 4 }}
+spec:
+  minAvailable: {{ .Values.bulker.podDisruptionBudget.minAvailable }}
+  selector:
+    matchLabels:
+      {{- include "jitsu.selectorLabels" . | nindent 6 }}
+      {{- include "jitsu.bulker.selectorLabels" . | nindent 6 }}
+{{- end }}

@@ -1,0 +1,15 @@
+{{- if and .Values.console.podDisruptionBudget.enabled .Values.console.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "jitsu.fullname" . }}-console
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+    {{- include "jitsu.console.selectorLabels" . | nindent 4 }}
+spec:
+  minAvailable: {{ .Values.console.podDisruptionBudget.minAvailable }}
+  selector:
+    matchLabels:
+      {{- include "jitsu.selectorLabels" . | nindent 6 }}
+      {{- include "jitsu.console.selectorLabels" . | nindent 6 }}
+{{- end }}

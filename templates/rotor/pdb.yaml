@@ -1,0 +1,15 @@
+{{- if and .Values.rotor.podDisruptionBudget.enabled .Values.rotor.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "jitsu.fullname" . }}-rotor
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+    {{- include "jitsu.rotor.selectorLabels" . | nindent 4 }}
+spec:
+  minAvailable: {{ .Values.rotor.podDisruptionBudget.minAvailable }}
+  selector:
+    matchLabels:
+      {{- include "jitsu.selectorLabels" . | nindent 6 }}
+      {{- include "jitsu.rotor.selectorLabels" . | nindent 6 }}
+{{- end }}
