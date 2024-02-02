@@ -48,11 +48,11 @@ spec:
           livenessProbe:
             httpGet:
               port: http
-              path: /api/ping
+              path: /api/healthcheck
           readinessProbe:
             httpGet:
               port: http
-              path: /api/ping
+              path: /api/healthcheck
           {{- end }}
           env:
             {{- $env := merge (deepCopy .Values.console.environment) .Values.jitsu.environment -}}
