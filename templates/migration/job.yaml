@@ -1,0 +1,37 @@
+{{- if .Values.migration.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "jitsu.fullname" . }}-migration-{{ sha1sum (toJson .Values) | substr 0 8 }}
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+  {{- with .Values.migration.jobAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        {{- include "jitsu.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      restartPolicy: "Never"
+      serviceAccountName: {{ include "jitsu.serviceAccountName" . }}
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.migration.image.repository }}:{{ .Values.migration.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.migration.image.pullPolicy }}
+        command: [prisma]
+        args: [db, push, --skip-generate, --schema, /app/schema.prisma]
+        env:
+          {{- $env := merge (deepCopy .Values.migration.environment) .Values.jitsu.environment -}}
+          {{- range $k, $v := $env }}
+            - name: {{ $k | quote }}
+              {{- toYaml $v | nindent 14 }}
+          {{- end }}
+{{- end }}

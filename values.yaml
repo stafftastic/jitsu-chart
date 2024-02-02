@@ -66,14 +66,29 @@ console:
     BULKER_AUTH_KEY:
       # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_auth_tokens
       value: ""
-    UPDATE_DB:
-      value: "true"
     DISABLE_SIGNUP:
       value: "false"
     GITHUB_CLIENT_ID:
       value: ""
     GITHUB_CLIENT_SECRET:
       value: ""
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+migration:
+  enabled: true
+  image:
+    repository: jitsucom/console
+    pullPolicy: IfNotPresent
+    tag: "latest"
+  restartPolicy: Never
+  environment: {}
+  jobAnnotations: {}
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}
@@ -171,8 +186,6 @@ rotor:
     CONFIG_STORE_DATABASE_URL:
       # postgres://username:password@host:port/database?options
       value: ""
-    UPDATE_DB:
-      value: "true"
   podDisruptionBudget:
     enabled: false
     minAvailable: 1
