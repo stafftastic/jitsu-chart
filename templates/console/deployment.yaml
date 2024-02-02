@@ -44,6 +44,16 @@ spec:
             - name: http
               containerPort: {{ .Values.console.service.port }}
               protocol: TCP
+          {{- if .Values.console.probes.enabled }}
+          livenessProbe:
+            httpGet:
+              port: http
+              path: /api/ping
+          readinessProbe:
+            httpGet:
+              port: http
+              path: /api/ping
+          {{- end }}
           env:
             {{- $env := merge (deepCopy .Values.console.environment) .Values.jitsu.environment -}}
             {{- range $k, $v := $env }}

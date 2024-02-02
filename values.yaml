@@ -45,6 +45,8 @@ console:
     # - secretName: jitsu-example-org-tls
     #   hosts:
     #     - jitsu.example.org
+  probes:
+    enabled: true
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -91,6 +93,8 @@ bulker:
   service:
     type: ClusterIP
     port: 3042
+  probes:
+    enabled: true
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -146,6 +150,8 @@ rotor:
   service:
     type: ClusterIP
     port: 3401
+  probes:
+    enabled: true
   autoscaling:
     enabled: false
     minReplicas: 1

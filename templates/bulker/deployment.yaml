@@ -44,6 +44,16 @@ spec:
             - name: http
               containerPort: {{ .Values.bulker.service.port }}
               protocol: TCP
+          {{- if .Values.console.probes.enabled }}
+          livenessProbe:
+            httpGet:
+              port: http
+              path: /health
+          readinessProbe:
+            httpGet:
+              port: http
+              path: /ready
+          {{- end }}
           env:
             {{- $env := merge (deepCopy .Values.bulker.environment) .Values.jitsu.environment -}}
             {{- range $k, $v := $env }}

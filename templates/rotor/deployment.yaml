@@ -44,6 +44,16 @@ spec:
             - name: http
               containerPort: {{ .Values.rotor.service.port }}
               protocol: TCP
+          {{- if .Values.rotor.probes.enabled }}
+          livenessProbe:
+            httpGet:
+              port: http
+              path: /health
+          readinessProbe:
+            httpGet:
+              port: http
+              path: /health
+          {{- end }}
           env:
             {{- $env := merge (deepCopy .Values.rotor.environment) .Values.jitsu.environment -}}
             {{- range $k, $v := $env }}
