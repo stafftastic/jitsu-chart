@@ -61,6 +61,12 @@ console:
       value: ""
     JITSU_PUBLIC_URL:
       value: ""
+    JITSU_INGEST_PUBLIC_URL:
+      value: ""
+    CONSOLE_AUTH_TOKENS:
+      # https://docs.jitsu.com/self-hosting/configuration#console_auth_tokens
+      # needed by ingest
+      value: ""
     ROTOR_URL:
       value: "http://jitsu-rotor:3401"
     BULKER_AUTH_KEY:
@@ -189,6 +195,69 @@ rotor:
   podDisruptionBudget:
     enabled: false
     minAvailable: 1
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+ingest:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: jitsucom/ingest
+    pullPolicy: IfNotPresent
+    tag: "latest"
+  service:
+    type: ClusterIP
+    port: 3043
+  ingress:
+    enabled: true
+    className: ''
+    annotations: {}
+    hosts: []
+    # - host: jitsu.example.org
+    #   paths:
+    #     - path: /api/s/
+    #       pathType: Prefix
+    tls: []
+    # - secretName: jitsu-example-org-tls
+    #   hosts:
+    #     - jitsu.example.org
+  probes:
+    enabled: true
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+  podDisruptionBudget:
+    enabled: false
+    minAvailable: 1
+  environment:
+    INGEST_PUBLIC_URL:
+      value: ""
+    INGEST_AUTH_TOKENS:
+      # https://docs.jitsu.com/self-hosting/configuration#ingest_auth_tokens
+      value: ""
+    INGEST_KAFKA_BOOTSTRAP_SERVERS:
+      # host:port
+      value: ""
+    INGEST_REPOSITORY_URL:
+      value: "http://jitsu-console:3000/api/admin/export/streams-with-destionations"
+    INGEST_REPOSITORY_AUTH_TOKEN:
+      # https://docs.jitsu.com/self-hosting/configuration#console_auth_tokens
+      # service-admin-account:console-token
+      value: ""
+    INGEST_SCRIPT_ORIGIN:
+      value: "http://jitsu-console:3000/api/s/javascript-library"
+    INGEST_ROTOR_URL:
+      value: "http://jitsu-rotor:3401"
+    INGEST_REDIS_URL:
+      value: ""
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}

@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "jitsu.fullname" . }}-ingest
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.ingest.autoscaling.enabled }}
+  replicas: {{ .Values.ingest.replicaCount }}
+  {{- end }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 10
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      {{- include "jitsu.selectorLabels" . | nindent 6 }}
+      {{- include "jitsu.ingest.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "jitsu.selectorLabels" . | nindent 8 }}
+        {{- include "jitsu.ingest.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "jitsu.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.ingest.image.repository }}:{{ .Values.ingest.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.ingest.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.ingest.service.port }}
+              protocol: TCP
+          {{- if .Values.ingest.probes.enabled }}
+          livenessProbe:
+            httpGet:
+              port: http
+              path: /health
+          readinessProbe:
+            httpGet:
+              port: http
+              path: /health
+          {{- end }}
+          env:
+            {{- $env := merge (deepCopy .Values.ingest.environment) .Values.jitsu.environment -}}
+            {{- range $k, $v := $env }}
+              - name: {{ $k | quote }}
+                {{- toYaml $v | nindent 16 }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

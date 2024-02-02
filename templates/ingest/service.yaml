@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "jitsu.fullname" . }}-ingest
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.ingest.service.type }}
+  ports:
+    - port: {{ .Values.ingest.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "jitsu.selectorLabels" . | nindent 4 }}
+    {{- include "jitsu.ingest.selectorLabels" . | nindent 4 }}

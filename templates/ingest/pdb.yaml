@@ -1,0 +1,15 @@
+{{- if and .Values.ingest.podDisruptionBudget.enabled .Values.ingest.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "jitsu.fullname" . }}-ingest
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+    {{- include "jitsu.ingest.selectorLabels" . | nindent 4 }}
+spec:
+  minAvailable: {{ .Values.ingest.podDisruptionBudget.minAvailable }}
+  selector:
+    matchLabels:
+      {{- include "jitsu.selectorLabels" . | nindent 6 }}
+      {{- include "jitsu.ingest.selectorLabels" . | nindent 6 }}
+{{- end }}

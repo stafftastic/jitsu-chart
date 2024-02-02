@@ -1,0 +1,33 @@
+{{- if and .Values.ingest.autoscaling.enabled .Values.ingest.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "jitsu.fullname" . }}-ingest
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+    {{- include "jitsu.ingest.selectorLabels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "jitsu.fullname" . }}-ingest
+  minReplicas: {{ .Values.ingest.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.ingest.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.ingest.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.ingest.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.ingest.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.ingest.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+{{- end }}
