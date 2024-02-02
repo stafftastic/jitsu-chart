@@ -1,0 +1,33 @@
+{{- if and .Values.bulker.autoscaling.enabled .Values.bulker.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "jitsu.fullname" . }}-bulker
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+    {{- include "jitsu.bulker.selectorLabels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "jitsu.fullname" . }}-bulker
+  minReplicas: {{ .Values.bulker.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.bulker.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.bulker.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.bulker.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.bulker.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.bulker.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+{{- end }}

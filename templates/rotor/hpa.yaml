@@ -1,0 +1,33 @@
+{{- if and .Values.rotor.autoscaling.enabled .Values.rotor.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "jitsu.fullname" . }}-rotor
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+    {{- include "jitsu.rotor.selectorLabels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "jitsu.fullname" . }}-rotor
+  minReplicas: {{ .Values.rotor.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.rotor.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.rotor.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.rotor.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.rotor.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.rotor.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+{{- end }}

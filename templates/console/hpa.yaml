@@ -1,0 +1,33 @@
+{{- if and .Values.console.autoscaling.enabled .Values.console.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "jitsu.fullname" . }}-console
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+    {{- include "jitsu.console.selectorLabels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "jitsu.fullname" . }}-console
+  minReplicas: {{ .Values.console.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.console.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.console.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.console.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.console.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.console.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+{{- end }}
