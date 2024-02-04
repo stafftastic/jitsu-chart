@@ -333,6 +333,14 @@ redis:
 
 kafka:
   enabled: true
+  listeners:
+    interbroker:
+      protocol: PLAINTEXT
+    controller:
+      protocol: PLAINTEXT
+    client:
+      protocol: PLAINTEXT
+      external: PLAINTEXT
 
 mongodb:
   enabled: true
