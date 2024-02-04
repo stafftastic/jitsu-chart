@@ -266,6 +266,53 @@ ingest:
   tolerations: []
   affinity: {}
 
+syncctl:
+  enabled: true
+  replicaCount: 1
+  image:
+    repository: jitsucom/ingest
+    pullPolicy: IfNotPresent
+    tag: "latest"
+  service:
+    type: ClusterIP
+    port: 3043
+  probes:
+    enabled: true
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+  podDisruptionBudget:
+    enabled: false
+    minAvailable: 1
+  environment:
+    SYNCCTL_AUTH_TOKENS:
+      value: ""
+    SYNCCTL_TOKEN_SECRET:
+      value: ""
+    SYNCCTL_DATABASE_URL:
+      value: ""
+    SYNCCTL_KUBERNETES_CLIENT_CONFIG:
+      value: local
+    SYNCCTL_KUBERNETES_CONTEXT:
+      value: ""
+    SYNCCTL_KUBERNETES_NAMESPACE:
+      # This needs to be abstracted
+      value: '{{ .Release.Namespace }}'
+    SYNCCTL_BULKER_URL:
+      value: "http://jitsu-bulker:3042"
+    SYNCCTL_BULKER_AUTH_KEY:
+      value: ""
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
 imagePullSecrets: []
 
 serviceAccount:
