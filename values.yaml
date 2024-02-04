@@ -2,16 +2,12 @@ nameOverride: ""
 
 fullnameOverride: ""
 
-jitsu:
-  environment:
-    DATABASE_URL:
-      # postgres://username:password@host:port/database?options
-      value: ""
-    REDIS_URL:
-      # redis://username:password@host:port
-      value: ""
-    BULKER_URL:
-      value: "http://jitsu-bulker:3042"
+# Common configuration values shared across multiple components.
+config:
+  # Postgres database URL in the format of: postgres://username:password@host:port/database?options
+  databaseURL: ""
+  # Redis URL in the format of: redis://username:password@host:port
+  redisURL: ""
 
 global:
   postgresql:
@@ -29,6 +25,82 @@ global:
 
 console:
   enabled: true
+  config:
+    # Comma-separated list of email:password, required when not using GitHub OAuth
+    # https://docs.jitsu.com/self-hosting/configuration#admin_credentials
+    adminCredentials: ""
+
+    # The URL where the Jitsu Console will be available
+    # https://docs.jitsu.com/self-hosting/configuration#jitsu_public_url
+    publicURL: ""
+
+    # Leave empty to configure automatically
+    # https://docs.jitsu.com/self-hosting/configuration#console_auth_tokens
+    consoleAuthTokens: ""
+
+    # Leave empty to configure automatically
+    # https://docs.jitsu.com/self-hosting/configuration#global_hash_secret
+    globalHashSecret: ""
+
+    # Plain, non-hashed tokens. Not recommended for production.
+    # https://docs.jitsu.com/self-hosting/configuration#console_raw_auth_tokens
+    consoleRawAuthTokens: ""
+
+    # Leave empty to use global jitsu.databaseURL
+    # https://docs.jitsu.com/self-hosting/configuration#database_url
+    databaseURL: ""
+
+    # Only needed if the bulker is deployed outside of this chart. Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#bulker_url-1
+    bulkerURL: ""
+
+    # Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#bulker_auth_key-1
+    bulkerAuthKey: ""
+
+    # Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#rotor_url
+    rotorURL: ""
+
+    # Enable GitHub OAuth
+    # https://docs.jitsu.com/self-hosting/configuration#github_client_id
+    githubClientID: ""
+    githubClientSecret: ""
+
+    # Public domain where ingest service is available. Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#ingest_host
+    ingestHost: ""
+
+    # HTTP port of the ingest service. Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#ingest_port
+    ingestPort: ""
+
+    # Whether to enable the Connectors Syncs feature in the Jitsu Console UI. Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#syncs_enabled
+    syncsEnabled: ""
+
+    # The URL of the Syncctl service. Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#syncctl_url
+    syncctlUrl: ""
+
+    # Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#syncctl_auth_key
+    syncctlAuthKey: ""
+
+    # Enables Connectors Sync Scheduler feature. Google Service Account Key in JSON format.
+    # https://docs.jitsu.com/self-hosting/configuration#syncctl_auth_key
+    googleSchedulerKey: ""
+
+    # ClickHouse configuration
+    # https://docs.jitsu.com/self-hosting/configuration#clickhouse_metrics_schema
+    clickhouseMetricsSchema: ""
+    clickhouseURL: ""
+    clickhouseUsername: ""
+    clickhousePassword: ""
+
+    # Log format. One of "text", "json".
+    # https://docs.jitsu.com/self-hosting/configuration#log_format-1
+    logFormat: "text"
   replicaCount: 1
   image:
     repository: jitsucom/console
