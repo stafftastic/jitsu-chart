@@ -270,7 +270,7 @@ syncctl:
   enabled: true
   replicaCount: 1
   image:
-    repository: jitsucom/ingest
+    repository: jitsucom/syncctl
     pullPolicy: IfNotPresent
     tag: "latest"
   service:
