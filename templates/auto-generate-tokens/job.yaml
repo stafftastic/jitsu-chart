@@ -75,6 +75,7 @@ spec:
                 name: $FULLNAME-tokens
               type: Opaque
               stringData:
+                ingestAuthTokens: ""
                 ingestTokenSecret: "$ingestTokenSecret"
                 ingestRepositoryAuthToken: "service-admin-account:$ingestRepositoryAuthToken"
                 bulkerTokenSecret: "$bulkerTokenSecret"
@@ -82,11 +83,12 @@ spec:
                 bulkerConfigSourceHTTPAuthToken: "$bulkerConfigSourceHTTPAuthToken"
                 rotorRepositoryAuthToken: "service-admin-account:$rotorRepositoryAuthToken"
                 rotorBulkerAuthKey: "$rotorBulkerAuthKey"
-                syncctlTokenSecret: "$syncctlTokenSecret"
                 consoleGlobalHashSecret: "$consoleGlobalHashSecret"
                 consoleAuthTokens: "$consoleAuthTokens"
                 consoleBulkerAuthKey: "$consoleBulkerAuthKey"
                 consoleSyncctlAuthKey: "$consoleSyncctlAuthKey"
                 syncctlAuthTokens: "$syncctlAuthTokens"
+                syncctlTokenSecret: "$syncctlTokenSecret"
+                syncctlBulkerAuthKey: "$syncctlBulkerAuthKey"
               EOF
 {{- end }}
