@@ -6,4 +6,4 @@ type: application
 # Set automatically as part of the release process
 version: 0.0.0
 
-appVersion: 1.44.8
+appVersion: 2.4.1
