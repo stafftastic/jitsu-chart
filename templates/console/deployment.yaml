@@ -69,10 +69,8 @@ spec:
           {{- end }}
           env:
             {{- include "jitsu.console.env" . | nindent 12 }}
-            {{- $env := merge (deepCopy .Values.console.environment) .Values.jitsu.environment -}}
-            {{- range $k, $v := $env }}
-            - name: {{ $k | quote }}
-              {{- toYaml $v | nindent 14 }}
+            {{- with .Values.console.env }}
+            {{- toYaml . | nindent 12 }}
             {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

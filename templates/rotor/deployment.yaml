@@ -74,9 +74,8 @@ spec:
           {{- end }}
           env:
             {{- include "jitsu.rotor.env" . | nindent 12 }}
-            {{- range $k, $v := .Values.rotor.environment }}
-            - name: {{ $k | quote }}
-              {{- toYaml $v | nindent 14 }}
+            {{- with .Values.rotor.env }}
+            {{- toYaml .Values.rotor.env | nindent 12 }}
             {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

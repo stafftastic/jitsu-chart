@@ -74,9 +74,8 @@ spec:
           {{- end }}
           env:
             {{- include "jitsu.ingest.env" . | nindent 12 }}
-            {{- range $k, $v := .Values.ingest.environment }}
-            - name: {{ $k | quote }}
-              {{- toYaml $v | nindent 14 }}
+            {{- with .Values.ingest.env }}
+            {{- toYaml . | nindent 12 }}
             {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

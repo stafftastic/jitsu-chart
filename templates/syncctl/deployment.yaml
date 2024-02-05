@@ -69,9 +69,8 @@ spec:
           {{- end }}
           env:
             {{- include "jitsu.syncctl.env" . | nindent 12 }}
-            {{- range $k, $v := .Values.syncctl.environment }}
-            - name: {{ $k | quote }}
-              {{- toYaml $v | nindent 14 }}
+            {{- with .Values.syncctl.env }}
+            {{- toYaml . | nindent 12 }}
             {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

@@ -2,10 +2,6 @@ nameOverride: ""
 
 fullnameOverride: ""
 
-# Kept for compatibility while refactoring
-jitsu:
-  environment: {}
-
 # Common configuration values shared across multiple components.
 config:
   # Postgres database URL in the format of: postgres://username:password@host:port/database?options
@@ -162,7 +158,7 @@ console:
   podDisruptionBudget:
     enabled: false
     minAvailable: 1
-  environment: {}
+  env: {}
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}
@@ -282,7 +278,7 @@ bulker:
   podDisruptionBudget:
     enabled: false
     minAvailable: 1
-  environment: {}
+  env: {}
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}
@@ -368,7 +364,7 @@ rotor:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
-  environment: {}
+  env: {}
   podDisruptionBudget:
     enabled: false
     minAvailable: 1
@@ -467,7 +463,7 @@ ingest:
   podDisruptionBudget:
     enabled: false
     minAvailable: 1
-  environment: {}
+  env: {}
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}
@@ -539,7 +535,7 @@ syncctl:
   podDisruptionBudget:
     enabled: false
     minAvailable: 1
-  environment: {}
+  env: {}
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}
@@ -555,7 +551,7 @@ migration:
     pullPolicy: IfNotPresent
     tag: ""
   restartPolicy: Never
-  environment: {}
+  env: {}
   jobAnnotations: {}
   podAnnotations: {}
   podSecurityContext: {}
