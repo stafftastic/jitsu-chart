@@ -62,9 +62,13 @@ spec:
               bulkerConfigSourceHTTPAuthToken=$(random_string 32)
               bulkerConfigSourceHTTPAuthTokenSalt=$(random_string 8)
 
-              consoleAuthTokens="$ingestRepositoryAuthTokenSalt.$(hash_token $ingestRepositoryAuthToken $ingestRepositoryAuthTokenSalt $consoleGlobalHashSecret),$rotorRepositoryAuthTokenSalt.$(hash_token $rotorRepositoryAuthToken $rotorRepositoryAuthTokenSalt $consoleGlobalHashSecret)"
+              consoleAuthTokens="$ingestRepositoryAuthTokenSalt.$(hash_token $ingestRepositoryAuthToken $ingestRepositoryAuthTokenSalt $consoleGlobalHashSecret)"
+              consoleAuthTokens="$consoleAuthTokens,$rotorRepositoryAuthTokenSalt.$(hash_token $rotorRepositoryAuthToken $rotorRepositoryAuthTokenSalt $consoleGlobalHashSecret)"
+              consoleAuthTokens="$consoleAuthTokens,$bulkerConfigSourceHTTPAuthTokenSalt.$(hash_token $bulkerConfigSourceHTTPAuthToken $bulkerConfigSourceHTTPAuthTokenSalt $bulkerTokenSecret)"
 
-              bulkerAuthTokens="$rotorBulkerAuthKeySalt.$(hash_token $rotorBulkerAuthKey $rotorBulkerAuthKeySalt $bulkerTokenSecret),$consoleBulkerAuthKeySalt.$(hash_token $consoleBulkerAuthKey $consoleBulkerAuthKeySalt $bulkerTokenSecret),$syncctlBulkerAuthKeySalt.$(hash_token $syncctlBulkerAuthKey $syncctlBulkerAuthKeySalt $bulkerTokenSecret),$bulkerConfigSourceHTTPAuthTokenSalt.$(hash_token $bulkerConfigSourceHTTPAuthToken $bulkerConfigSourceHTTPAuthTokenSalt $bulkerTokenSecret)"
+              bulkerAuthTokens="$rotorBulkerAuthKeySalt.$(hash_token $rotorBulkerAuthKey $rotorBulkerAuthKeySalt $bulkerTokenSecret)"
+              bulkerAuthTokens="$bulkerAuthTokens,$consoleBulkerAuthKeySalt.$(hash_token $consoleBulkerAuthKey $consoleBulkerAuthKeySalt $bulkerTokenSecret)"
+              bulkerAuthTokens="$bulkerAuthTokens,$syncctlBulkerAuthKeySalt.$(hash_token $syncctlBulkerAuthKey $syncctlBulkerAuthKeySalt $bulkerTokenSecret)"
 
               syncctlAuthTokens="$consoleSyncctlAuthKeySalt.$(hash_token $consoleSyncctlAuthKey $consoleSyncctlAuthKeySalt $syncctlTokenSecret)"
 
@@ -80,7 +84,7 @@ spec:
                 ingestRepositoryAuthToken: "service-admin-account:$ingestRepositoryAuthToken"
                 bulkerTokenSecret: "$bulkerTokenSecret"
                 bulkerAuthTokens: "$bulkerAuthTokens"
-                bulkerConfigSourceHTTPAuthToken: "$bulkerConfigSourceHTTPAuthToken"
+                bulkerConfigSourceHTTPAuthToken: "service-admin-account:$bulkerConfigSourceHTTPAuthToken"
                 rotorRepositoryAuthToken: "service-admin-account:$rotorRepositoryAuthToken"
                 rotorBulkerAuthKey: "$rotorBulkerAuthKey"
                 consoleGlobalHashSecret: "$consoleGlobalHashSecret"
