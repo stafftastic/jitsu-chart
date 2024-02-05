@@ -16,8 +16,17 @@ config:
   # Will be configured automatically if left empty and using the Redis subchart.
   redisURL: ""
 
+  # Global Kafka configuration
+  kafkaBootstrapServers: ""
+  kafkaSSL: ""
+  kafkaSASL: "" # dict or string
+
   # Generate inter-service auth tokens automatically
   autoGenerateTokens: true
+
+  # Use these values to override service URLs if deployed externally.
+  bulkerURL: ""
+  rotorURL: ""
 
 global:
   postgresql:
@@ -204,6 +213,7 @@ bulker:
     # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_kafka_ssl_skip_verify
     bulkerKafkaSSLSkipVerify: ""
 
+    # Can be either a string or a dict.
     # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_kafka_sasl-aka-kafka-auth
     bulkerKafkaSASL: ""
 
@@ -277,6 +287,65 @@ bulker:
 
 rotor:
   enabled: true
+  config:
+    # Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#repository_base_url
+    repositoryBaseURL: ""
+
+    # Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#repository_auth_token
+    repositoryAuthToken: ""
+
+    # https://docs.jitsu.com/self-hosting/configuration#repository_refresh_period_sec
+    repositoryRefreshPeriodSec: ""
+
+    # Leave empty to configure automatically if config.redisURL is set or Redis subchart is being used.
+    # https://docs.jitsu.com/self-hosting/configuration#redis_url
+    redisURL: ""
+
+    # Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#bulker_url
+    bulkerURL: ""
+
+    # Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#bulker_auth_key
+    bulkerAuthKey: ""
+
+    # Leave empty to configure automatically if config.kafkaBootstrapServers is set or Kafka subchart is being used.
+    # https://docs.jitsu.com/self-hosting/configuration#kafka_bootstrap_servers
+    kafkaBootstrapServers: ""
+
+    # https://docs.jitsu.com/self-hosting/configuration#kafka_ssl
+    kafkaSSL: "false"
+
+    # Can be either a string or a dict.
+    # https://docs.jitsu.com/self-hosting/configuration#kafka_sasl-aka-kafka-auth
+    kafkaSASL: ""
+
+    # Leave empty to configure automatically if MongoDB subchart is being used.
+    # https://docs.jitsu.com/self-hosting/configuration#mongodb_url
+    mongodbURL: ""
+
+    # https://docs.jitsu.com/self-hosting/configuration#metrics_destination_id
+    metricsDestinationID: ""
+
+    # https://docs.jitsu.com/self-hosting/configuration#events_log_max_size
+    eventsLogMaxSize: ""
+
+    # https://docs.jitsu.com/self-hosting/configuration#concurrency
+    concurrency: ""
+
+    # https://docs.jitsu.com/self-hosting/configuration#messages_retry_count
+    messagesRetryCount: ""
+
+    # https://docs.jitsu.com/self-hosting/configuration#messages_retry_backoff_base
+    messagesRetryBackoffBase: ""
+
+    # https://docs.jitsu.com/self-hosting/configuration#messages_retry_backoff_max_delay
+    messagesRetryBackoffMaxDelay: ""
+
+    # https://docs.jitsu.com/self-hosting/configuration#log_format
+    logFormat: "text"
   replicaCount: 1
   image:
     repository: jitsucom/rotor
@@ -293,19 +362,7 @@ rotor:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
-  environment:
-    MONGODB_URL:
-      # mongodb://username:password@host:port
-      value: ""
-    KAFKA_BOOTSTRAP_SERVERS:
-      # host:port
-      value: ""
-    BULKER_AUTH_KEY:
-      # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_auth_tokens
-      value: ""
-    CONFIG_STORE_DATABASE_URL:
-      # postgres://username:password@host:port/database?options
-      value: ""
+  environment: {}
   podDisruptionBudget:
     enabled: false
     minAvailable: 1

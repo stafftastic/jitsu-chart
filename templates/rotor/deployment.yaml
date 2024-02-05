@@ -55,10 +55,10 @@ spec:
               path: /health
           {{- end }}
           env:
-            {{- $env := merge (deepCopy .Values.rotor.environment) .Values.jitsu.environment -}}
-            {{- range $k, $v := $env }}
-              - name: {{ $k | quote }}
-                {{- toYaml $v | nindent 16 }}
+            {{- include "jitsu.rotor.env" . | nindent 12 }}
+            {{- range $k, $v := .Values.rotor.environment }}
+            - name: {{ $k | quote }}
+              {{- toYaml $v | nindent 14 }}
             {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

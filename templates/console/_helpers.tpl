@@ -21,8 +21,14 @@ app.kubernetes.io/component: console
 - name: BULKER_AUTH_KEY
   value: {{ .bulkerAuthKey | quote }}
 {{- end }}
+{{- if and (not .rotorURL) (not $.Values.config.rotorURL) $.Values.rotor.enabled }}
 - name: ROTOR_URL
-  value: {{ .rotorURL | default (printf "http://%s-bulker:%d" (include "jitsu.fullname" $) (int $.Values.bulker.service.port)) | quote }}
+  value: {{ printf "http://%s-rotor:%d" (include "jitsu.fullname" $) (int $.Values.rotor.service.port) | quote }}
+{{- end }}
+{{- with (.rotorURL | default $.Values.config.rotorURL) }}
+- name: ROTOR_URL
+  value: {{ . | quote }}
+{{- end }}
 {{- if $.Values.syncctl.enabled }}
 - name: SYNCS_ENABLED
   value: {{ .syncsEnabled | default true | quote }}

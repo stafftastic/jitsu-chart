@@ -66,14 +66,14 @@ app.kubernetes.io/component: bulker
 - name: BULKER_EVENTS_LOG_MAX_SIZE
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .bulkerKafkaBootstrapServers) $.Values.kafka.enabled }}
+{{- if and (not .bulkerKafkaBootstrapServers) (not $.Values.config.kafkaBootstrapServers) $.Values.kafka.enabled }}
 - name: BULKER_KAFKA_BOOTSTRAP_SERVERS
   value: "{{ $.Release.Name }}-kafka:9092"
-{{- else if .bulkerKafkaBootstrapServers }}
+{{- else if or .bulkerKafkaBootstrapServers $.Values.config.kafkaBootstrapServers }}
 - name: BULKER_KAFKA_BOOTSTRAP_SERVERS
-  value: {{ .bulkerKafkaBootstrapServers | quote }}
+  value: {{ .bulkerKafkaBootstrapServers | default $.Values.config.kafkaBootstrapServers | quote }}
 {{- end }}
-{{- with .bulkerKafkaSSL }}
+{{- with (.bulkerKafkaSSL | default $.Values.config.kafkaSSL) }}
 - name: BULKER_KAFKA_SSL
   value: {{ . | quote }}
 {{- end }}
@@ -81,9 +81,13 @@ app.kubernetes.io/component: bulker
 - name: BULKER_KAFKA_SSL_SKIP_VERIFY
   value: {{ . | quote }}
 {{- end }}
-{{- with .bulkerKafkaSASL }}
+{{- with (.bulkerKafkaSASL | default $.Values.config.kafkaSASL) }}
 - name: BULKER_KAFKA_SASL
+  {{- if kindIs "string" . }}
   value: {{ . | quote }}
+  {{- else }}
+  value: {{ toJson . | quote }}
+  {{- end }}
 {{- end }}
 {{- with .bulkerBatchRunnerDefaultPeriodSec }}
 - name: BULKER_BATCH_RUNNER_DEFAULT_PERIOD_SEC
