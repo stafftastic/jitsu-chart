@@ -22,7 +22,6 @@ spec:
       {{- end }}
       restartPolicy: "Never"
       serviceAccountName: {{ include "jitsu.serviceAccountName" . }}
-      {{- if or .Values.postgresql.enabled .Values.config.autoGenerateTokens }}
       initContainers:
         {{- if .Values.config.autoGenerateTokens }}
         - name: wait-for-tokens
@@ -34,7 +33,6 @@ spec:
           image: ghcr.io/groundnuty/k8s-wait-for:v2.0
           args: ["service", "{{ .Release.Name }}-postgresql"]
         {{- end }}
-      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.migration.image.repository }}:{{ .Values.migration.image.tag | default .Chart.AppVersion }}"

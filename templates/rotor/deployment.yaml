@@ -34,7 +34,6 @@ spec:
       serviceAccountName: {{ include "jitsu.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      {{- if or .Values.config.autoGenerateTokens .Values.redis.enabled .Values.console.enabled }}
       initContainers:
         {{- if .Values.config.autoGenerateTokens }}
         - name: wait-for-tokens
@@ -46,12 +45,26 @@ spec:
           image: ghcr.io/groundnuty/k8s-wait-for:v2.0
           args: ["service", "{{ include "jitsu.fullname" . }}-redis-master"]
         {{- end }}
+        {{- if .Values.kafka.enabled }}
+        - name: wait-for-kafka
+          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          args: ["service", "{{ include "jitsu.fullname" . }}-kafka"]
+        {{- end }}
+        {{- if .Values.mongodb.enabled }}
+        - name: wait-for-mongodb
+          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          args: ["service", "{{ .Release.Name }}-mongodb"]
+        {{- end }}
         {{- if .Values.console.enabled }}
         - name: wait-for-console
           image: ghcr.io/groundnuty/k8s-wait-for:v2.0
           args: ["service", "{{ include "jitsu.fullname" . }}-console"]
         {{- end }}
-      {{- end }}
+        {{- if .Values.bulker.enabled }}
+        - name: wait-for-bulker
+          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          args: ["service", "{{ include "jitsu.fullname" . }}-bulker"]
+        {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:

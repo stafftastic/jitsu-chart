@@ -34,7 +34,6 @@ spec:
       serviceAccountName: {{ include "jitsu.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      {{- if or .Values.config.autoGenerateTokens .Values.redis.enabled .Values.console.enabled }}
       initContainers:
         {{- if .Values.config.autoGenerateTokens }}
         - name: wait-for-tokens
@@ -44,14 +43,23 @@ spec:
         {{- if .Values.redis.enabled }}
         - name: wait-for-redis
           image: ghcr.io/groundnuty/k8s-wait-for:v2.0
-          args: ["service", "{{ include "jitsu.fullname" . }}-redis-master"]
+          args: ["service", "{{ .Release.Name }}-redis-master"]
+        {{- end }}
+        {{- if .Values.kafka.enabled }}
+        - name: wait-for-kafka
+          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          args: ["service", "{{ .Release.Name }}-kafka"]
         {{- end }}
         {{- if .Values.console.enabled }}
         - name: wait-for-console
           image: ghcr.io/groundnuty/k8s-wait-for:v2.0
           args: ["service", "{{ include "jitsu.fullname" . }}-console"]
         {{- end }}
-      {{- end }}
+        {{- if .Values.rotor.enabled }}
+        - name: wait-for-rotor
+          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          args: ["service", "{{ include "jitsu.fullname" . }}-rotor"]
+        {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
