@@ -9,9 +9,11 @@ jitsu:
 # Common configuration values shared across multiple components.
 config:
   # Postgres database URL in the format of: postgres://username:password@host:port/database?options
+  # Will be configured automatically if left empty and using the PostgreSQL subchart.
   databaseURL: ""
 
   # Redis URL in the format of: redis://username:password@host:port
+  # Will be configured automatically if left empty and using the Redis subchart.
   redisURL: ""
 
   # Generate inter-service auth tokens automatically
@@ -20,9 +22,9 @@ config:
 global:
   postgresql:
     auth:
-      username: ""
+      username: "jitsu"
       password: ""
-      database: ""
+      database: "jitsu"
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}
