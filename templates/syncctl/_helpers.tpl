@@ -52,7 +52,7 @@ app.kubernetes.io/component: syncctl
   valueFrom:
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
-      key: syncctlBulkerAuthKey
+      key: bulkerAuthToken
 {{- end }}
 {{- with .bulkerAuthKey }}
 - name: SYNCCTL_BULKER_AUTH_KEY

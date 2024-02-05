@@ -51,7 +51,7 @@ app.kubernetes.io/component: ingest
   valueFrom:
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
-      key: ingestRepositoryAuthToken
+      key: consoleAuthToken
 {{- end }}
 {{- with .repositoryAuthToken }}
 - name: INGEST_REPOSITORY_AUTH_TOKEN

@@ -20,7 +20,7 @@ app.kubernetes.io/component: console
   valueFrom:
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
-      key: consoleBulkerAuthKey
+      key: bulkerAuthToken
 {{- end }}
 {{- with .bulkerAuthKey }}
 - name: BULKER_AUTH_KEY
@@ -77,7 +77,7 @@ app.kubernetes.io/component: console
   valueFrom:
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
-      key: consoleSyncctlAuthKey
+      key: syncctlAuthToken
 {{- end }}
 {{- with .syncctlAuthKey }}
 - name: SYNCCTL_AUTH_KEY
@@ -99,7 +99,7 @@ app.kubernetes.io/component: console
   valueFrom:
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
-      key: consoleGlobalHashSecret
+      key: consoleTokenSecret
 {{- end }}
 {{- with .consoleGlobalHashSecret }}
 - name: GLOBAL_HASH_SECRET

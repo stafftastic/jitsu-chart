@@ -20,6 +20,12 @@ spec:
           env:
             - name: FULLNAME
               value: {{ include "jitsu.fullname" . }}
+            - name: SECRET_LENGTH
+              value: "32"
+            - name: TOKEN_LENGTH
+              value: "32"
+            - name: SALT_LENGTH
+              value: "32"
           command: ["sh", "-c"]
           args:
             - |
@@ -27,50 +33,36 @@ spec:
                 echo "Secret $FULLNAME-tokens already exists, skipping generation"
                 exit 0
               fi
-
               set -e
-
               random_string() {
                 length="$1"
                 cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c "$length"
               }
-
               hash_token() {
                 token="$1"
                 salt="$2"
                 secret="$3"
-                echo -n "$token$salt$secret" | sha512sum | awk '{print $1}'
+                echo -n "$token$salt$secret" | sha512sum | awk '{print $1}' | tr -d '\n'
               }
+              ingestTokenSecret=$(random_string $SECRET_LENGTH)
+              bulkerTokenSecret=$(random_string $SECRET_LENGTH)
+              syncctlTokenSecret=$(random_string $SECRET_LENGTH)
+              consoleTokenSecret=$(random_string $SECRET_LENGTH)
 
-              ingestTokenSecret=$(random_string 32)
-              bulkerTokenSecret=$(random_string 32)
-              syncctlTokenSecret=$(random_string 32)
-              consoleGlobalHashSecret=$(random_string 32)
+              ingestAuthToken=$(random_string $TOKEN_LENGTH)
+              bulkerAuthToken=$(random_string $TOKEN_LENGTH)
+              syncctlAuthToken=$(random_string $TOKEN_LENGTH)
+              consoleAuthToken=$(random_string $TOKEN_LENGTH)
 
-              ingestRepositoryAuthToken=$(random_string 32)
-              ingestRepositoryAuthTokenSalt=$(random_string 8)
-              rotorRepositoryAuthToken=$(random_string 32)
-              rotorRepositoryAuthTokenSalt=$(random_string 8)
-              rotorBulkerAuthKey=$(random_string 32)
-              rotorBulkerAuthKeySalt=$(random_string 8)
-              consoleBulkerAuthKey=$(random_string 32)
-              consoleBulkerAuthKeySalt=$(random_string 8)
-              consoleSyncctlAuthKey=$(random_string 32)
-              consoleSyncctlAuthKeySalt=$(random_string 8)
-              syncctlBulkerAuthKey=$(random_string 32)
-              syncctlBulkerAuthKeySalt=$(random_string 8)
-              bulkerConfigSourceHTTPAuthToken=$(random_string 32)
-              bulkerConfigSourceHTTPAuthTokenSalt=$(random_string 8)
+              ingestAuthTokenSalt=$(random_string $SALT_LENGTH)
+              bulkerAuthTokenSalt=$(random_string $SALT_LENGTH)
+              syncctlAuthTokenSalt=$(random_string $SALT_LENGTH)
+              consoleAuthTokenSalt=$(random_string $SALT_LENGTH)
 
-              consoleAuthTokens="$ingestRepositoryAuthTokenSalt.$(hash_token $ingestRepositoryAuthToken $ingestRepositoryAuthTokenSalt $consoleGlobalHashSecret)"
-              consoleAuthTokens="$consoleAuthTokens,$rotorRepositoryAuthTokenSalt.$(hash_token $rotorRepositoryAuthToken $rotorRepositoryAuthTokenSalt $consoleGlobalHashSecret)"
-              consoleAuthTokens="$consoleAuthTokens,$bulkerConfigSourceHTTPAuthTokenSalt.$(hash_token $bulkerConfigSourceHTTPAuthToken $bulkerConfigSourceHTTPAuthTokenSalt $bulkerTokenSecret)"
-
-              bulkerAuthTokens="$rotorBulkerAuthKeySalt.$(hash_token $rotorBulkerAuthKey $rotorBulkerAuthKeySalt $bulkerTokenSecret)"
-              bulkerAuthTokens="$bulkerAuthTokens,$consoleBulkerAuthKeySalt.$(hash_token $consoleBulkerAuthKey $consoleBulkerAuthKeySalt $bulkerTokenSecret)"
-              bulkerAuthTokens="$bulkerAuthTokens,$syncctlBulkerAuthKeySalt.$(hash_token $syncctlBulkerAuthKey $syncctlBulkerAuthKeySalt $bulkerTokenSecret)"
-
-              syncctlAuthTokens="$consoleSyncctlAuthKeySalt.$(hash_token $consoleSyncctlAuthKey $consoleSyncctlAuthKeySalt $syncctlTokenSecret)"
+              ingestAuthTokens="$ingestAuthTokenSalt.$(hash_token $ingestAuthToken $ingestAuthTokenSalt $ingestTokenSecret)"
+              bulkerAuthTokens="$bulkerAuthTokenSalt.$(hash_token $bulkerAuthToken $bulkerAuthTokenSalt $bulkerTokenSecret)"
+              syncctlAuthTokens="$syncctlAuthTokenSalt.$(hash_token $syncctlAuthToken $syncctlAuthTokenSalt $syncctlTokenSecret)"
+              consoleAuthTokens="$consoleAuthTokenSalt.$(hash_token $consoleAuthToken $consoleAuthTokenSalt $consoleTokenSecret)"
 
               kubectl apply -f- <<EOF
               apiVersion: v1
@@ -79,20 +71,19 @@ spec:
                 name: $FULLNAME-tokens
               type: Opaque
               stringData:
-                ingestAuthTokens: ""
                 ingestTokenSecret: "$ingestTokenSecret"
-                ingestRepositoryAuthToken: "service-admin-account:$ingestRepositoryAuthToken"
                 bulkerTokenSecret: "$bulkerTokenSecret"
-                bulkerAuthTokens: "$bulkerAuthTokens"
-                bulkerConfigSourceHTTPAuthToken: "service-admin-account:$bulkerConfigSourceHTTPAuthToken"
-                rotorRepositoryAuthToken: "service-admin-account:$rotorRepositoryAuthToken"
-                rotorBulkerAuthKey: "$rotorBulkerAuthKey"
-                consoleGlobalHashSecret: "$consoleGlobalHashSecret"
-                consoleAuthTokens: "$consoleAuthTokens"
-                consoleBulkerAuthKey: "$consoleBulkerAuthKey"
-                consoleSyncctlAuthKey: "$consoleSyncctlAuthKey"
-                syncctlAuthTokens: "$syncctlAuthTokens"
                 syncctlTokenSecret: "$syncctlTokenSecret"
-                syncctlBulkerAuthKey: "$syncctlBulkerAuthKey"
+                consoleTokenSecret: "$consoleTokenSecret"
+
+                ingestAuthToken: "$ingestAuthToken"
+                bulkerAuthToken: "$bulkerAuthToken"
+                syncctlAuthToken: "$syncctlAuthToken"
+                consoleAuthToken: "service-admin-account:$consoleAuthToken"
+
+                ingestAuthTokens: "$ingestAuthTokens"
+                bulkerAuthTokens: "$bulkerAuthTokens"
+                syncctlAuthTokens: "$syncctlAuthTokens"
+                consoleAuthTokens: "$consoleAuthTokens"
               EOF
 {{- end }}

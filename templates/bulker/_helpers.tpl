@@ -25,7 +25,7 @@ app.kubernetes.io/component: bulker
   valueFrom:
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
-      key: bulkerConfigSourceHTTPAuthToken
+      key: consoleAuthToken
 {{- end }}
 {{- with .configSourceHTTPAuthToken }}
 - name: BULKER_CONFIG_SOURCE_HTTP_AUTH_TOKEN
@@ -52,6 +52,17 @@ app.kubernetes.io/component: bulker
 {{- end }}
 {{- with .authTokens}}
 - name: BULKER_AUTH_TOKENS
+  value: {{ . | quote }}
+{{- end }}
+{{- if and (not .tokenSecret) $.Values.config.autoGenerateTokens }}
+- name: BULKER_TOKEN_SECRET
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "jitsu.fullname" $ }}-tokens
+      key: bulkerTokenSecret
+{{- end }}
+{{- with .tokenSecret }}
+- name: BULKER_TOKEN_SECRET
   value: {{ . | quote }}
 {{- end }}
 {{- with .rawAuthTokens }}
