@@ -11,6 +11,8 @@ app.kubernetes.io/component: console
   value: {{ .jitsuPublicURL | quote }}
 - name: NEXTAUTH_URL
   value: {{ .nextauthURL | default .jitsuPublicURL | quote }}
+- name: NEXTAUTH_URL_INTERNAL
+  value: {{ .nextauthURLInternal | default (printf "http://%s-console:%d" (include "jitsu.fullname" $) (int $.Values.console.service.port)) | quote }}
 - name: JITSU_INGEST_PUBLIC_URL
   value: {{ .jitsuIngestPublicURL | quote }}
 - name: DATABASE_URL

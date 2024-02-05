@@ -51,6 +51,9 @@ console:
     # Leave empty to default to jitsuPublicURL.
     nextauthURL: ""
 
+    # Leave empty to default to the console service.
+    nextauthURLInternal: ""
+
     # Initial admin user. Required if not using GitHub OAuth.
     seedUserEmail: ""
     seedUserPassword: ""
