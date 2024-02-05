@@ -577,6 +577,8 @@ postgresql:
 
 redis:
   enabled: true
+  auth:
+    enabled: false
 
 kafka:
   enabled: true
