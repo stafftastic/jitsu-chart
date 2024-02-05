@@ -151,7 +151,7 @@ console:
     className: ''
     annotations: {}
     hosts:
-      - host: jitsu.example.org
+      - host: jitsu.example.com
         paths:
           - path: /
             pathType: Prefix
@@ -456,9 +456,9 @@ ingest:
     className: ''
     annotations: {}
     hosts:
-      - host: jitsu.example.org
+      - host: data.jitsu.example.com
         paths:
-          - path: /api/s/
+          - path: /
             pathType: Prefix
     tls: []
     # - secretName: jitsu-example-org-tls
