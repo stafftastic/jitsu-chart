@@ -22,11 +22,18 @@ spec:
       {{- end }}
       restartPolicy: "Never"
       serviceAccountName: {{ include "jitsu.serviceAccountName" . }}
-      {{- if .Values.postgresql.enabled }}
+      {{- if or .Values.postgresql.enabled .Values.config.autoGenerateTokens }}
       initContainers:
+        {{- if .Values.config.autoGenerateTokens }}
+        - name: wait-for-tokens
+          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          args: ["job-wr", "{{ include "jitsu.fullname" . }}-auto-generate-tokens-{{ sha1sum (toJson .Values) | substr 0 8 }}"]
+          {{- end }}
+        {{- if .Values.postgresql.enabled }}
         - name: wait-for-postgresql
           image: ghcr.io/groundnuty/k8s-wait-for:v2.0
           args: ["service", "{{ .Release.Name }}-postgresql"]
+        {{- end }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
