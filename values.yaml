@@ -4,6 +4,9 @@ fullnameOverride: ""
 
 # Common configuration values shared across multiple components.
 config:
+  # Generate inter-service auth tokens automatically upon deployment.
+  autoGenerateTokens: true
+
   # Postgres database URL in the format of: postgres://username:password@host:port/database?options
   # Will be configured automatically if left empty and using the PostgreSQL subchart.
   databaseURL: ""
@@ -12,13 +15,16 @@ config:
   # Will be configured automatically if left empty and using the Redis subchart.
   redisURL: ""
 
-  # Global Kafka configuration
+  # Global Kafka configuration. Leave empty if using Kafka subchart.
+  # List of hosts in the format of: host:port,...
   kafkaBootstrapServers: ""
+  # Enable/disable SSL
   kafkaSSL: ""
-  kafkaSASL: "" # dict or string
+  # Dict or JSON string with SASL configuration. Leave empty to disable.
+  kafkaSASL: ""
 
-  # Generate inter-service auth tokens automatically
-  autoGenerateTokens: true
+  # Global MongoDB URL. Leave empty if using MongoDB subchart.
+  mongodbURL: ""
 
   # Use these values to override service URLs if deployed externally.
   bulkerURL: ""
