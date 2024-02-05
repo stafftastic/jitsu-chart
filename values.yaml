@@ -2,12 +2,20 @@ nameOverride: ""
 
 fullnameOverride: ""
 
+# Kept for compatibility while refactoring
+jitsu:
+  environment: {}
+
 # Common configuration values shared across multiple components.
 config:
   # Postgres database URL in the format of: postgres://username:password@host:port/database?options
   databaseURL: ""
+
   # Redis URL in the format of: redis://username:password@host:port
   redisURL: ""
+
+  # Generate inter-service auth tokens automatically
+  autoGenerateTokens: true
 
 global:
   postgresql:
@@ -26,13 +34,22 @@ global:
 console:
   enabled: true
   config:
+    # The URL where the Jitsu Console will be available
+    # https://docs.jitsu.com/self-hosting/configuration#jitsu_public_url
+    jitsuPublicURL: ""
+
     # Comma-separated list of email:password, required when not using GitHub OAuth
     # https://docs.jitsu.com/self-hosting/configuration#admin_credentials
     adminCredentials: ""
 
-    # The URL where the Jitsu Console will be available
-    # https://docs.jitsu.com/self-hosting/configuration#jitsu_public_url
-    publicURL: ""
+    # Enable GitHub OAuth
+    # https://docs.jitsu.com/self-hosting/configuration#github_client_id
+    githubClientID: ""
+    githubClientSecret: ""
+
+    # Disable sign-up
+    # https://github.com/jitsucom/jitsu/blob/newjitsu/docker/README.md#further-steps
+    disableSignup: "false"
 
     # Leave empty to configure automatically
     # https://docs.jitsu.com/self-hosting/configuration#console_auth_tokens
@@ -61,11 +78,6 @@ console:
     # Leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#rotor_url
     rotorURL: ""
-
-    # Enable GitHub OAuth
-    # https://docs.jitsu.com/self-hosting/configuration#github_client_id
-    githubClientID: ""
-    githubClientSecret: ""
 
     # Public domain where ingest service is available. Leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#ingest_host
@@ -133,28 +145,7 @@ console:
   podDisruptionBudget:
     enabled: false
     minAvailable: 1
-  environment:
-    NEXTAUTH_URL:
-      value: ""
-    JITSU_PUBLIC_URL:
-      value: ""
-    JITSU_INGEST_PUBLIC_URL:
-      value: ""
-    CONSOLE_AUTH_TOKENS:
-      # https://docs.jitsu.com/self-hosting/configuration#console_auth_tokens
-      # needed by ingest
-      value: ""
-    ROTOR_URL:
-      value: "http://jitsu-rotor:3401"
-    BULKER_AUTH_KEY:
-      # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_auth_tokens
-      value: ""
-    DISABLE_SIGNUP:
-      value: "false"
-    GITHUB_CLIENT_ID:
-      value: ""
-    GITHUB_CLIENT_SECRET:
-      value: ""
+  environment: {}
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}
