@@ -17,9 +17,10 @@ app.kubernetes.io/component: console
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
       key: consoleBulkerAuthKey
-{{- else if .bulkerAuthKey }}
+{{- end }}
+{{- with .bulkerAuthKey }}
 - name: BULKER_AUTH_KEY
-  value: {{ .bulkerAuthKey | quote }}
+  value: {{ . | quote }}
 {{- end }}
 {{- if and (not .rotorURL) (not $.Values.config.rotorURL) $.Values.rotor.enabled }}
 - name: ROTOR_URL
@@ -29,14 +30,19 @@ app.kubernetes.io/component: console
 - name: ROTOR_URL
   value: {{ . | quote }}
 {{- end }}
-{{- if $.Values.syncctl.enabled }}
+{{- if and (not .syncsEnabled) $.Values.syncctl.enabled }}
 - name: SYNCS_ENABLED
-  value: {{ .syncsEnabled | default true | quote }}
+  value: "true"
+{{- end }}
+{{- with .syncsEnabled }}
+- name: SYNCS_ENABLED
+  value: {{ . | quote }}
+{{- end }}
+{{- if and (not .syncctlURL) $.Values.syncctl.enabled }}
 - name: SYNCCTL_URL
   value: {{ .syncctlURL | default (printf "http://%s-syncctl:%d" (include "jitsu.fullname" $) (int $.Values.syncctl.service.port)) | quote }}
-{{- else }}
-- name: SYNCS_ENABLED
-  value: {{ .syncsEnabled | default false | quote }}
+{{- end }}
+{{- with .syncctlURL }}
 - name: SYNCCTL_URL
   value: {{ .syncctlURL | quote }}
 {{- end }}
@@ -46,9 +52,10 @@ app.kubernetes.io/component: console
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
       key: consoleSyncctlAuthKey
-{{- else if .syncctlAuthKey }}
+{{- end }}
+{{- with .syncctlAuthKey }}
 - name: SYNCCTL_AUTH_KEY
-  value: {{ .syncctlAuthKey | quote }}
+  value: {{ . | quote }}
 {{- end }}
 {{- if and (not .consoleAuthTokens) $.Values.config.autoGenerateTokens }}
 - name: CONSOLE_AUTH_TOKENS
@@ -56,9 +63,10 @@ app.kubernetes.io/component: console
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
       key: consoleAuthTokens
-{{- else if .consoleAuthTokens }}
+{{- end }}
+{{- with .consoleAuthTokens }}
 - name: CONSOLE_AUTH_TOKENS
-  value: {{ .consoleAuthTokens | quote }}
+  value: {{ . | quote }}
 {{- end }}
 {{- if and (not .consoleGlobalHashSecret) $.Values.config.autoGenerateTokens }}
 - name: GLOBAL_HASH_SECRET
@@ -66,7 +74,8 @@ app.kubernetes.io/component: console
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
       key: consoleGlobalHashSecret
-{{- else if .consoleGlobalHashSecret }}
+{{- end }}
+{{- with .consoleGlobalHashSecret }}
 - name: GLOBAL_HASH_SECRET
   value: {{ .consoleGlobalHashSecret | quote }}
 {{- end }}
