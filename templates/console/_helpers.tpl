@@ -127,6 +127,10 @@ app.kubernetes.io/component: console
 - name: GITHUB_CLIENT_SECRET
   value: {{ . | quote }}
 {{- end }}
+{{- with .enableCredentialsLogin }}
+- name: ENABLE_CREDENTIALS_LOGIN
+  value: {{ . | quote }}
+{{- end }}
 {{- with .adminCredentials }}
 - name: ADMIN_CREDENTIALS
   value: {{ . | quote }}

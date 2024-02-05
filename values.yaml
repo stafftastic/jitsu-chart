@@ -67,6 +67,9 @@ console:
     # https://github.com/jitsucom/jitsu/blob/newjitsu/docker/README.md#further-steps
     disableSignup: "false"
 
+    # Enable credentials login regardless of seedUser* being set or not.
+    enableCredentialsLogin: ""
+
     # Leave empty to configure automatically
     # https://docs.jitsu.com/self-hosting/configuration#console_auth_tokens
     consoleAuthTokens: ""
