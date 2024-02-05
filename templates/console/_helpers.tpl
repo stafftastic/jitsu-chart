@@ -9,6 +9,8 @@ app.kubernetes.io/component: console
 {{- with .Values.console.config -}}
 - name: JITSU_PUBLIC_URL
   value: {{ .jitsuPublicURL | quote }}
+- name: DATABASE_URL
+  value: {{ .databaseURL | default (include "jitsu.databaseURL" $) | quote }}
 - name: BULKER_AUTH_KEY
   valueFrom:
     secretKeyRef:
@@ -46,21 +48,6 @@ app.kubernetes.io/component: console
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
       key: consoleGlobalHashSecret
-{{- end }}
-{{- if and (not .databaseURL) (not $.Values.jitsu.databaseURL) $.Values.postgresql.enabled }}
-{{- with $.Values.global.postgresql.auth }}
-- name: DATABASE_URL
-  value: {{ printf "postgres://%s:%s@%s:%d/%s?sslmode=no-verify&schema=newjitsu"
-    .username
-    .password
-    (printf "%s-postgresql" $.Release.Name)
-    5432
-    .database
-  | quote }}
-{{- end }}
-{{- else }}
-- name: DATABASE_URL
-  value: {{ .databaseURL | default $.Values.jitsu.databaseURL | quote }}
 {{- end }}
 {{- with .githubClientID }}
 - name: GITHUB_CLIENT_ID

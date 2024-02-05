@@ -60,3 +60,19 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{- define "jitsu.databaseURL" -}}
+{{- if and (not .Values.config.databaseURL) .Values.postgresql.enabled }}
+{{- with $.Values.global.postgresql.auth -}}
+{{ printf "postgres://%s:%s@%s:%d/%s?sslmode=no-verify&schema=newjitsu"
+  .username
+  .password
+  (printf "%s-postgresql" $.Release.Name)
+  5432
+  .database
+}}
+{{- end }}
+{{- else -}}
+{{ .Values.config.databaseURL }}
+{{- end }}
+{{- end }}
