@@ -43,7 +43,7 @@ spec:
         {{- if .Values.redis.enabled }}
         - name: wait-for-redis
           image: ghcr.io/groundnuty/k8s-wait-for:v2.0
-          args: ["service", "{{ .Release.Name }}-redis"]
+          args: ["service", "{{ .Release.Name }}-redis-master"]
         {{- end }}
         {{- if .Values.kafka.enabled }}
         - name: wait-for-kafka
