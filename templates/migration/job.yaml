@@ -10,7 +10,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  backoffLimit: 1
+  backoffLimit: 10
   template:
     metadata:
       labels:
@@ -22,16 +22,23 @@ spec:
       {{- end }}
       restartPolicy: "Never"
       serviceAccountName: {{ include "jitsu.serviceAccountName" . }}
+      {{- if .Values.postgresql.enabled }}
+      initContainers:
+        - name: wait-for-postgresql
+          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          args: ["service", "{{ .Release.Name }}-postgresql"]
+      {{- end }}
       containers:
-      - name: {{ .Chart.Name }}
-        image: "{{ .Values.migration.image.repository }}:{{ .Values.migration.image.tag | default .Chart.AppVersion }}"
-        imagePullPolicy: {{ .Values.migration.image.pullPolicy }}
-        command: [prisma]
-        args: [db, push, --skip-generate, --schema, /app/schema.prisma]
-        env:
-          {{- $env := merge (deepCopy .Values.migration.environment) .Values.jitsu.environment -}}
-          {{- range $k, $v := $env }}
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.migration.image.repository }}:{{ .Values.migration.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.migration.image.pullPolicy }}
+          command: [prisma]
+          args: [db, push, --skip-generate, --schema, /app/schema.prisma]
+          env:
+            {{- range $k, $v := .Values.migration.environment }}
             - name: {{ $k | quote }}
               {{- toYaml $v | nindent 14 }}
-          {{- end }}
+            {{- end }}
+            - name: DATABASE_URL
+              value: {{ include "jitsu.databaseURL" . | quote }}
 {{- end }}
