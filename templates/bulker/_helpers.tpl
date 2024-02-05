@@ -8,32 +8,32 @@ app.kubernetes.io/component: bulker
 {{- define "jitsu.bulker.env" -}}
 {{- with .Values.bulker.config }}
 - name: BULKER_INSTANCE_ID
-  value: {{ .bulkerInstanceID | quote }}
-{{- if and (not .bulkerConfigSource) $.Values.config.autoGenerateTokens }}
+  value: {{ .instanceID | quote }}
+{{- if and (not .configSource) $.Values.config.autoGenerateTokens }}
 - name: BULKER_CONFIG_SOURCE
   value: {{ printf "http://%s-console:%d/api/admin/export/bulker-connections"
     (include "jitsu.fullname" $)
     $.Values.console.service.port
   | quote }}
-{{- else if .bulkerConfigSource }}
+{{- else if .configSource }}
 - name: BULKER_CONFIG_SOURCE
-  value: {{ .bulkerConfigSource | quote }}
+  value: {{ .configSource | quote }}
 {{- end }}
-{{- if and (not .bulkerConfigSourceHTTPAuthToken) $.Values.config.autoGenerateTokens }}
+{{- if and (not .configSourceHTTPAuthToken) $.Values.config.autoGenerateTokens }}
 - name: BULKER_CONFIG_SOURCE_HTTP_AUTH_TOKEN
   valueFrom:
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
       key: bulkerConfigSourceHTTPAuthToken
-{{- else if .bulkerConfigSourceHTTPAuthToken }}
+{{- else if .configSourceHTTPAuthToken }}
 - name: BULKER_CONFIG_SOURCE_HTTP_AUTH_TOKEN
-  value: {{ .bulkerConfigSourceHTTPAuthToken | quote }}
+  value: {{ .configSourceHTTPAuthToken | quote }}
 {{- end }}
-{{- with .bulkerConfigRefreshPeriodSec }}
+{{- with .configRefreshPeriodSec }}
 - name: BULKER_CONFIG_REFRESH_PERIOD_SEC
   value: {{ . | quote }}
 {{- end }}
-{{- range $k, $v := .bulkerDestination }}
+{{- range $k, $v := .destination }}
 - name: {{ printf "BULKER_DESTINATION_%s" (upper $k) | quote }}
   {{- if kindIs "string" $v }}
   value: {{ $v | quote }}
@@ -41,47 +41,47 @@ app.kubernetes.io/component: bulker
   value: {{ toJson $v | quote }}
   {{- end }}
 {{- end }}
-{{- if and (not .bulkerAuthTokens) $.Values.config.autoGenerateTokens }}
+{{- if and (not .authTokens) $.Values.config.autoGenerateTokens }}
 - name: BULKER_AUTH_TOKENS
   valueFrom:
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
       key: bulkerAuthTokens
-{{- else if .bulkerAuthTokens}}
+{{- else if .authTokens}}
 - name: BULKER_AUTH_TOKENS
-  value: {{ .bulkerAuthTokens | quote }}
+  value: {{ .authTokens | quote }}
 {{- end }}
-{{- with .bulkerRawAuthTokens }}
+{{- with .rawAuthTokens }}
 - name: BULKER_RAW_AUTH_TOKENS
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .bulkerRedisURL) $.Values.redis.enabled }}
+{{- if and (not .redisURL) $.Values.redis.enabled }}
 - name: BULKER_REDIS_URL
   value: "redis://{{ $.Release.Name }}-redis-master:6379"
-{{- else if .bulkerRedisURL }}
+{{- else if .redisURL }}
 - name: BULKER_REDIS_URL
-  value: {{ .bulkerRedisURL | default $.Values.config.redisURL | quote }}
+  value: {{ .redisURL | default $.Values.config.redisURL | quote }}
 {{- end }}
-{{- with .bulkerEventsLogMaxSize }}
+{{- with .eventsLogMaxSize }}
 - name: BULKER_EVENTS_LOG_MAX_SIZE
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .bulkerKafkaBootstrapServers) (not $.Values.config.kafkaBootstrapServers) $.Values.kafka.enabled }}
+{{- if and (not .kafkaBootstrapServers) (not $.Values.config.kafkaBootstrapServers) $.Values.kafka.enabled }}
 - name: BULKER_KAFKA_BOOTSTRAP_SERVERS
   value: "{{ $.Release.Name }}-kafka:9092"
-{{- else if or .bulkerKafkaBootstrapServers $.Values.config.kafkaBootstrapServers }}
+{{- else if or .kafkaBootstrapServers $.Values.config.kafkaBootstrapServers }}
 - name: BULKER_KAFKA_BOOTSTRAP_SERVERS
-  value: {{ .bulkerKafkaBootstrapServers | default $.Values.config.kafkaBootstrapServers | quote }}
+  value: {{ .kafkaBootstrapServers | default $.Values.config.kafkaBootstrapServers | quote }}
 {{- end }}
-{{- with (.bulkerKafkaSSL | default $.Values.config.kafkaSSL) }}
+{{- with (.kafkaSSL | default $.Values.config.kafkaSSL) }}
 - name: BULKER_KAFKA_SSL
   value: {{ . | quote }}
 {{- end }}
-{{- with .bulkerKafkaSSLSkipVerify }}
+{{- with .kafkaSSLSkipVerify }}
 - name: BULKER_KAFKA_SSL_SKIP_VERIFY
   value: {{ . | quote }}
 {{- end }}
-{{- with (.bulkerKafkaSASL | default $.Values.config.kafkaSASL) }}
+{{- with (.kafkaSASL | default $.Values.config.kafkaSASL) }}
 - name: BULKER_KAFKA_SASL
   {{- if kindIs "string" . }}
   value: {{ . | quote }}
@@ -89,47 +89,47 @@ app.kubernetes.io/component: bulker
   value: {{ toJson . | quote }}
   {{- end }}
 {{- end }}
-{{- with .bulkerBatchRunnerDefaultPeriodSec }}
+{{- with .batchRunnerDefaultPeriodSec }}
 - name: BULKER_BATCH_RUNNER_DEFAULT_PERIOD_SEC
   value: {{ . | quote }}
 {{- end }}
-{{- with .bulkerBatchRunnerDefaultBatchSize }}
+{{- with .batchRunnerDefaultBatchSize }}
 - name: BULKER_BATCH_RUNNER_DEFAULT_BATCH_SIZE
   value: {{ . | quote }}
 {{- end }}
-{{- with .bulkerBatchRunnerDefaultRetryPeriodSec }}
+{{- with .batchRunnerDefaultRetryPeriodSec }}
 - name: BULKER_BATCH_RUNNER_DEFAULT_RETRY_PERIOD_SEC
   value: {{ . | quote }}
 {{- end }}
-{{- with .bulkerBatchRunnerDefaultRetryBatchSize }}
+{{- with .batchRunnerDefaultRetryBatchSize }}
 - name: BULKER_BATCH_RUNNER_DEFAULT_RETRY_BATCH_SIZE
   value: {{ . | quote }}
 {{- end }}
-{{- with .bulkerMessagesRetryCount }}
+{{- with .messagesRetryCount }}
 - name: BULKER_MESSAGES_RETRY_COUNT
   value: {{ . | quote }}
 {{- end }}
-{{- with .bulkerMessagesRetryBackoffBase }}
+{{- with .messagesRetryBackoffBase }}
 - name: BULKER_MESSAGES_RETRY_BACKOFF_BASE
   value: {{ . | quote }}
 {{- end }}
-{{- with .bulkerMessagesRetryBackoffMaxDelay }}
+{{- with .messagesRetryBackoffMaxDelay }}
 - name: BULKER_MESSAGES_RETRY_BACKOFF_MAX_DELAY
   value: {{ . | quote }}
 {{- end }}
-{{- with .bulkerKafkaTopicRetentionHours }}
+{{- with .kafkaTopicRetentionHours }}
 - name: BULKER_KAFKA_TOPIC_RETENTION_HOURS
   value: {{ . | quote }}
 {{- end }}
-{{- with .bulkerKafkaRetryTopicRetentionHours }}
+{{- with .kafkaRetryTopicRetentionHours }}
 - name: BULKER_KAFKA_RETRY_TOPIC_RETENTION_HOURS
   value: {{ . | quote }}
 {{- end }}
-{{- with .bulkerKafkaDeadTopicRetentionHours }}
+{{- with .kafkaDeadTopicRetentionHours }}
 - name: BULKER_KAFKA_DEAD_TOPIC_RETENTION_HOURS
   value: {{ . | quote }}
 {{- end }}
-{{- with .bulkerKafkaTopicReplicationFactor }}
+{{- with .kafkaTopicReplicationFactor }}
 - name: BULKER_KAFKA_TOPIC_REPLICATION_FACTOR
   value: {{ . | quote }}
 {{- end }}
