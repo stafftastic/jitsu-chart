@@ -49,9 +49,15 @@ console:
     # https://docs.jitsu.com/self-hosting/configuration#jitsu_public_url
     jitsuPublicURL: ""
 
-    # Comma-separated list of email:password, required when not using GitHub OAuth
-    # https://docs.jitsu.com/self-hosting/configuration#admin_credentials
-    adminCredentials: ""
+    # The external URL of the ingest service.
+    jitsuIngestPublicURL: ""
+
+    # Leave empty to default to jitsuPublicURL.
+    nextauthURL: ""
+
+    # Initial admin user. Required if not using GitHub OAuth.
+    seedUserEmail: ""
+    seedUserPassword: ""
 
     # Enable GitHub OAuth
     # https://docs.jitsu.com/self-hosting/configuration#github_client_id

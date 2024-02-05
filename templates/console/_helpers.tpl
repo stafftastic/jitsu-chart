@@ -9,6 +9,10 @@ app.kubernetes.io/component: console
 {{- with .Values.console.config -}}
 - name: JITSU_PUBLIC_URL
   value: {{ .jitsuPublicURL | quote }}
+- name: NEXTAUTH_URL
+  value: {{ .nextauthURL | default .jitsuPublicURL | quote }}
+- name: JITSU_INGEST_PUBLIC_URL
+  value: {{ .jitsuIngestPublicURL | quote }}
 - name: DATABASE_URL
   value: {{ .databaseURL | default (include "jitsu.databaseURL" $) | quote }}
 {{- if and (not .bulkerAuthKey) $.Values.bulker.enabled $.Values.config.autoGenerateTokens }}
@@ -103,6 +107,14 @@ app.kubernetes.io/component: console
 {{- end }}
 {{- with .consoleRawAuthTokens }}
 - name: CONSOLE_RAW_AUTH_TOKENS
+  value: {{ . | quote }}
+{{- end }}
+{{- with .seedUserEmail }}
+- name: SEED_USER_EMAIL
+  value: {{ . | quote }}
+{{- end }}
+{{- with .seedUserPassword }}
+- name: SEED_USER_PASSWORD
   value: {{ . | quote }}
 {{- end }}
 {{- with .githubClientID }}
