@@ -9,25 +9,27 @@ app.kubernetes.io/component: bulker
 {{- with .Values.bulker.config }}
 - name: BULKER_INSTANCE_ID
   value: {{ .instanceID | quote }}
-{{- if and (not .configSource) $.Values.config.autoGenerateTokens }}
+{{- if and (not .configSource) $.Values.console.enabled $.Values.config.autoGenerateTokens }}
 - name: BULKER_CONFIG_SOURCE
   value: {{ printf "http://%s-console:%d/api/admin/export/bulker-connections"
     (include "jitsu.fullname" $)
     $.Values.console.service.port
   | quote }}
-{{- else if .configSource }}
-- name: BULKER_CONFIG_SOURCE
-  value: {{ .configSource | quote }}
 {{- end }}
-{{- if and (not .configSourceHTTPAuthToken) $.Values.config.autoGenerateTokens }}
+{{- with .configSource }}
+- name: BULKER_CONFIG_SOURCE
+  value: {{ . | quote }}
+{{- end }}
+{{- if and (not .configSourceHTTPAuthToken) $.Values.console.enabled $.Values.config.autoGenerateTokens }}
 - name: BULKER_CONFIG_SOURCE_HTTP_AUTH_TOKEN
   valueFrom:
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
       key: bulkerConfigSourceHTTPAuthToken
-{{- else if .configSourceHTTPAuthToken }}
+{{- end }}
+{{- with .configSourceHTTPAuthToken }}
 - name: BULKER_CONFIG_SOURCE_HTTP_AUTH_TOKEN
-  value: {{ .configSourceHTTPAuthToken | quote }}
+  value: {{ . | quote }}
 {{- end }}
 {{- with .configRefreshPeriodSec }}
 - name: BULKER_CONFIG_REFRESH_PERIOD_SEC
@@ -47,20 +49,22 @@ app.kubernetes.io/component: bulker
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
       key: bulkerAuthTokens
-{{- else if .authTokens}}
+{{- end }}
+{{- with .authTokens}}
 - name: BULKER_AUTH_TOKENS
-  value: {{ .authTokens | quote }}
+  value: {{ . | quote }}
 {{- end }}
 {{- with .rawAuthTokens }}
 - name: BULKER_RAW_AUTH_TOKENS
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .redisURL) $.Values.redis.enabled }}
+{{- if and (not .redisURL) (not $.Values.config.redisURL) $.Values.redis.enabled }}
 - name: BULKER_REDIS_URL
   value: "redis://{{ $.Release.Name }}-redis-master:6379"
-{{- else if .redisURL }}
+{{- end }}
+{{- with (.redisURL | default $.Values.config.redisURL) }}
 - name: BULKER_REDIS_URL
-  value: {{ .redisURL | default $.Values.config.redisURL | quote }}
+  value: {{ . | quote }}
 {{- end }}
 {{- with .eventsLogMaxSize }}
 - name: BULKER_EVENTS_LOG_MAX_SIZE
@@ -69,9 +73,10 @@ app.kubernetes.io/component: bulker
 {{- if and (not .kafkaBootstrapServers) (not $.Values.config.kafkaBootstrapServers) $.Values.kafka.enabled }}
 - name: BULKER_KAFKA_BOOTSTRAP_SERVERS
   value: "{{ $.Release.Name }}-kafka:9092"
-{{- else if or .kafkaBootstrapServers $.Values.config.kafkaBootstrapServers }}
+{{- end }}
+{{- with (.kafkaBootstrapServers | default $.Values.config.kafkaBootstrapServers) }}
 - name: BULKER_KAFKA_BOOTSTRAP_SERVERS
-  value: {{ .kafkaBootstrapServers | default $.Values.config.kafkaBootstrapServers | quote }}
+  value: {{ . | quote }}
 {{- end }}
 {{- with (.kafkaSSL | default $.Values.config.kafkaSSL) }}
 - name: BULKER_KAFKA_SSL
