@@ -1,9 +1,25 @@
 apiVersion: v2
 name: jitsu
-
 type: application
 
-# Set automatically as part of the release process
+# Chart version is set automatically as part of the release process
 version: 0.0.0
-
 appVersion: 2.4.1
+
+dependencies:
+  - name: postgresql
+    version: ^14.0.1
+    repository: oci://registry-1.docker.io/bitnamicharts
+    condition: postgresql.enabled
+  - name: redis
+    version: ^18.12.1
+    repository: oci://registry-1.docker.io/bitnamicharts
+    condition: redis.enabled
+  - name: kafka
+    version: ^26.8.4
+    repository: oci://registry-1.docker.io/bitnamicharts
+    condition: kafka.enabled
+  - name: mongodb
+    version: ^14.8.2
+    repository: oci://registry-1.docker.io/bitnamicharts
+    condition: mongodb.enabled

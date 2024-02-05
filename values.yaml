@@ -14,6 +14,11 @@ jitsu:
       value: "http://jitsu-bulker:3042"
 
 global:
+  postgresql:
+    auth:
+      username: ""
+      password: ""
+      database: ""
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}
@@ -319,3 +324,23 @@ serviceAccount:
   create: true
   annotations: {}
   name: ""
+
+postgresql:
+  enabled: true
+
+redis:
+  enabled: true
+
+kafka:
+  enabled: true
+  listeners:
+    interbroker:
+      protocol: PLAINTEXT
+    controller:
+      protocol: PLAINTEXT
+    client:
+      protocol: PLAINTEXT
+      external: PLAINTEXT
+
+mongodb:
+  enabled: true
