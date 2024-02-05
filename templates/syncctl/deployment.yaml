@@ -55,10 +55,10 @@ spec:
               path: /health
           {{- end }}
           env:
-            {{- $env := merge (deepCopy .Values.syncctl.environment) .Values.jitsu.environment -}}
-            {{- range $k, $v := $env }}
-              - name: {{ $k | quote }}
-                {{- toYaml $v | nindent 16 }}
+            {{- include "jitsu.syncctl.env" . | nindent 12 }}
+            {{- range $k, $v := .Values.syncctl.environment }}
+            - name: {{ $k | quote }}
+              {{- toYaml $v | nindent 14 }}
             {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
