@@ -1,0 +1,33 @@
+{{- if and .Values.syncctl.autoscaling.enabled .Values.syncctl.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "jitsu.fullname" . }}-syncctl
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+    {{- include "jitsu.syncctl.selectorLabels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "jitsu.fullname" . }}-syncctl
+  minReplicas: {{ .Values.syncctl.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.syncctl.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.syncctl.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.syncctl.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.syncctl.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.syncctl.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+{{- end }}

@@ -1,0 +1,15 @@
+{{- if and .Values.syncctl.podDisruptionBudget.enabled .Values.syncctl.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "jitsu.fullname" . }}-syncctl
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+    {{- include "jitsu.syncctl.selectorLabels" . | nindent 4 }}
+spec:
+  minAvailable: {{ .Values.syncctl.podDisruptionBudget.minAvailable }}
+  selector:
+    matchLabels:
+      {{- include "jitsu.selectorLabels" . | nindent 6 }}
+      {{- include "jitsu.syncctl.selectorLabels" . | nindent 6 }}
+{{- end }}
