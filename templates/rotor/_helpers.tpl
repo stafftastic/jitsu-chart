@@ -11,7 +11,7 @@ app.kubernetes.io/component: rotor
 - name: REPOSITORY_BASE_URL
   value: {{ printf "http://%s-console:%d/api/admin/export"
     (include "jitsu.fullname" $)
-    $.Values.console.service.port
+    (int $.Values.console.service.port)
   | quote }}
 {{- end }}
 {{- with .repositoryBaseURL }}
@@ -43,7 +43,10 @@ app.kubernetes.io/component: rotor
 {{- end }}
 {{- if and (not .bulkerURL) (not $.Values.config.bulkerURL) $.Values.bulker.enabled }}
 - name: BULKER_URL
-  value: {{ printf "http://%s-bulker:%d" (include "jitsu.fullname" $) (int $.Values.bulker.service.port) | quote }}
+  value: {{ printf "http://%s-bulker:%d"
+    (include "jitsu.fullname" $)
+    (int $.Values.bulker.service.port)
+  | quote }}
 {{- end }}
 {{- with (.bulkerURL | default $.Values.config.bulkerURL) }}
 - name: BULKER_URL
