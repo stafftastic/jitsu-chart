@@ -175,6 +175,94 @@ migration:
 
 bulker:
   enabled: true
+  config:
+    # UUID of bulker instance
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_instance_id
+    bulkerInstanceID: ""
+
+    # Leave empty to configure automatically.
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_config_source
+    bulkerConfigSource: ""
+
+    # Leave empty to configure automatically.
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_config_source_http_auth_token
+    bulkerConfigSourceHTTPAuthToken: ""
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_config_refresh_period_sec
+    bulkerConfigRefreshPeriodSec: ""
+
+    # Dict of dicts converted to JSON environment variables, e.g.:
+    # bulkerDestination:
+    #   postgres:
+    #     id: postgres
+    # results in: BULKER_DESTINATION_POSTGRES='{"id": "postgres"}'
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#with-bulker_destination_-environment-variables
+    bulkerDestination: {}
+
+    # Leave empty to automatically configure.
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_auth_tokens
+    bulkerAuthTokens: ""
+
+    # Leave empty to automatically configure.
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_token_secret
+    bulkerTokenSecret: ""
+
+    # Leave empty to automatically configure.
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_raw_auth_tokens
+    bulkerRawAuthTokens: ""
+
+    # Leave empty to automatically configure.
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_kafka_bootstrap_servers
+    bulkerKafkaBootstrapServers: ""
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_kafka_ssl
+    bulkerKafkaSSL: "false"
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_kafka_ssl_skip_verify
+    bulkerKafkaSSLSkipVerify: ""
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_kafka_sasl-aka-kafka-auth
+    bulkerKafkaSASL: ""
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_batch_runner_default_period_sec
+    bulkerBatchRunnerDefaultPeriodSec: ""
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_batch_runner_default_batch_size
+    bulkerBatchRunnerDefaultBatchSize: ""
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_messages_retry_count
+    bulkerMessagesRetryCount: ""
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_messages_retry_backoff_base
+    bulkerMessagesRetryBackoffBase: ""
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_messages_retry_backoff_max_delay
+    bulkerMessagesRetryBackoffMaxDelay: ""
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_batch_runner_default_retry_period_sec
+    bulkerBatchRunnerDefaultRetryPeriodSec: ""
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_batch_runner_default_retry_batch_size
+    bulkerBatchRunnerDefaultRetryBatchSize: ""
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_kafka_topic_retention_hours
+    bulkerKafkaTopicRetentionHours: ""
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_kafka_retry_topic_retention_hours
+    bulkerKafkaRetryTopicRetentionHours: ""
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_kafka_dead_topic_retention_hours
+    bulkerKafkaDeadTopicRetentionHours: ""
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_kafka_topic_replication_factor
+    bulkerKafkaTopicReplicationFactor: ""
+
+    # Store history of processed events in Redis. Leave empty to configure automatically if config.redisURL is set and/or Redis subchart is being used.
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#connection-to-redis-optional
+    bulkerRedisURL: ""
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#connection-to-redis-optional
+    bulkerEventsLogMaxSize: ""
   replicaCount: 1
   image:
     repository: jitsucom/bulker
@@ -195,34 +283,7 @@ bulker:
   podDisruptionBudget:
     enabled: false
     minAvailable: 1
-  environment:
-    BULKER_AUTH_TOKENS:
-      # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_auth_tokens
-      value: ""
-    BULKER_KAFKA_BOOTSTRAP_SERVERS:
-      value: ""
-    BULKER_CONFIG_SOURCE:
-      value: "redis"
-    BULKER_INTERNAL_TASK_LOG:
-      value: |
-        {
-        "id": "task_log",
-        "metricsKeyPrefix": "syncs",
-        "usesBulker": true,
-        "type": "postgres",
-        "options":{
-          "mode": "stream"
-        },
-        "credentials":{
-          "host": "",
-          "port": 5432,
-          "sslMode": "disable",
-          "database": "",
-          "password": "",
-          "username": "",
-          "defaultSchema":"public"
-          }
-        }
+  environment: {}
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}
