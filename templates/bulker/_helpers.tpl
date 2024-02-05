@@ -13,7 +13,7 @@ app.kubernetes.io/component: bulker
 - name: BULKER_CONFIG_SOURCE
   value: {{ printf "http://%s-console:%d/api/admin/export/bulker-connections"
     (include "jitsu.fullname" $)
-    $.Values.console.service.port
+    (int $.Values.console.service.port)
   | quote }}
 {{- end }}
 {{- with .configSource }}
