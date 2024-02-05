@@ -37,16 +37,17 @@ ingest:
             pathType: "Prefix"
 ```
 
-See [values.yaml](values.yaml) for more configuration options and more detailed descriptions.
+See [values.yaml](values.yaml) for more configuration options.
 
 ## Dependencies
 This chart deploys the following dependencies by default:
+
 * Postgres
 * Redis
 * Kafka
 * MongoDB
 
-If you want to use your own instances of these, disable them in with their respective option:
+If you want to use your own instances of these, disable them in with their respective options:
 ```yaml
 postgresql:
   enabled: false
@@ -58,7 +59,7 @@ mongodb:
   enabled: false
 ```
 
-Then supply the connection details in the `config` section:
+Then supply the connection details in the `config` section (or specifically per-service):
 ```yaml
 config:
   databaseURL: "postgres://..."
