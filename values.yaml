@@ -128,7 +128,7 @@ console:
   image:
     repository: jitsucom/console
     pullPolicy: IfNotPresent
-    tag: "latest"
+    tag: ""
   service:
     type: ClusterIP
     port: 3000
@@ -261,7 +261,7 @@ bulker:
     repository: jitsucom/bulker
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "latest"
+    tag: ""
   service:
     type: ClusterIP
     port: 3042
@@ -350,7 +350,7 @@ rotor:
   image:
     repository: jitsucom/rotor
     pullPolicy: IfNotPresent
-    tag: "latest"
+    tag: ""
   service:
     type: ClusterIP
     port: 3401
@@ -433,7 +433,7 @@ ingest:
   image:
     repository: jitsucom/ingest
     pullPolicy: IfNotPresent
-    tag: "latest"
+    tag: ""
   service:
     type: ClusterIP
     port: 3049
@@ -518,7 +518,7 @@ syncctl:
   image:
     repository: jitsucom/syncctl
     pullPolicy: IfNotPresent
-    tag: "latest"
+    tag: ""
   service:
     type: ClusterIP
     port: 3043
@@ -547,7 +547,7 @@ migration:
   image:
     repository: jitsucom/console
     pullPolicy: IfNotPresent
-    tag: "latest"
+    tag: ""
   restartPolicy: Never
   environment: {}
   jobAnnotations: {}
