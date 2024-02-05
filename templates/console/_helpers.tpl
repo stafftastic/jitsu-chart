@@ -30,6 +30,28 @@ app.kubernetes.io/component: console
 - name: ROTOR_URL
   value: {{ . | quote }}
 {{- end }}
+{{- if and (not .ingestHost) (not $.Values.config.ingestHost) $.Values.ingest.enabled }}
+- name: INGEST_HOST
+  value: {{ $.Values.ingest.config.dataDomain | default (printf "%s-ingest" (include "jitsu.fullname" $)) | quote }}
+{{- end }}
+{{- with (.ingestHost | default $.Values.config.ingestHost) }}
+- name: INGEST_HOST
+  value: {{ . | quote }}
+{{- end }}
+{{- if and (not .ingestPort) (not $.Values.config.ingestPort) $.Values.ingest.enabled }}
+- name: INGEST_PORT
+  {{- if and $.Values.ingest.ingress.enabled $.Values.ingest.ingress.tls }}
+  value: "443"
+  {{- else if $.Values.ingest.ingress.enabled }}
+  value: "80"
+  {{- else }}
+  value: {{ $.Values.ingest.service.port | quote }}
+  {{- end }}
+{{- end }}
+{{- with (.ingestPort | default $.Values.config.ingestPort) }}
+- name: INGEST_PORT
+  value: {{ . | quote }}
+{{- end }}
 {{- if and (not .syncsEnabled) $.Values.syncctl.enabled }}
 - name: SYNCS_ENABLED
   value: "true"
