@@ -34,11 +34,23 @@ spec:
       serviceAccountName: {{ include "jitsu.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      {{- if .Values.config.autoGenerateTokens }}
+      {{- if or .Values.config.autoGenerateTokens .Values.migration.enabled .Values.console.enabled }}
       initContainers:
+        {{- if .Values.config.autoGenerateTokens }}
         - name: wait-for-tokens
           image: ghcr.io/groundnuty/k8s-wait-for:v2.0
           args: ["job-wr", "{{ include "jitsu.fullname" . }}-auto-generate-tokens-{{ sha1sum (toJson .Values) | substr 0 8 }}"]
+        {{- end }}
+        {{- if .Values.migration.enabled }}
+        - name: wait-for-migration
+          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          args: ["job-wr", "{{ include "jitsu.fullname" . }}-migration-{{ sha1sum (toJson .Values) | substr 0 8 }}"]
+        {{- end }}
+        {{- if .Values.console.enabled }}
+        - name: wait-for-console
+          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          args: ["service", "{{ include "jitsu.fullname" . }}-console"]
+        {{- end }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
