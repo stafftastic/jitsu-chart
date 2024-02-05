@@ -39,7 +39,7 @@ spec:
                 token="$1"
                 salt="$2"
                 secret="$3"
-                echo -n "$token$salt$secret" | sha512sum | awk '{print $1}' | xxd -r -p | base64 -w 0
+                echo -n "$token$salt$secret" | sha512sum | awk '{print $1}'
               }
 
               ingestTokenSecret=$(random_string 32)
