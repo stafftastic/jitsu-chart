@@ -1,0 +1,89 @@
+{{- if .Values.config.autoGenerateTokens }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "jitsu.fullname" . }}-auto-generate-tokens
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        {{- include "jitsu.selectorLabels" . | nindent 8 }}
+    spec:
+      restartPolicy: Never
+      serviceAccountName: {{ include "jitsu.serviceAccountName" . }}
+      containers:
+        - name: auto-generate-tokens
+          image: "alpine/k8s:{{ .Capabilities.KubeVersion.Version | trimPrefix "v"}}"
+          env:
+            - name: FULLNAME
+              value: {{ include "jitsu.fullname" . }}
+          command: ["sh", "-c"]
+          args:
+            - |
+              if kubectl get secrets "$FULLNAME-tokens" > /dev/null 2>&1; then
+                echo "Secret $FULLNAME-tokens already exists, skipping generation"
+                exit 0
+              fi
+
+              set -e
+
+              random_string() {
+                length="$1"
+                cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c "$length"
+              }
+
+              hash_token() {
+                token="$1"
+                salt="$2"
+                secret="$3"
+                echo -n "$token$salt$secret" | sha512sum | awk '{print $1}' | xxd -r -p | base64 -w 0
+              }
+
+              ingestTokenSecret=$(random_string 32)
+              bulkerTokenSecret=$(random_string 32)
+              syncctlTokenSecret=$(random_string 32)
+              consoleGlobalHashSecret=$(random_string 32)
+
+              ingestRepositoryAuthToken=$(random_string 32)
+              ingestRepositoryAuthTokenSalt=$(random_string 8)
+              rotorRepositoryAuthToken=$(random_string 32)
+              rotorRepositoryAuthTokenSalt=$(random_string 8)
+              rotorBulkerAuthKey=$(random_string 32)
+              rotorBulkerAuthKeySalt=$(random_string 8)
+              consoleBulkerAuthKey=$(random_string 32)
+              consoleBulkerAuthKeySalt=$(random_string 8)
+              consoleSyncctlAuthKey=$(random_string 32)
+              consoleSyncctlAuthKeySalt=$(random_string 8)
+              syncctlBulkerAuthKey=$(random_string 32)
+              syncctlBulkerAuthKeySalt=$(random_string 8)
+
+              consoleAuthTokens="$ingestRepositoryAuthTokenSalt.$(hash_token $ingestRepositoryAuthToken $ingestRepositoryAuthTokenSalt $consoleGlobalHashSecret),$rotorRepositoryAuthTokenSalt.$(hash_token $rotorRepositoryAuthToken $rotorRepositoryAuthTokenSalt $consoleGlobalHashSecret)"
+
+              bulkerAuthTokens="$rotorBulkerAuthKeySalt.$(hash_token $rotorBulkerAuthKey $rotorBulkerAuthKeySalt $bulkerTokenSecret),$consoleBulkerAuthKeySalt.$(hash_token $consoleBulkerAuthKey $consoleBulkerAuthKeySalt $bulkerTokenSecret),$syncctlBulkerAuthKeySalt.$(hash_token $syncctlBulkerAuthKey $syncctlBulkerAuthKeySalt $bulkerTokenSecret)"
+
+              syncctlAuthTokens="$consoleSyncctlAuthKeySalt.$(hash_token $consoleSyncctlAuthKey $consoleSyncctlAuthKeySalt $syncctlTokenSecret)"
+
+              kubectl apply -f- <<EOF
+              apiVersion: v1
+              kind: Secret
+              metadata:
+                name: $FULLNAME-tokens
+              type: Opaque
+              stringData:
+                ingestTokenSecret: "$ingestTokenSecret"
+                ingestRepositoryAuthToken: "service-admin-account:$ingestRepositoryAuthToken"
+                bulkerTokenSecret: "$bulkerTokenSecret"
+                bulkerAuthTokens: "$bulkerAuthTokens"
+                rotorRepositoryAuthToken: "service-admin-account:$rotorRepositoryAuthToken"
+                rotorBulkerAuthKey: "$rotorBulkerAuthKey"
+                syncctlTokenSecret: "$syncctlTokenSecret"
+                consoleGlobalHashSecret: "$consoleGlobalHashSecret"
+                consoleAuthTokens: "$consoleAuthTokens"
+                consoleBulkerAuthKey: "$consoleBulkerAuthKey"
+                consoleSyncctlAuthKey: "$consoleSyncctlAuthKey"
+                syncctlAuthTokens: "$syncctlAuthTokens"
+              EOF
+{{- end }}
