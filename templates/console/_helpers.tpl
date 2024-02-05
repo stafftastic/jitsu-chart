@@ -11,11 +11,16 @@ app.kubernetes.io/component: console
   value: {{ .jitsuPublicURL | quote }}
 - name: DATABASE_URL
   value: {{ .databaseURL | default (include "jitsu.databaseURL" $) | quote }}
+{{- if and (not .bulkerAuthKey) $.Values.bulker.enabled $.Values.config.autoGenerateTokens }}
 - name: BULKER_AUTH_KEY
   valueFrom:
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
       key: consoleBulkerAuthKey
+{{- else if .bulkerAuthKey }}
+- name: BULKER_AUTH_KEY
+  value: {{ .bulkerAuthKey | quote }}
+{{- end }}
 - name: ROTOR_URL
   value: {{ .rotorURL | default (printf "http://%s-bulker:%d" (include "jitsu.fullname" $) (int $.Values.bulker.service.port)) | quote }}
 {{- if $.Values.syncctl.enabled }}
@@ -29,25 +34,39 @@ app.kubernetes.io/component: console
 - name: SYNCCTL_URL
   value: {{ .syncctlURL | quote }}
 {{- end }}
+{{- if and (not .syncctlAuthKey) $.Values.syncctl.enabled $.Values.config.autoGenerateTokens }}
 - name: SYNCCTL_AUTH_KEY
   valueFrom:
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
       key: consoleSyncctlAuthKey
-{{- if .consoleRawAuthTokens }}
-- name: CONSOLE_RAW_AUTH_TOKENS
-  value: {{ .consoleRawAuthTokens | quote }}
-{{- else }}
+{{- else if .syncctlAuthKey }}
+- name: SYNCCTL_AUTH_KEY
+  value: {{ .syncctlAuthKey | quote }}
+{{- end }}
+{{- if and (not .consoleAuthTokens) $.Values.config.autoGenerateTokens }}
 - name: CONSOLE_AUTH_TOKENS
   valueFrom:
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
       key: consoleAuthTokens
+{{- else if .consoleAuthTokens }}
+- name: CONSOLE_AUTH_TOKENS
+  value: {{ .consoleAuthTokens | quote }}
+{{- end }}
+{{- if and (not .consoleGlobalHashSecret) $.Values.config.autoGenerateTokens }}
 - name: GLOBAL_HASH_SECRET
   valueFrom:
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
       key: consoleGlobalHashSecret
+{{- else if .consoleGlobalHashSecret }}
+- name: GLOBAL_HASH_SECRET
+  value: {{ .consoleGlobalHashSecret | quote }}
+{{- end }}
+{{- with .consoleRawAuthTokens }}
+- name: CONSOLE_RAW_AUTH_TOKENS
+  value: {{ . | quote }}
 {{- end }}
 {{- with .githubClientID }}
 - name: GITHUB_CLIENT_ID

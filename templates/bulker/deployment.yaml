@@ -55,10 +55,10 @@ spec:
               path: /ready
           {{- end }}
           env:
-            {{- $env := merge (deepCopy .Values.bulker.environment) .Values.jitsu.environment -}}
-            {{- range $k, $v := $env }}
-              - name: {{ $k | quote }}
-                {{- toYaml $v | nindent 16 }}
+            {{- include "jitsu.bulker.env" . | nindent 12 }}
+            {{- range $k, $v := .Values.bulker.env }}
+            - name: {{ $k | quote }}
+              {{- toYaml $v | nindent 14 }}
             {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

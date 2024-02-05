@@ -156,23 +156,6 @@ console:
   tolerations: []
   affinity: {}
 
-migration:
-  enabled: true
-  image:
-    repository: jitsucom/console
-    pullPolicy: IfNotPresent
-    tag: "latest"
-  restartPolicy: Never
-  environment: {}
-  jobAnnotations: {}
-  podAnnotations: {}
-  podSecurityContext: {}
-  securityContext: {}
-  resources: {}
-  nodeSelector: {}
-  tolerations: []
-  affinity: {}
-
 bulker:
   enabled: true
   config:
@@ -436,6 +419,23 @@ syncctl:
       value: "http://jitsu-bulker:3042"
     SYNCCTL_BULKER_AUTH_KEY:
       value: ""
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+migration:
+  enabled: true
+  image:
+    repository: jitsucom/console
+    pullPolicy: IfNotPresent
+    tag: "latest"
+  restartPolicy: Never
+  environment: {}
+  jobAnnotations: {}
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}
