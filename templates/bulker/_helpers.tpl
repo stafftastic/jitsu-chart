@@ -60,7 +60,7 @@ app.kubernetes.io/component: bulker
   value: "redis://{{ $.Release.Name }}-redis-master:6379"
 {{- else if .bulkerRedisURL }}
 - name: BULKER_REDIS_URL
-  value: {{ .bulkerRedisURL | quote }}
+  value: {{ .bulkerRedisURL | default $.Values.config.redisURL | quote }}
 {{- end }}
 {{- with .bulkerEventsLogMaxSize }}
 - name: BULKER_EVENTS_LOG_MAX_SIZE
