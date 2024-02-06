@@ -102,7 +102,7 @@ bulker:
 
 Becomes:
 
-```env
+```sh
 BULKER_DESTINATION_POSTGRES='{"id":"postgres"}'
 BULKER_DESTINATION_S3='{"id":"s3"}'
 ```
