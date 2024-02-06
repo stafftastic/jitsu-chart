@@ -1,0 +1,23 @@
+{{- $warned := false }}
+{{- define "jitsu.warn-default-password" }}
+{{- printf "\033[1;31m" -}}
+WARNING: You are using the default password for {{ . }}.
+{{ printf "\033[0m" -}}
+{{- end }}
+{{- if eq .Values.redis.auth.password "jitsu" }}
+{{- $warned = true }}
+{{- include "jitsu.warn-default-password" "Redis" }}
+{{- end }}
+{{- if eq .Values.postgresql.auth.password "jitsu" }}
+{{- $warned = true }}
+{{- include "jitsu.warn-default-password" "PostgreSQL" }}
+{{- end }}
+{{- if eq (index .Values.mongodb.auth.passwords 0) "jitsu" }}
+{{- $warned = true }}
+{{- include "jitsu.warn-default-password" "MongoDB" }}
+{{- end }}
+{{- if $warned }}
+{{- printf "\033[1;32m" -}}
+For production use, change the passwords in values.yaml.
+{{- printf "\033[0m" -}}
+{{- end }}

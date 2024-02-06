@@ -9,7 +9,7 @@ config:
   # Will be configured automatically if left empty and using the PostgreSQL subchart.
   databaseUrl: ""
 
-  # Redis URL in the format of: redis://username:password@host:port
+  # Redis URL in the format of: redis://password@host:port
   # Will be configured automatically if left empty and using the Redis subchart.
   redisUrl: ""
 
@@ -606,16 +606,25 @@ serviceAccount:
     create: true
 
 postgresql:
-  auth:
-    username: "jitsu"
-    password: ""
-    database: "jitsu"
   enabled: true
+  auth:
+    database: "jitsu"
+    username: "jitsu"
+    password: "jitsu"
 
 redis:
   enabled: true
   auth:
-    enabled: false
+    enabled: true
+    password: "jitsu"
+
+mongodb:
+  enabled: true
+  auth:
+    enabled: true
+    databases: ["jitsu"]
+    usernames: ["jitsu"]
+    passwords: ["jitsu"]
 
 kafka:
   enabled: true
@@ -628,9 +637,3 @@ kafka:
       protocol: PLAINTEXT
       external: PLAINTEXT
 
-mongodb:
-  enabled: true
-  auth:
-    databases: ["jitsu"]
-    usernames: ["jitsu"]
-    passwords: []

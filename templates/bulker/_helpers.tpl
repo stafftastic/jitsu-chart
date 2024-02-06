@@ -9,6 +9,8 @@ app.kubernetes.io/component: bulker
 {{- with .Values.bulker.config }}
 - name: BULKER_INSTANCE_ID
   value: {{ .instanceId | quote }}
+- name: BULKER_REDIS_URL
+  value: {{ .redisUrl | default (include "jitsu.redisUrl" $) | quote }}
 {{- if and (not .configSource) $.Values.console.enabled $.Values.tokenGenerator.enabled }}
 - name: BULKER_CONFIG_SOURCE
   value: {{ printf "http://%s-console:%d/api/admin/export/bulker-connections"
@@ -67,14 +69,6 @@ app.kubernetes.io/component: bulker
 {{- end }}
 {{- with .rawAuthTokens }}
 - name: BULKER_RAW_AUTH_TOKENS
-  value: {{ . | quote }}
-{{- end }}
-{{- if and (not .redisUrl) (not $.Values.config.redisUrl) $.Values.redis.enabled }}
-- name: BULKER_REDIS_URL
-  value: "redis://{{ $.Release.Name }}-redis-master:6379"
-{{- end }}
-{{- with (.redisUrl | default $.Values.config.redisUrl) }}
-- name: BULKER_REDIS_URL
   value: {{ . | quote }}
 {{- end }}
 {{- with .eventsLogMaxSize }}

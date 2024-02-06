@@ -9,6 +9,8 @@ app.kubernetes.io/component: ingest
 {{- with .Values.ingest.config }}
 - name: INGEST_DATA_DOMAIN
   value: {{ .dataDomain | quote }}
+- name: INGEST_REDIS_URL
+  value: {{ .redisUrl | default (include "jitsu.redisUrl" $) | quote }}
 {{- if and (not .authTokens) $.Values.tokenGenerator.enabled }}
 - name: INGEST_AUTH_TOKENS
   valueFrom:
@@ -91,14 +93,6 @@ app.kubernetes.io/component: ingest
 {{- end }}
 {{- with (.rotorUrl | default $.Values.config.rotorUrl) }}
 - name: INGEST_ROTOR_URL
-  value: {{ . | quote }}
-{{- end }}
-{{- if and (not .redisUrl) (not $.Values.config.redisUrl) $.Values.redis.enabled }}
-- name: INGEST_REDIS_URL
-  value: {{ printf "redis://%s-redis-master:6379" $.Release.Name | quote }}
-{{- end }}
-{{- with (.redisUrl | default $.Values.config.redisUrl) }}
-- name: INGEST_REDIS_URL
   value: {{ . | quote }}
 {{- end }}
 {{- with .eventsLogMaxSize }}

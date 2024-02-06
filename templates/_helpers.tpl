@@ -76,3 +76,33 @@ Create the name of the service account to use
 {{ .Values.config.databaseUrl }}
 {{- end }}
 {{- end }}
+
+{{- define "jitsu.redisUrl" -}}
+{{- if and (not .Values.config.redisUrl) .Values.redis.enabled }}
+{{- with $.Values.redis -}}
+{{ printf "redis://%s@%s:%d"
+  .auth.password
+  (printf "%s-redis-master" $.Release.Name)
+  6379
+}}
+{{- end }}
+{{- else -}}
+{{ .Values.config.redisUrl }}
+{{- end }}
+{{- end }}
+
+{{- define "jitsu.mongodbUrl" -}}
+{{- if and (not .Values.config.mongodbUrl) .Values.mongodb.enabled }}
+{{- with $.Values.mongodb.auth -}}
+{{ printf "mongodb://%s:%s@%s:%d/%s"
+  (index .usernames 0)
+  (index .passwords 0)
+  (printf "%s-mongodb" $.Release.Name)
+  27017
+  (index .databases 0)
+}}
+{{- end }}
+{{- else -}}
+{{ .Values.config.mongodbUrl }}
+{{- end }}
+{{- end }}

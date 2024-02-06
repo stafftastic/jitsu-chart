@@ -13,6 +13,9 @@ postgresql:
 mongodb:
   auth:
     passwords: ["changeMe"]
+redis:
+  auth:
+    password: "changeMe"
 console:
   config:
     jitsuPublicURL: "http://jitsu.example.com"

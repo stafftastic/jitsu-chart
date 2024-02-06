@@ -7,6 +7,10 @@ app.kubernetes.io/component: rotor
 
 {{- define "jitsu.rotor.env" -}}
 {{- with .Values.rotor.config }}
+- name: REDIS_URL
+  value: {{ .redisUrl | default (include "jitsu.redisUrl" $) | quote }}
+- name: MONGODB_URL
+  value: {{ .mongodbUrl | default (include "jitsu.mongodbUrl" $) | quote }}
 {{- if and (not .repositoryBaseUrl) $.Values.console.enabled $.Values.tokenGenerator.enabled }}
 - name: REPOSITORY_BASE_URL
   value: {{ printf "http://%s-console:%d/api/admin/export"
@@ -31,14 +35,6 @@ app.kubernetes.io/component: rotor
 {{- end }}
 {{- with .repositoryRefreshPeriodSec }}
 - name: REPOSITORY_REFRESH_PERIOD_SEC
-  value: {{ . | quote }}
-{{- end }}
-{{- if and (not .redisUrl) (not $.Values.config.redisUrl) $.Values.redis.enabled }}
-- name: REDIS_URL
-  value: {{ printf "redis://%s-redis-master:6379" $.Release.Name | quote }}
-{{- end }}
-{{- with (.redisUrl | default $.Values.config.redisUrl) }}
-- name: REDIS_URL
   value: {{ . | quote }}
 {{- end }}
 {{- if and (not .bulkerUrl) (not $.Values.config.bulkerUrl) $.Values.bulker.enabled }}
@@ -82,14 +78,6 @@ app.kubernetes.io/component: rotor
   {{- else }}
   value: {{ toJson . | quote }}
   {{- end }}
-{{- end }}
-{{- if and (not .mongodbUrl) (not $.Values.config.mongodbUrl) $.Values.mongodb.enabled }}
-- name: MONGODB_URL
-  value: {{ printf "mongodb://%s-mongodb:27017" $.Release.Name | quote }}
-{{- end }}
-{{- with (.mongodbUrl | default $.Values.config.mongodbUrl) }}
-- name: MONGODB_URL
-  value: {{ . | quote }}
 {{- end }}
 {{- with .metricsDestinationId }}
 - name: METRICS_DESTINATION_ID
