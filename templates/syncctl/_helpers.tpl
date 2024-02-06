@@ -16,7 +16,7 @@ app.kubernetes.io/component: syncctl
 {{- define "jitsu.syncctl.env" -}}
 {{- with .Values.syncctl.config -}}
 - name: SYNCCTL_DATABASE_URL
-  value: {{ .databaseUrl | default (include "jitsu.databaseUrl" $) | quote }}
+  value: {{ .databaseUrl | default (include "jitsu.databaseUrl" $ | replace "schema=" "search_path=") | quote }}
 {{- if and (not .authTokens) $.Values.tokenGenerator.enabled }}
 - name: SYNCCTL_AUTH_TOKENS
   valueFrom:
