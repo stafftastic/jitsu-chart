@@ -9,7 +9,7 @@ app.kubernetes.io/component: ingest
 {{- with .Values.ingest.config }}
 - name: INGEST_DATA_DOMAIN
   value: {{ .dataDomain | quote }}
-{{- if and (not .authTokens) $.Values.config.autoGenerateTokens }}
+{{- if and (not .authTokens) $.Values.tokenGenerator.enabled }}
 - name: INGEST_AUTH_TOKENS
   valueFrom:
     secretKeyRef:
@@ -20,7 +20,7 @@ app.kubernetes.io/component: ingest
 - name: INGEST_AUTH_TOKENS
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .tokenSecret) $.Values.config.autoGenerateTokens }}
+{{- if and (not .tokenSecret) $.Values.tokenGenerator.enabled }}
 - name: INGEST_TOKEN_SECRET
   valueFrom:
     secretKeyRef:
@@ -35,7 +35,7 @@ app.kubernetes.io/component: ingest
 - name: INGEST_RAW_AUTH_TOKENS
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .repositoryUrl) $.Values.console.enabled $.Values.config.autoGenerateTokens }}
+{{- if and (not .repositoryUrl) $.Values.console.enabled $.Values.tokenGenerator.enabled }}
 - name: INGEST_REPOSITORY_URL
   value: {{ printf "http://%s-console:%d/api/admin/export/streams-with-destinations"
     (include "jitsu.fullname" $)
@@ -46,7 +46,7 @@ app.kubernetes.io/component: ingest
 - name: INGEST_REPOSITORY_URL
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .repositoryAuthToken) $.Values.console.enabled $.Values.config.autoGenerateTokens }}
+{{- if and (not .repositoryAuthToken) $.Values.console.enabled $.Values.tokenGenerator.enabled }}
 - name: INGEST_REPOSITORY_AUTH_TOKEN
   valueFrom:
     secretKeyRef:

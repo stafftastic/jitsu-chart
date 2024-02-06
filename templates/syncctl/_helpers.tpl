@@ -9,7 +9,7 @@ app.kubernetes.io/component: syncctl
 {{- with .Values.syncctl.config -}}
 - name: SYNCCTL_DATABASE_URL
   value: {{ .databaseUrl | default (include "jitsu.databaseUrl" $) | quote }}
-{{- if and (not .authTokens) $.Values.config.autoGenerateTokens }}
+{{- if and (not .authTokens) $.Values.tokenGenerator.enabled }}
 - name: SYNCCTL_AUTH_TOKENS
   valueFrom:
     secretKeyRef:
@@ -20,7 +20,7 @@ app.kubernetes.io/component: syncctl
 - name: SYNCCTL_AUTH_TOKENS
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .tokenSecret) $.Values.config.autoGenerateTokens }}
+{{- if and (not .tokenSecret) $.Values.tokenGenerator.enabled }}
 - name: SYNCCTL_TOKEN_SECRET
   valueFrom:
     secretKeyRef:
@@ -47,7 +47,7 @@ app.kubernetes.io/component: syncctl
 - name: SYNCCTL_BULKER_URL
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .bulkerAuthKey) $.Values.bulker.enabled $.Values.config.autoGenerateTokens }}
+{{- if and (not .bulkerAuthKey) $.Values.bulker.enabled $.Values.tokenGenerator.enabled }}
 - name: SYNCCTL_BULKER_AUTH_KEY
   valueFrom:
     secretKeyRef:

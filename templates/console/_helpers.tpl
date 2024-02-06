@@ -25,7 +25,7 @@ app.kubernetes.io/component: console
 - name: BULKER_URL
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .bulkerAuthKey) $.Values.bulker.enabled $.Values.config.autoGenerateTokens }}
+{{- if and (not .bulkerAuthKey) $.Values.bulker.enabled $.Values.tokenGenerator.enabled }}
 - name: BULKER_AUTH_KEY
   valueFrom:
     secretKeyRef:
@@ -82,7 +82,7 @@ app.kubernetes.io/component: console
 - name: SYNCCTL_URL
   value: {{ .syncctlUrl | quote }}
 {{- end }}
-{{- if and (not .syncctlAuthKey) $.Values.syncctl.enabled $.Values.config.autoGenerateTokens }}
+{{- if and (not .syncctlAuthKey) $.Values.syncctl.enabled $.Values.tokenGenerator.enabled }}
 - name: SYNCCTL_AUTH_KEY
   valueFrom:
     secretKeyRef:
@@ -93,7 +93,7 @@ app.kubernetes.io/component: console
 - name: SYNCCTL_AUTH_KEY
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .consoleAuthTokens) $.Values.config.autoGenerateTokens }}
+{{- if and (not .consoleAuthTokens) $.Values.tokenGenerator.enabled }}
 - name: CONSOLE_AUTH_TOKENS
   valueFrom:
     secretKeyRef:
@@ -104,7 +104,7 @@ app.kubernetes.io/component: console
 - name: CONSOLE_AUTH_TOKENS
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .consoleGlobalHashSecret) $.Values.config.autoGenerateTokens }}
+{{- if and (not .consoleGlobalHashSecret) $.Values.tokenGenerator.enabled }}
 - name: GLOBAL_HASH_SECRET
   valueFrom:
     secretKeyRef:

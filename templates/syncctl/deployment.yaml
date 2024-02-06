@@ -35,7 +35,7 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
-        {{- if .Values.config.autoGenerateTokens }}
+        {{- if .Values.tokenGenerator.enabled }}
         - name: wait-for-tokens
           image: ghcr.io/groundnuty/k8s-wait-for:v2.0
           args: ["job-wr", "{{ include "jitsu.fullname" . }}-auto-generate-tokens-{{ sha1sum (toJson .Values) | substr 0 8 }}"]

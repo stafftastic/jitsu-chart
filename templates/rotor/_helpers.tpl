@@ -7,7 +7,7 @@ app.kubernetes.io/component: rotor
 
 {{- define "jitsu.rotor.env" -}}
 {{- with .Values.rotor.config }}
-{{- if and (not .repositoryBaseUrl) $.Values.console.enabled $.Values.config.autoGenerateTokens }}
+{{- if and (not .repositoryBaseUrl) $.Values.console.enabled $.Values.tokenGenerator.enabled }}
 - name: REPOSITORY_BASE_URL
   value: {{ printf "http://%s-console:%d/api/admin/export"
     (include "jitsu.fullname" $)
@@ -18,7 +18,7 @@ app.kubernetes.io/component: rotor
 - name: REPOSITORY_BASE_URL
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .repositoryAuthToken) $.Values.console.enabled $.Values.config.autoGenerateTokens }}
+{{- if and (not .repositoryAuthToken) $.Values.console.enabled $.Values.tokenGenerator.enabled }}
 - name: REPOSITORY_AUTH_TOKEN
   valueFrom:
     secretKeyRef:
@@ -52,7 +52,7 @@ app.kubernetes.io/component: rotor
 - name: BULKER_URL
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .bulkerAuthKey) $.Values.bulker.enabled $.Values.config.autoGenerateTokens }}
+{{- if and (not .bulkerAuthKey) $.Values.bulker.enabled $.Values.tokenGenerator.enabled }}
 - name: BULKER_AUTH_KEY
   valueFrom:
     secretKeyRef:

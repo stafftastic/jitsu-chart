@@ -9,7 +9,7 @@ app.kubernetes.io/component: bulker
 {{- with .Values.bulker.config }}
 - name: BULKER_INSTANCE_ID
   value: {{ .instanceId | quote }}
-{{- if and (not .configSource) $.Values.console.enabled $.Values.config.autoGenerateTokens }}
+{{- if and (not .configSource) $.Values.console.enabled $.Values.tokenGenerator.enabled }}
 - name: BULKER_CONFIG_SOURCE
   value: {{ printf "http://%s-console:%d/api/admin/export/bulker-connections"
     (include "jitsu.fullname" $)
@@ -20,7 +20,7 @@ app.kubernetes.io/component: bulker
 - name: BULKER_CONFIG_SOURCE
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .configSourceHttpAuthToken) $.Values.console.enabled $.Values.config.autoGenerateTokens }}
+{{- if and (not .configSourceHttpAuthToken) $.Values.console.enabled $.Values.tokenGenerator.enabled }}
 - name: BULKER_CONFIG_SOURCE_HTTP_AUTH_TOKEN
   valueFrom:
     secretKeyRef:
@@ -43,7 +43,7 @@ app.kubernetes.io/component: bulker
   value: {{ toJson $v | quote }}
   {{- end }}
 {{- end }}
-{{- if and (not .authTokens) $.Values.config.autoGenerateTokens }}
+{{- if and (not .authTokens) $.Values.tokenGenerator.enabled }}
 - name: BULKER_AUTH_TOKENS
   valueFrom:
     secretKeyRef:
@@ -54,7 +54,7 @@ app.kubernetes.io/component: bulker
 - name: BULKER_AUTH_TOKENS
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .tokenSecret) $.Values.config.autoGenerateTokens }}
+{{- if and (not .tokenSecret) $.Values.tokenGenerator.enabled }}
 - name: BULKER_TOKEN_SECRET
   valueFrom:
     secretKeyRef:
