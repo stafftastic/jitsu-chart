@@ -17,7 +17,7 @@ console:
     jitsuIngestURL: "http://data.jitsu.example.com"
     seedUserEmail: "admin@example.com"
     seedUserPassword: "changeMe"
-    # or:
+    # or...
     # githubClientID: "..."
     # githubClientSecret: "..."
   ingress:

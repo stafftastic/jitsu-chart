@@ -57,7 +57,7 @@ app.kubernetes.io/component: rotor
   valueFrom:
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
-      key: rotorBulkerAuthKey
+      key: bulkerAuthToken
 {{- end }}
 {{- with .bulkerAuthKey }}
 - name: BULKER_AUTH_KEY
