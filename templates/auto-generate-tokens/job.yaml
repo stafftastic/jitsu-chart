@@ -38,11 +38,14 @@ spec:
                 length="$1"
                 cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c "$length"
               }
-              hash_token() {
+              hex_hash_token() {
                 token="$1"
                 salt="$2"
                 secret="$3"
                 echo -n "$token$salt$secret" | sha512sum | awk '{print $1}' | tr -d '\n'
+              }
+              base64_hash_token() {
+                hex_hash_token "$@" | xxd -r -p | base64 -w 0 | tr -d '='
               }
               ingestTokenSecret=$(random_string $SECRET_LENGTH)
               bulkerTokenSecret=$(random_string $SECRET_LENGTH)
@@ -59,10 +62,10 @@ spec:
               syncctlAuthTokenSalt=$(random_string $SALT_LENGTH)
               consoleAuthTokenSalt=$(random_string $SALT_LENGTH)
 
-              ingestAuthTokens="$ingestAuthTokenSalt.$(hash_token $ingestAuthToken $ingestAuthTokenSalt $ingestTokenSecret)"
-              bulkerAuthTokens="$bulkerAuthTokenSalt.$(hash_token $bulkerAuthToken $bulkerAuthTokenSalt $bulkerTokenSecret)"
-              syncctlAuthTokens="$syncctlAuthTokenSalt.$(hash_token $syncctlAuthToken $syncctlAuthTokenSalt $syncctlTokenSecret)"
-              consoleAuthTokens="$consoleAuthTokenSalt.$(hash_token $consoleAuthToken $consoleAuthTokenSalt $consoleTokenSecret)"
+              ingestAuthTokens="$ingestAuthTokenSalt.$(base64_hash_token $ingestAuthToken $ingestAuthTokenSalt $ingestTokenSecret)"
+              bulkerAuthTokens="$bulkerAuthTokenSalt.$(base64_hash_token $bulkerAuthToken $bulkerAuthTokenSalt $bulkerTokenSecret)"
+              syncctlAuthTokens="$syncctlAuthTokenSalt.$(base64_hash_token $syncctlAuthToken $syncctlAuthTokenSalt $syncctlTokenSecret)"
+              consoleAuthTokens="$consoleAuthTokenSalt.$(hex_hash_token $consoleAuthToken $consoleAuthTokenSalt $consoleTokenSecret)"
 
               kubectl apply -f- <<EOF
               apiVersion: v1
