@@ -17,6 +17,14 @@ app.kubernetes.io/component: console
   value: {{ .jitsuIngestPublicUrl | quote }}
 - name: DATABASE_URL
   value: {{ .databaseUrl | default (include "jitsu.databaseUrl" $) | quote }}
+{{- if and (not .bulkerUrl) (not $.Values.config.bulkerUrl) $.Values.bulker.enabled }}
+- name: BULKER_URL
+  value: {{ printf "http://%s-bulker:%d" (include "jitsu.fullname" $) (int $.Values.bulker.service.port) | quote }}
+{{- end }}
+{{- with (.bulkerUrl | default $.Values.config.bulkerUrl) }}
+- name: BULKER_URL
+  value: {{ . | quote }}
+{{- end }}
 {{- if and (not .bulkerAuthKey) $.Values.bulker.enabled $.Values.config.autoGenerateTokens }}
 - name: BULKER_AUTH_KEY
   valueFrom:
