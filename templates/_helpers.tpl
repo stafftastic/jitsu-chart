@@ -80,7 +80,7 @@ Create the name of the service account to use
 {{- define "jitsu.redisUrl" -}}
 {{- if and (not .Values.config.redisUrl) .Values.redis.enabled }}
 {{- with $.Values.redis -}}
-{{ printf "redis://%s@%s:%d"
+{{ printf "redis://:%s@%s:%d"
   .auth.password
   (printf "%s-redis-master" $.Release.Name)
   6379

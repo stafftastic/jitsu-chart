@@ -9,7 +9,7 @@ config:
   # Will be configured automatically if left empty and using the PostgreSQL subchart.
   databaseUrl: ""
 
-  # Redis URL in the format of: redis://password@host:port
+  # Global Redis URL in the format of: redis://:password@host:port
   # Will be configured automatically if left empty and using the Redis subchart.
   redisUrl: ""
 
