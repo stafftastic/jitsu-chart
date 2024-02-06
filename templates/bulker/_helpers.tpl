@@ -72,7 +72,7 @@ app.kubernetes.io/component: bulker
   value: {{ . | quote }}
 {{- end }}
 {{- if and (not .globalHashSecret) (not $.Values.config.globalHashSecret) $.Values.tokenGenerator.enabled }}
-- name: GLOBAL_HASH_SECRET
+- name: BULKER_GLOBAL_HASH_SECRET
   valueFrom:
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
