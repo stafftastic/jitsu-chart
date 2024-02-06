@@ -47,25 +47,26 @@ spec:
               base64_hash_token() {
                 hex_hash_token "$@" | xxd -r -p | base64 -w 0 | tr -d '='
               }
+              globalHashSecret=$(random_string $SECRET_LENGTH)
               ingestTokenSecret=$(random_string $SECRET_LENGTH)
               bulkerTokenSecret=$(random_string $SECRET_LENGTH)
               syncctlTokenSecret=$(random_string $SECRET_LENGTH)
-              consoleTokenSecret=$(random_string $SECRET_LENGTH)
 
+              consoleAuthToken=$(random_string $TOKEN_LENGTH)
               ingestAuthToken=$(random_string $TOKEN_LENGTH)
               bulkerAuthToken=$(random_string $TOKEN_LENGTH)
               syncctlAuthToken=$(random_string $TOKEN_LENGTH)
-              consoleAuthToken=$(random_string $TOKEN_LENGTH)
 
+              consoleAuthTokenSalt=$(random_string $SALT_LENGTH)
               ingestAuthTokenSalt=$(random_string $SALT_LENGTH)
               bulkerAuthTokenSalt=$(random_string $SALT_LENGTH)
               syncctlAuthTokenSalt=$(random_string $SALT_LENGTH)
-              consoleAuthTokenSalt=$(random_string $SALT_LENGTH)
 
               ingestAuthTokens="$ingestAuthTokenSalt.$(base64_hash_token $ingestAuthToken $ingestAuthTokenSalt $ingestTokenSecret)"
               bulkerAuthTokens="$bulkerAuthTokenSalt.$(base64_hash_token $bulkerAuthToken $bulkerAuthTokenSalt $bulkerTokenSecret)"
               syncctlAuthTokens="$syncctlAuthTokenSalt.$(base64_hash_token $syncctlAuthToken $syncctlAuthTokenSalt $syncctlTokenSecret)"
-              consoleAuthTokens="$consoleAuthTokenSalt.$(hex_hash_token $consoleAuthToken $consoleAuthTokenSalt $consoleTokenSecret)"
+
+              consoleAuthTokens="$consoleAuthTokenSalt.$(hex_hash_token $consoleAuthToken $consoleAuthTokenSalt $globalHashSecret)"
 
               kubectl apply -f- <<EOF
               apiVersion: v1
@@ -74,10 +75,11 @@ spec:
                 name: $FULLNAME-tokens
               type: Opaque
               stringData:
+                globalHashSecret: "$globalHashSecret"
+
                 ingestTokenSecret: "$ingestTokenSecret"
                 bulkerTokenSecret: "$bulkerTokenSecret"
                 syncctlTokenSecret: "$syncctlTokenSecret"
-                consoleTokenSecret: "$consoleTokenSecret"
 
                 ingestAuthToken: "$ingestAuthToken"
                 bulkerAuthToken: "$bulkerAuthToken"

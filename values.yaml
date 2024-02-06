@@ -24,6 +24,10 @@ config:
   # Global MongoDB URL. Leave empty if using MongoDB subchart.
   mongodbUrl: ""
 
+  # Global hash secret used by console, bulker and ingest.
+  # Configured automatically when tokenGenerator.enabled is true.
+  globalHashSecret: ""
+
   # Use these values to override service URLs if deployed externally.
   bulkerUrl: ""
   rotorUrl: ""
@@ -224,6 +228,9 @@ bulker:
     rawAuthTokens: ""
 
     # Leave empty to automatically configure.
+    globalHashSecret: ""
+
+    # Leave empty to automatically configure.
     # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_kafka_bootstrap_servers
     kafkaBootstrapServers: ""
 
@@ -411,6 +418,9 @@ ingest:
 
     # https://docs.jitsu.com/self-hosting/configuration#ingest_raw_auth_tokens
     rawAuthTokens: ""
+
+    # Leave empty to automatically configure.
+    globalHashSecret: ""
 
     # Leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#ingest_repository_url

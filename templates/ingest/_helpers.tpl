@@ -37,6 +37,17 @@ app.kubernetes.io/component: ingest
 - name: INGEST_RAW_AUTH_TOKENS
   value: {{ . | quote }}
 {{- end }}
+{{- if and (not .globalHashSecret) (not $.Values.config.globalHashSecret) $.Values.tokenGenerator.enabled }}
+- name: GLOBAL_HASH_SECRET
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "jitsu.fullname" $ }}-tokens
+      key: globalHashSecret
+{{- end }}
+{{- with (.globalHashSecret | default $.Values.config.globalHashSecret) }}
+- name: GLOBAL_HASH_SECRET
+  value: {{ . | quote }}
+{{- end }}
 {{- if and (not .repositoryUrl) $.Values.console.enabled $.Values.tokenGenerator.enabled }}
 - name: INGEST_REPOSITORY_URL
   value: {{ printf "http://%s-console:%d/api/admin/export/streams-with-destinations"

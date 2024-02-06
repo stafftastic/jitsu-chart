@@ -71,6 +71,17 @@ app.kubernetes.io/component: bulker
 - name: BULKER_RAW_AUTH_TOKENS
   value: {{ . | quote }}
 {{- end }}
+{{- if and (not .globalHashSecret) (not $.Values.config.globalHashSecret) $.Values.tokenGenerator.enabled }}
+- name: GLOBAL_HASH_SECRET
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "jitsu.fullname" $ }}-tokens
+      key: globalHashSecret
+{{- end }}
+{{- with (.globalHashSecret | default $.Values.config.globalHashSecret) }}
+- name: GLOBAL_HASH_SECRET
+  value: {{ . | quote }}
+{{- end }}
 {{- with .eventsLogMaxSize }}
 - name: BULKER_EVENTS_LOG_MAX_SIZE
   value: {{ . | quote }}

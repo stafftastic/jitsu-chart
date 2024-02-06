@@ -104,16 +104,16 @@ app.kubernetes.io/component: console
 - name: CONSOLE_AUTH_TOKENS
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .consoleGlobalHashSecret) $.Values.tokenGenerator.enabled }}
+{{- if and (not .globalHashSecret) (not $.Values.config.globalHashSecret) $.Values.tokenGenerator.enabled }}
 - name: GLOBAL_HASH_SECRET
   valueFrom:
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
-      key: consoleTokenSecret
+      key: globalHashSecret
 {{- end }}
-{{- with .consoleGlobalHashSecret }}
+{{- with (.globalHashSecret | default $.Values.config.globalHashSecret) }}
 - name: GLOBAL_HASH_SECRET
-  value: {{ .consoleGlobalHashSecret | quote }}
+  value: {{ . | quote }}
 {{- end }}
 {{- with .consoleRawAuthTokens }}
 - name: CONSOLE_RAW_AUTH_TOKENS
