@@ -7,10 +7,12 @@ helm install jitsu oci://registry-1.docker.io/stafftasticcharts/jitsu -f values.
 
 `values.yaml`:
 ```yaml
-global:
-  postgresql:
-    auth:
-      password: "changeMe"
+postgresql:
+  auth:
+    password: "changeMe"
+mongodb:
+  auth:
+    passwords: ["changeMe"]
 console:
   config:
     jitsuPublicURL: "http://jitsu.example.com"

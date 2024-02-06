@@ -42,11 +42,6 @@ tokenGenerator:
   saltLength: 32
 
 global:
-  postgresql:
-    auth:
-      username: "jitsu"
-      password: ""
-      database: "jitsu"
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}
@@ -611,6 +606,10 @@ serviceAccount:
     create: true
 
 postgresql:
+  auth:
+    username: "jitsu"
+    password: ""
+    database: "jitsu"
   enabled: true
 
 redis:
@@ -631,3 +630,7 @@ kafka:
 
 mongodb:
   enabled: true
+  auth:
+    databases: ["jitsu"]
+    usernames: ["jitsu"]
+    passwords: []

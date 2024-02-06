@@ -63,7 +63,7 @@ Create the name of the service account to use
 
 {{- define "jitsu.databaseUrl" -}}
 {{- if and (not .Values.config.databaseUrl) .Values.postgresql.enabled }}
-{{- with $.Values.global.postgresql.auth -}}
+{{- with $.Values.postgresql.auth -}}
 {{ printf "postgres://%s:%s@%s:%d/%s?schema=newjitsu"
   .username
   .password
