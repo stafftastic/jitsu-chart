@@ -41,7 +41,7 @@ spec:
           args: [db, push, --skip-generate, --schema, /app/schema.prisma]
           env:
             - name: DATABASE_URL
-              value: {{ include "jitsu.databaseURL" . | quote }}
+              value: {{ include "jitsu.databaseUrl" . | quote }}
             {{- with .Values.migration.env }}
             {{- toYaml . | nindent 12 }}
             {{- end }}

@@ -35,14 +35,14 @@ app.kubernetes.io/component: ingest
 - name: INGEST_RAW_AUTH_TOKENS
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .repositoryURL) $.Values.console.enabled $.Values.config.autoGenerateTokens }}
+{{- if and (not .repositoryUrl) $.Values.console.enabled $.Values.config.autoGenerateTokens }}
 - name: INGEST_REPOSITORY_URL
   value: {{ printf "http://%s-console:%d/api/admin/export/streams-with-destinations"
     (include "jitsu.fullname" $)
     (int $.Values.console.service.port)
   | quote }}
 {{- end }}
-{{- with .repositoryURL }}
+{{- with .repositoryUrl }}
 - name: INGEST_REPOSITORY_URL
   value: {{ . | quote }}
 {{- end }}
@@ -69,15 +69,15 @@ app.kubernetes.io/component: ingest
 - name: INGEST_KAFKA_BOOTSTRAP_SERVERS
   value: {{ . | quote }}
 {{- end }}
-{{- with (.kafkaSSL | default $.Values.config.kafkaSSL) }}
+{{- with (.kafkaSsl | default $.Values.config.kafkaSsl) }}
 - name: INGEST_KAFKA_SSL
   value: {{ . | quote }}
 {{- end }}
-{{- with (.kafkaSSLSkipVerify | default $.Values.config.kafkaSSLSkipVerify) }}
+{{- with (.kafkaSslSkipVerify | default $.Values.config.kafkaSslSkipVerify) }}
 - name: INGEST_KAFKA_SSL_SKIP_VERIFY
   value: {{ . | quote }}
 {{- end }}
-{{- with (.kafkaSASL | default $.Values.config.kafkaSASL) }}
+{{- with (.kafkaSasl | default $.Values.config.kafkaSasl) }}
 - name: INGEST_KAFKA_SASL
   {{- if kindIs "string" . }}
   value: {{ . | quote }}
@@ -85,19 +85,19 @@ app.kubernetes.io/component: ingest
   value: {{ toJson . | quote }}
   {{- end }}
 {{- end }}
-{{- if and (not .rotorURL) (not $.Values.config.rotorURL) $.Values.rotor.enabled }}
+{{- if and (not .rotorUrl) (not $.Values.config.rotorUrl) $.Values.rotor.enabled }}
 - name: INGEST_ROTOR_URL
   value: {{ printf "http://%s-rotor:%d" (include "jitsu.fullname" $) (int $.Values.rotor.service.port) | quote }}
 {{- end }}
-{{- with (.rotorURL | default $.Values.config.rotorURL) }}
+{{- with (.rotorUrl | default $.Values.config.rotorUrl) }}
 - name: INGEST_ROTOR_URL
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .redisURL) (not $.Values.config.redisURL) $.Values.redis.enabled }}
+{{- if and (not .redisUrl) (not $.Values.config.redisUrl) $.Values.redis.enabled }}
 - name: INGEST_REDIS_URL
   value: {{ printf "redis://%s-redis-master:6379" $.Release.Name | quote }}
 {{- end }}
-{{- with (.redisURL | default $.Values.config.redisURL) }}
+{{- with (.redisUrl | default $.Values.config.redisUrl) }}
 - name: INGEST_REDIS_URL
   value: {{ . | quote }}
 {{- end }}

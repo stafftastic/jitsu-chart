@@ -8,7 +8,7 @@ app.kubernetes.io/component: bulker
 {{- define "jitsu.bulker.env" -}}
 {{- with .Values.bulker.config }}
 - name: BULKER_INSTANCE_ID
-  value: {{ .instanceID | quote }}
+  value: {{ .instanceId | quote }}
 {{- if and (not .configSource) $.Values.console.enabled $.Values.config.autoGenerateTokens }}
 - name: BULKER_CONFIG_SOURCE
   value: {{ printf "http://%s-console:%d/api/admin/export/bulker-connections"
@@ -20,14 +20,14 @@ app.kubernetes.io/component: bulker
 - name: BULKER_CONFIG_SOURCE
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .configSourceHTTPAuthToken) $.Values.console.enabled $.Values.config.autoGenerateTokens }}
+{{- if and (not .configSourceHttpAuthToken) $.Values.console.enabled $.Values.config.autoGenerateTokens }}
 - name: BULKER_CONFIG_SOURCE_HTTP_AUTH_TOKEN
   valueFrom:
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
       key: consoleAuthToken
 {{- end }}
-{{- with .configSourceHTTPAuthToken }}
+{{- with .configSourceHttpAuthToken }}
 - name: BULKER_CONFIG_SOURCE_HTTP_AUTH_TOKEN
   value: {{ . | quote }}
 {{- end }}
@@ -69,11 +69,11 @@ app.kubernetes.io/component: bulker
 - name: BULKER_RAW_AUTH_TOKENS
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .redisURL) (not $.Values.config.redisURL) $.Values.redis.enabled }}
+{{- if and (not .redisUrl) (not $.Values.config.redisUrl) $.Values.redis.enabled }}
 - name: BULKER_REDIS_URL
   value: "redis://{{ $.Release.Name }}-redis-master:6379"
 {{- end }}
-{{- with (.redisURL | default $.Values.config.redisURL) }}
+{{- with (.redisUrl | default $.Values.config.redisUrl) }}
 - name: BULKER_REDIS_URL
   value: {{ . | quote }}
 {{- end }}
@@ -89,15 +89,15 @@ app.kubernetes.io/component: bulker
 - name: BULKER_KAFKA_BOOTSTRAP_SERVERS
   value: {{ . | quote }}
 {{- end }}
-{{- with (.kafkaSSL | default $.Values.config.kafkaSSL) }}
+{{- with (.kafkaSsl | default $.Values.config.kafkaSsl) }}
 - name: BULKER_KAFKA_SSL
   value: {{ . | quote }}
 {{- end }}
-{{- with .kafkaSSLSkipVerify }}
+{{- with .kafkaSslSkipVerify }}
 - name: BULKER_KAFKA_SSL_SKIP_VERIFY
   value: {{ . | quote }}
 {{- end }}
-{{- with (.kafkaSASL | default $.Values.config.kafkaSASL) }}
+{{- with (.kafkaSasl | default $.Values.config.kafkaSasl) }}
 - name: BULKER_KAFKA_SASL
   {{- if kindIs "string" . }}
   value: {{ . | quote }}

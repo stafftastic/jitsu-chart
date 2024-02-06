@@ -8,15 +8,15 @@ app.kubernetes.io/component: console
 {{- define "jitsu.console.env" -}}
 {{- with .Values.console.config -}}
 - name: JITSU_PUBLIC_URL
-  value: {{ .jitsuPublicURL | quote }}
+  value: {{ .jitsuPublicUrl | quote }}
 - name: NEXTAUTH_URL
-  value: {{ .nextauthURL | default .jitsuPublicURL | quote }}
+  value: {{ .nextauthUrl | default .jitsuPublicUrl | quote }}
 - name: NEXTAUTH_URL_INTERNAL
-  value: {{ .nextauthURLInternal | default (printf "http://%s-console:%d" (include "jitsu.fullname" $) (int $.Values.console.service.port)) | quote }}
+  value: {{ .nextauthUrlInternal | default (printf "http://%s-console:%d" (include "jitsu.fullname" $) (int $.Values.console.service.port)) | quote }}
 - name: JITSU_INGEST_PUBLIC_URL
-  value: {{ .jitsuIngestPublicURL | quote }}
+  value: {{ .jitsuIngestPublicUrl | quote }}
 - name: DATABASE_URL
-  value: {{ .databaseURL | default (include "jitsu.databaseURL" $) | quote }}
+  value: {{ .databaseUrl | default (include "jitsu.databaseUrl" $) | quote }}
 {{- if and (not .bulkerAuthKey) $.Values.bulker.enabled $.Values.config.autoGenerateTokens }}
 - name: BULKER_AUTH_KEY
   valueFrom:
@@ -28,11 +28,11 @@ app.kubernetes.io/component: console
 - name: BULKER_AUTH_KEY
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .rotorURL) (not $.Values.config.rotorURL) $.Values.rotor.enabled }}
+{{- if and (not .rotorUrl) (not $.Values.config.rotorUrl) $.Values.rotor.enabled }}
 - name: ROTOR_URL
   value: {{ printf "http://%s-rotor:%d" (include "jitsu.fullname" $) (int $.Values.rotor.service.port) | quote }}
 {{- end }}
-{{- with (.rotorURL | default $.Values.config.rotorURL) }}
+{{- with (.rotorUrl | default $.Values.config.rotorUrl) }}
 - name: ROTOR_URL
   value: {{ . | quote }}
 {{- end }}
@@ -66,13 +66,13 @@ app.kubernetes.io/component: console
 - name: SYNCS_ENABLED
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .syncctlURL) $.Values.syncctl.enabled }}
+{{- if and (not .syncctlUrl) $.Values.syncctl.enabled }}
 - name: SYNCCTL_URL
-  value: {{ .syncctlURL | default (printf "http://%s-syncctl:%d" (include "jitsu.fullname" $) (int $.Values.syncctl.service.port)) | quote }}
+  value: {{ .syncctlUrl | default (printf "http://%s-syncctl:%d" (include "jitsu.fullname" $) (int $.Values.syncctl.service.port)) | quote }}
 {{- end }}
-{{- with .syncctlURL }}
+{{- with .syncctlUrl }}
 - name: SYNCCTL_URL
-  value: {{ .syncctlURL | quote }}
+  value: {{ .syncctlUrl | quote }}
 {{- end }}
 {{- if and (not .syncctlAuthKey) $.Values.syncctl.enabled $.Values.config.autoGenerateTokens }}
 - name: SYNCCTL_AUTH_KEY
@@ -119,7 +119,7 @@ app.kubernetes.io/component: console
 - name: SEED_USER_PASSWORD
   value: {{ . | quote }}
 {{- end }}
-{{- with .githubClientID }}
+{{- with .githubClientId }}
 - name: GITHUB_CLIENT_ID
   value: {{ . | quote }}
 {{- end }}
@@ -143,7 +143,7 @@ app.kubernetes.io/component: console
 - name: CLICKHOUSE_METRICS_SCHEMA
   value: {{ . | quote }}
 {{- end }}
-{{- with .clickhouseURL }}
+{{- with .clickhouseUrl }}
 - name: CLICKHOUSE_URL
   value: {{ . | quote }}
 {{- end }}

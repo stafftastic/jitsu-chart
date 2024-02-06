@@ -61,8 +61,8 @@ Create the name of the service account to use
 {{- end }}
 {{- end }}
 
-{{- define "jitsu.databaseURL" -}}
-{{- if and (not .Values.config.databaseURL) .Values.postgresql.enabled }}
+{{- define "jitsu.databaseUrl" -}}
+{{- if and (not .Values.config.databaseUrl) .Values.postgresql.enabled }}
 {{- with $.Values.global.postgresql.auth -}}
 {{ printf "postgres://%s:%s@%s:%d/%s?schema=newjitsu"
   .username
@@ -73,6 +73,6 @@ Create the name of the service account to use
 }}
 {{- end }}
 {{- else -}}
-{{ .Values.config.databaseURL }}
+{{ .Values.config.databaseUrl }}
 {{- end }}
 {{- end }}

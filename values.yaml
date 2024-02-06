@@ -9,26 +9,26 @@ config:
 
   # Postgres database URL in the format of: postgres://username:password@host:port/database?options
   # Will be configured automatically if left empty and using the PostgreSQL subchart.
-  databaseURL: ""
+  databaseUrl: ""
 
   # Redis URL in the format of: redis://username:password@host:port
   # Will be configured automatically if left empty and using the Redis subchart.
-  redisURL: ""
+  redisUrl: ""
 
   # Global Kafka configuration. Leave empty if using Kafka subchart.
   # List of hosts in the format of: host:port,...
   kafkaBootstrapServers: ""
   # Enable/disable SSL
-  kafkaSSL: ""
+  kafkaSsl: ""
   # Dict or JSON string with SASL configuration. Leave empty to disable.
-  kafkaSASL: ""
+  kafkaSasl: ""
 
   # Global MongoDB URL. Leave empty if using MongoDB subchart.
-  mongodbURL: ""
+  mongodbUrl: ""
 
   # Use these values to override service URLs if deployed externally.
-  bulkerURL: ""
-  rotorURL: ""
+  bulkerUrl: ""
+  rotorUrl: ""
 
 global:
   postgresql:
@@ -49,16 +49,16 @@ console:
   config:
     # The URL where the Jitsu Console will be available
     # https://docs.jitsu.com/self-hosting/configuration#jitsu_public_url
-    jitsuPublicURL: ""
+    jitsuPublicUrl: ""
 
     # The external URL of the ingest service.
-    jitsuIngestPublicURL: ""
+    jitsuIngestPublicUrl: ""
 
-    # Leave empty to default to jitsuPublicURL.
-    nextauthURL: ""
+    # Leave empty to default to jitsuPublicUrl.
+    nextauthUrl: ""
 
     # Leave empty to default to the console service.
-    nextauthURLInternal: ""
+    nextauthUrlInternal: ""
 
     # Initial admin user. Required if not using GitHub OAuth.
     seedUserEmail: ""
@@ -66,7 +66,7 @@ console:
 
     # Enable GitHub OAuth
     # https://docs.jitsu.com/self-hosting/configuration#github_client_id
-    githubClientID: ""
+    githubClientId: ""
     githubClientSecret: ""
 
     # Disable sign-up
@@ -88,13 +88,13 @@ console:
     # https://docs.jitsu.com/self-hosting/configuration#console_raw_auth_tokens
     consoleRawAuthTokens: ""
 
-    # Leave empty to use global jitsu.databaseURL
+    # Leave empty to use global jitsu.databaseUrl
     # https://docs.jitsu.com/self-hosting/configuration#database_url
-    databaseURL: ""
+    databaseUrl: ""
 
     # Only needed if the bulker is deployed outside of this chart. Leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#bulker_url-1
-    bulkerURL: ""
+    bulkerUrl: ""
 
     # Leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#bulker_auth_key-1
@@ -102,7 +102,7 @@ console:
 
     # Leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#rotor_url
-    rotorURL: ""
+    rotorUrl: ""
 
     # Public domain where ingest service is available. Leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#ingest_host
@@ -131,7 +131,7 @@ console:
     # ClickHouse configuration
     # https://docs.jitsu.com/self-hosting/configuration#clickhouse_metrics_schema
     clickhouseMetricsSchema: ""
-    clickhouseURL: ""
+    clickhouseUrl: ""
     clickhouseUsername: ""
     clickhousePassword: ""
 
@@ -192,7 +192,7 @@ bulker:
 
     # Leave empty to configure automatically.
     # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_config_source_http_auth_token
-    configSourceHTTPAuthToken: ""
+    configSourceHttpAuthToken: ""
 
     # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_config_refresh_period_sec
     configRefreshPeriodSec: ""
@@ -222,14 +222,14 @@ bulker:
     kafkaBootstrapServers: ""
 
     # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_kafka_ssl
-    kafkaSSL: "false"
+    kafkaSsl: "false"
 
     # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_kafka_ssl_skip_verify
-    kafkaSSLSkipVerify: ""
+    kafkaSslSkipVerify: ""
 
     # Can be either a string or a dict.
     # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_kafka_sasl-aka-kafka-auth
-    kafkaSASL: ""
+    kafkaSasl: ""
 
     # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_batch_runner_default_period_sec
     batchRunnerDefaultPeriodSec: ""
@@ -264,9 +264,9 @@ bulker:
     # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_kafka_topic_replication_factor
     kafkaTopicReplicationFactor: ""
 
-    # Store history of processed events in Redis. Leave empty to configure automatically if config.redisURL is set and/or Redis subchart is being used.
+    # Store history of processed events in Redis. Leave empty to configure automatically if config.redisUrl is set and/or Redis subchart is being used.
     # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#connection-to-redis-optional
-    redisURL: ""
+    redisUrl: ""
 
     # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#connection-to-redis-optional
     eventsLogMaxSize: ""
@@ -304,7 +304,7 @@ rotor:
   config:
     # Leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#repository_base_url
-    repositoryBaseURL: ""
+    repositoryBaseUrl: ""
 
     # Leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#repository_auth_token
@@ -313,13 +313,13 @@ rotor:
     # https://docs.jitsu.com/self-hosting/configuration#repository_refresh_period_sec
     repositoryRefreshPeriodSec: ""
 
-    # Leave empty to configure automatically if config.redisURL is set or Redis subchart is being used.
+    # Leave empty to configure automatically if config.redisUrl is set or Redis subchart is being used.
     # https://docs.jitsu.com/self-hosting/configuration#redis_url
-    redisURL: ""
+    redisUrl: ""
 
     # Leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#bulker_url
-    bulkerURL: ""
+    bulkerUrl: ""
 
     # Leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#bulker_auth_key
@@ -330,18 +330,18 @@ rotor:
     kafkaBootstrapServers: ""
 
     # https://docs.jitsu.com/self-hosting/configuration#kafka_ssl
-    kafkaSSL: "false"
+    kafkaSsl: "false"
 
     # Can be either a string or a dict.
     # https://docs.jitsu.com/self-hosting/configuration#kafka_sasl-aka-kafka-auth
-    kafkaSASL: ""
+    kafkaSasl: ""
 
     # Leave empty to configure automatically if MongoDB subchart is being used.
     # https://docs.jitsu.com/self-hosting/configuration#mongodb_url
-    mongodbURL: ""
+    mongodbUrl: ""
 
     # https://docs.jitsu.com/self-hosting/configuration#metrics_destination_id
-    metricsDestinationID: ""
+    metricsDestinationId: ""
 
     # https://docs.jitsu.com/self-hosting/configuration#events_log_max_size
     eventsLogMaxSize: ""
@@ -408,7 +408,7 @@ ingest:
 
     # Leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#ingest_repository_url
-    repositoryURL: ""
+    repositoryUrl: ""
 
     # Leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#ingest_repository_auth_token
@@ -422,21 +422,21 @@ ingest:
     kafkaBootstrapServers: ""
 
     # https://docs.jitsu.com/self-hosting/configuration#ingest_kafka_ssl
-    kafkaSSL: ""
+    kafkaSsl: ""
 
     # https://docs.jitsu.com/self-hosting/configuration#ingest_kafka_ssl_skip_verify
-    kafkaSSLSkipVerify: ""
+    kafkaSslSkipVerify: ""
 
     # https://docs.jitsu.com/self-hosting/configuration#ingest_kafka_sasl-aka-kafka-auth
-    kafkaSASL: ""
+    kafkaSasl: ""
 
     # Leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#ingest_rotor_url
-    rotorURL: ""
+    rotorUrl: ""
 
-    # Leave empty to configure automatically when Redis subchart is enabled or config.redisURL is set.
+    # Leave empty to configure automatically when Redis subchart is enabled or config.redisUrl is set.
     # https://docs.jitsu.com/self-hosting/configuration#ingest_redis_url
-    redisURL: ""
+    redisUrl: ""
 
     # https://docs.jitsu.com/self-hosting/configuration#ingest_events_log_max_size
     eventsLogMaxSize: ""
@@ -498,16 +498,16 @@ syncctl:
     # https://docs.jitsu.com/self-hosting/configuration#syncctl_raw_auth_tokens
     rawAuthTokens: ""
 
-    # Leave empty to configure automatically when Postgres subchart is used or config.databaseURL is set.
+    # Leave empty to configure automatically when Postgres subchart is used or config.databaseUrl is set.
     # https://docs.jitsu.com/self-hosting/configuration#syncctl_database_url
-    databaseURL: ""
+    databaseUrl: ""
 
     # https://docs.jitsu.com/self-hosting/configuration#syncctl_sidecar_database_url
-    sidecarDatabaseURL: ""
+    sidecarDatabaseUrl: ""
 
     # Leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#syncctl_bulker_url
-    bulkerURL: ""
+    bulkerUrl: ""
 
     # Leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#syncctl_bulker_auth_key

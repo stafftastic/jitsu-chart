@@ -7,14 +7,14 @@ app.kubernetes.io/component: rotor
 
 {{- define "jitsu.rotor.env" -}}
 {{- with .Values.rotor.config }}
-{{- if and (not .repositoryBaseURL) $.Values.console.enabled $.Values.config.autoGenerateTokens }}
+{{- if and (not .repositoryBaseUrl) $.Values.console.enabled $.Values.config.autoGenerateTokens }}
 - name: REPOSITORY_BASE_URL
   value: {{ printf "http://%s-console:%d/api/admin/export"
     (include "jitsu.fullname" $)
     (int $.Values.console.service.port)
   | quote }}
 {{- end }}
-{{- with .repositoryBaseURL }}
+{{- with .repositoryBaseUrl }}
 - name: REPOSITORY_BASE_URL
   value: {{ . | quote }}
 {{- end }}
@@ -33,22 +33,22 @@ app.kubernetes.io/component: rotor
 - name: REPOSITORY_REFRESH_PERIOD_SEC
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .redisURL) (not $.Values.config.redisURL) $.Values.redis.enabled }}
+{{- if and (not .redisUrl) (not $.Values.config.redisUrl) $.Values.redis.enabled }}
 - name: REDIS_URL
   value: {{ printf "redis://%s-redis-master:6379" $.Release.Name | quote }}
 {{- end }}
-{{- with (.redisURL | default $.Values.config.redisURL) }}
+{{- with (.redisUrl | default $.Values.config.redisUrl) }}
 - name: REDIS_URL
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .bulkerURL) (not $.Values.config.bulkerURL) $.Values.bulker.enabled }}
+{{- if and (not .bulkerUrl) (not $.Values.config.bulkerUrl) $.Values.bulker.enabled }}
 - name: BULKER_URL
   value: {{ printf "http://%s-bulker:%d"
     (include "jitsu.fullname" $)
     (int $.Values.bulker.service.port)
   | quote }}
 {{- end }}
-{{- with (.bulkerURL | default $.Values.config.bulkerURL) }}
+{{- with (.bulkerUrl | default $.Values.config.bulkerUrl) }}
 - name: BULKER_URL
   value: {{ . | quote }}
 {{- end }}
@@ -57,7 +57,7 @@ app.kubernetes.io/component: rotor
   valueFrom:
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
-      key: bulkerAuthToken
+      key: rotorBulkerAuthKey
 {{- end }}
 {{- with .bulkerAuthKey }}
 - name: BULKER_AUTH_KEY
@@ -71,11 +71,11 @@ app.kubernetes.io/component: rotor
 - name: KAFKA_BOOTSTRAP_SERVERS
   value: {{ . | quote }}
 {{- end }}
-{{- with (.kafkaSSL | default $.Values.config.kafkaSSL) }}
+{{- with (.kafkaSsl | default $.Values.config.kafkaSsl) }}
 - name: KAFKA_SSL
   value: {{ . | quote }}
 {{- end }}
-{{- with (.kafkaSASL | default $.Values.config.kafkaSASL) }}
+{{- with (.kafkaSasl | default $.Values.config.kafkaSasl) }}
 - name: KAFKA_SASL
   {{- if kindIs "string" . }}
   value: {{ . | quote }}
@@ -83,15 +83,15 @@ app.kubernetes.io/component: rotor
   value: {{ toJson . | quote }}
   {{- end }}
 {{- end }}
-{{- if and (not .mongodbURL) (not $.Values.config.mongodbURL) $.Values.mongodb.enabled }}
+{{- if and (not .mongodbUrl) (not $.Values.config.mongodbUrl) $.Values.mongodb.enabled }}
 - name: MONGODB_URL
   value: {{ printf "mongodb://%s-mongodb:27017" $.Release.Name | quote }}
 {{- end }}
-{{- with (.mongodbURL | default $.Values.config.mongodbURL) }}
+{{- with (.mongodbUrl | default $.Values.config.mongodbUrl) }}
 - name: MONGODB_URL
   value: {{ . | quote }}
 {{- end }}
-{{- with .metricsDestinationID }}
+{{- with .metricsDestinationId }}
 - name: METRICS_DESTINATION_ID
   value: {{ . | quote }}
 {{- end }}

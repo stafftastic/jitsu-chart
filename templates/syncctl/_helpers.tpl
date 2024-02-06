@@ -8,7 +8,7 @@ app.kubernetes.io/component: syncctl
 {{- define "jitsu.syncctl.env" -}}
 {{- with .Values.syncctl.config -}}
 - name: SYNCCTL_DATABASE_URL
-  value: {{ .databaseURL | default (include "jitsu.databaseURL" $) | quote }}
+  value: {{ .databaseUrl | default (include "jitsu.databaseUrl" $) | quote }}
 {{- if and (not .authTokens) $.Values.config.autoGenerateTokens }}
 - name: SYNCCTL_AUTH_TOKENS
   valueFrom:
@@ -35,15 +35,15 @@ app.kubernetes.io/component: syncctl
 - name: SYNCCTL_RAW_AUTH_TOKENS
   value: {{ . | quote }}
 {{- end }}
-{{- with .sidecarDatabaseURL }}
+{{- with .sidecarDatabaseUrl }}
 - name: SYNCCTL_SIDECAR_DATABASE_URL
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .bulkerURL) (not $.Values.config.bulkerURL) $.Values.bulker.enabled }}
+{{- if and (not .bulkerUrl) (not $.Values.config.bulkerUrl) $.Values.bulker.enabled }}
 - name: SYNCCTL_BULKER_URL
   value: {{ printf "http://%s-bulker:%d" (include "jitsu.fullname" $) (int $.Values.bulker.service.port) | quote }}
 {{- end }}
-{{- with (.bulkerURL | default $.Values.config.bulkerURL) }}
+{{- with (.bulkerUrl | default $.Values.config.bulkerUrl) }}
 - name: SYNCCTL_BULKER_URL
   value: {{ . | quote }}
 {{- end }}
