@@ -497,6 +497,10 @@ ingest:
 
 syncctl:
   enabled: true
+
+  # Create the syncctl namespace if it's not the same as the deployment namespace and we're
+  # using the service account to talk to Kubernetes.
+  createNamespace: true
   config:
     # Leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#syncctl_auth_tokens
@@ -530,7 +534,9 @@ syncctl:
     # https://docs.jitsu.com/self-hosting/configuration#syncctl_kubernetes_client_config
     kubernetesContext: ""
 
-    # Leave empty to configure automatically.
+    # Leave empty to use the deployment namespace. If syncctl.serviceAccount.rbac.create is true
+    # and syncctl.config.kubernetesClientConfig is unset a Role and RoleBinding will be created in
+    # this namespace.
     # https://docs.jitsu.com/self-hosting/configuration#syncctl_task_timeout_hours
     kubernetesNamespace: ""
 
@@ -539,6 +545,12 @@ syncctl:
 
     # https://docs.jitsu.com/self-hosting/configuration#syncctl_log_format
     logFormat: "text"
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+    rbac:
+      create: true
   replicaCount: 1
   image:
     repository: jitsucom/syncctl

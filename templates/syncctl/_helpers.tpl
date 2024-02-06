@@ -5,6 +5,14 @@ Rotor selector labels
 app.kubernetes.io/component: syncctl
 {{- end }}
 
+{{- define "jitsu.syncctl.serviceAccountName" -}}
+{{- if .Values.syncctl.serviceAccount.create }}
+{{- default (printf "%s-syncctl" (include "jitsu.fullname" .)) .Values.syncctl.serviceAccount.name }}
+{{- else }}
+{{- default "default" .Values.syncctl.serviceAccount.name }}
+{{- end }}
+{{- end }}
+
 {{- define "jitsu.syncctl.env" -}}
 {{- with .Values.syncctl.config -}}
 - name: SYNCCTL_DATABASE_URL
