@@ -588,6 +588,8 @@ serviceAccount:
   create: true
   annotations: {}
   name: ""
+  rbac:
+    create: true
 
 postgresql:
   enabled: true
