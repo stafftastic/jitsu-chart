@@ -4,8 +4,6 @@ fullnameOverride: ""
 
 # Common configuration values shared across multiple components.
 config:
-  # Generate inter-service auth tokens automatically upon deployment.
-  autoGenerateTokens: true
 
   # Postgres database URL in the format of: postgres://username:password@host:port/database?options
   # Will be configured automatically if left empty and using the PostgreSQL subchart.
@@ -29,6 +27,17 @@ config:
   # Use these values to override service URLs if deployed externally.
   bulkerUrl: ""
   rotorUrl: ""
+
+tokenGenerator:
+  # Generate inter-service auth tokens automatically upon deployment.
+  enabled: true
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+  tokenLength: 32
+  secretLength: 32
+  saltLength: 32
 
 global:
   postgresql:

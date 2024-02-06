@@ -1,12 +1,13 @@
-{{- if .Values.config.autoGenerateTokens }}
+{{- if .Values.tokenGenerator.enabled }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{ include "jitsu.fullname" . }}-auto-generate-tokens
+  name: {{ include "jitsu.fullname" . }}-token-generator
   labels:
     {{- include "jitsu.labels" . | nindent 4 }}
 rules:
   - apiGroups: [""]
     resources: ["secrets"]
     verbs: ["create", "get"]
+    resourceNames: ["{{ include "jitsu.fullname" . }}-tokens"]
 {{- end }}

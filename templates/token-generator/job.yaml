@@ -1,8 +1,8 @@
-{{- if .Values.config.autoGenerateTokens }}
+{{- if .Values.tokenGenerator.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "jitsu.fullname" . }}-auto-generate-tokens-{{ sha1sum (toJson .Values) | substr 0 8 }}
+  name: {{ include "jitsu.fullname" . }}-token-generator-{{ sha1sum (toJson .Values) | substr 0 8 }}
   labels:
     {{- include "jitsu.labels" . | nindent 4 }}
 spec:
@@ -13,19 +13,19 @@ spec:
         {{- include "jitsu.selectorLabels" . | nindent 8 }}
     spec:
       restartPolicy: Never
-      serviceAccountName: {{ include "jitsu.serviceAccountName" . }}
+      serviceAccountName: {{ include "jitsu.tokenGenerator.serviceAccountName" . }}
       containers:
-        - name: auto-generate-tokens
+        - name: token-generator
           image: "alpine/k8s:{{ .Capabilities.KubeVersion.Version | trimPrefix "v"}}"
           env:
             - name: FULLNAME
               value: {{ include "jitsu.fullname" . }}
             - name: SECRET_LENGTH
-              value: "32"
+              value: {{ .Values.tokenGenerator.secretLength | default "32" | quote }}
             - name: TOKEN_LENGTH
-              value: "32"
+              value: {{ .Values.tokenGenerator.tokenLength | default "32" | quote }}
             - name: SALT_LENGTH
-              value: "32"
+              value: {{ .Values.tokenGenerator.saltLength | default "32" | quote }}
           command: ["sh", "-c"]
           args:
             - |
@@ -36,7 +36,7 @@ spec:
               set -e
               random_string() {
                 length="$1"
-                cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c "$length"
+                cat /dev/urandom | tr -dc 'a-zA-Z0-9_-' | head -c "$length"
               }
               hex_hash_token() {
                 token="$1"
