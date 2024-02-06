@@ -35,6 +35,8 @@ tokenGenerator:
     create: true
     annotations: {}
     name: ""
+    rbac:
+      create: true
   tokenLength: 32
   secretLength: 32
   saltLength: 32
