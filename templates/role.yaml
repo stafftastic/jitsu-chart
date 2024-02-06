@@ -2,7 +2,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: {{ include "jitsu.fullname" . }}-migration
+  name: {{ include "jitsu.fullname" . }}-k8s-wait-for
   labels:
     {{- include "jitsu.labels" . | nindent 4 }}
 rules:
