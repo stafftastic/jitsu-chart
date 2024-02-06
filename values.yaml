@@ -501,6 +501,11 @@ syncctl:
   # Create the syncctl namespace if it's not the same as the deployment namespace and we're
   # using the service account to talk to Kubernetes.
   createNamespace: true
+
+  # If using the Postgres subchart and a separate namespace for syncctl workloads, we need to
+  # create a proxy service to the Postgres service in the new namespace. If you're not using
+  # the default cluster domain "cluster.local" this can be overridden here.
+  clusterDomain: ""
   config:
     # Leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#syncctl_auth_tokens

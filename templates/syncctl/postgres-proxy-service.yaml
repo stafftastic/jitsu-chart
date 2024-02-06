@@ -1,0 +1,14 @@
+{{- if and
+  .Values.syncctl.enabled
+  (not (eq (.Values.syncctl.config.kubernetesNamespace | default .Release.Namespace) .Release.Namespace))
+  (not .Values.syncctl.config.kubernetesClientConfig)
+}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-postgresql
+  namespace: {{ .Values.syncctl.config.kubernetesNamespace }}
+spec:
+  type: ExternalName
+  externalName: {{ printf "%s-postgresql.%s.%s" .Release.Name .Release.Namespace (.Values.syncctl.clusterDomain | default "svc.cluster.local") }}
+{{- end }}
