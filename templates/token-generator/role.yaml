@@ -8,6 +8,9 @@ metadata:
 rules:
   - apiGroups: [""]
     resources: ["secrets"]
-    verbs: ["create", "get"]
+    verbs: ["create"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get"]
     resourceNames: ["{{ include "jitsu.fullname" . }}-tokens"]
 {{- end }}
