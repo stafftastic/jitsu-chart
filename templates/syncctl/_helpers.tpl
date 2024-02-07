@@ -55,15 +55,15 @@ app.kubernetes.io/component: syncctl
 - name: SYNCCTL_BULKER_URL
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .bulkerAuthKey) $.Values.bulker.enabled $.Values.tokenGenerator.enabled }}
-- name: SYNCCTL_BULKER_AUTH_KEY
+{{- if and (not .bulkerAuthToken ) $.Values.bulker.enabled $.Values.tokenGenerator.enabled }}
+- name: SYNCCTL_BULKER_AUTH_TOKEN
   valueFrom:
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
       key: bulkerAuthToken
 {{- end }}
-{{- with .bulkerAuthKey }}
-- name: SYNCCTL_BULKER_AUTH_KEY
+{{- with .bulkerAuthToken }}
+- name: SYNCCTL_BULKER_AUTH_TOKEN
   value: {{ . | quote }}
 {{- end }}
 {{- with .kubernetesClientConfig }}
