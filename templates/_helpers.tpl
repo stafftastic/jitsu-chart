@@ -94,11 +94,12 @@ Create the name of the service account to use
 {{- define "jitsu.mongodbUrl" -}}
 {{- if and (not .Values.config.mongodbUrl) .Values.mongodb.enabled }}
 {{- with $.Values.mongodb.auth -}}
-{{ printf "mongodb://%s:%s@%s:%d/%s"
+{{ printf "mongodb://%s:%s@%s:%d/%s?authSource=%s"
   (index .usernames 0)
   (index .passwords 0)
   (printf "%s-mongodb" $.Release.Name)
   27017
+  (index .databases 0)
   (index .databases 0)
 }}
 {{- end }}
