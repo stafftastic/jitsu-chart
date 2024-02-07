@@ -9,6 +9,7 @@ console:
   config:
     seedUserEmail: "me@example.com"
     seedUserPassword: "changeMe"
+EOF
 ```
 
 For a production deployment it is recommended to read through `values.yaml` and make conscious
