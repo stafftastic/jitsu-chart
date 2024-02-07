@@ -42,6 +42,9 @@ console:
     githubClientSecret: "..."
 ```
 
+Once you have logged in, set `console.config.disableSignup` to `true` to prevent anyone with a
+GitHub account from using your instance.
+
 See [values.yaml](values.yaml) for more configuration options.
 
 ## Dependencies
