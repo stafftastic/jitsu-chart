@@ -508,7 +508,7 @@ syncctl:
   createNamespace: true
 
   # If using the Postgres subchart and a separate namespace for syncctl workloads, we need to
-  # create a proxy service to the Postgres service in the new namespace. If you're not using
+  # create proxy services to Postgres and the Bulker in the new namespace. If you're not using
   # the default cluster domain "cluster.local" this can be overridden here.
   clusterDomain: ""
   config:
@@ -646,4 +646,3 @@ kafka:
     client:
       protocol: PLAINTEXT
       external: PLAINTEXT
-
