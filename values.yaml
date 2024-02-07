@@ -30,6 +30,7 @@ config:
   # Use these values to override service URLs if deployed externally.
   bulkerUrl: ""
   rotorUrl: ""
+  syncctlUrl: ""
 
 # Unified and simplified ingress definition.
 # Uses a single host for both console and ingest and automatically configures public URL options.

@@ -74,13 +74,13 @@ app.kubernetes.io/component: console
 - name: SYNCS_ENABLED
   value: {{ . | quote }}
 {{- end }}
-{{- if and (not .syncctlUrl) $.Values.syncctl.enabled }}
+{{- if and (not .syncctlUrl) (not $.Values.config.syncctlUrl) $.Values.syncctl.enabled }}
 - name: SYNCCTL_URL
-  value: {{ .syncctlUrl | default (printf "http://%s-syncctl:%d" (include "jitsu.fullname" $) (int $.Values.syncctl.service.port)) | quote }}
+  value: {{ printf "http://%s-syncctl:%d" (include "jitsu.fullname" $) (int $.Values.syncctl.service.port) | quote }}
 {{- end }}
-{{- with .syncctlUrl }}
+{{- with (.syncctlUrl | default $.Values.config.syncctlUrl) }}
 - name: SYNCCTL_URL
-  value: {{ .syncctlUrl | quote }}
+  value: {{ . | quote }}
 {{- end }}
 {{- if and (not .syncctlAuthKey) $.Values.syncctl.enabled $.Values.tokenGenerator.enabled }}
 - name: SYNCCTL_AUTH_KEY
