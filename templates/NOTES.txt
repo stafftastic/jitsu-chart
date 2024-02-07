@@ -4,15 +4,15 @@
 WARNING: You are using the default password for {{ . }}.
 {{ printf "\033[0m" -}}
 {{- end }}
-{{- if eq .Values.redis.auth.password "jitsu" }}
+{{- if and .Values.redis.enabled (eq .Values.redis.auth.password "jitsu") }}
 {{- $warned = true }}
 {{- include "jitsu.warn-default-password" "Redis" }}
 {{- end }}
-{{- if eq .Values.postgresql.auth.password "jitsu" }}
+{{- if and .Values.postgresql.enabled (eq .Values.postgresql.auth.password "jitsu") }}
 {{- $warned = true }}
 {{- include "jitsu.warn-default-password" "PostgreSQL" }}
 {{- end }}
-{{- if eq (index .Values.mongodb.auth.passwords 0) "jitsu" }}
+{{- if and .Values.mongodb.enabled (eq (index .Values.mongodb.auth.passwords 0) "jitsu") }}
 {{- $warned = true }}
 {{- include "jitsu.warn-default-password" "MongoDB" }}
 {{- end }}
