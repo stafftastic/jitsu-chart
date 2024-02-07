@@ -71,10 +71,10 @@ mongodb:
 Then supply the connection details in the `config` section (or specifically per service):
 ```yaml
 config:
-  databaseURL: "postgres://..."
-  redisURL: "redis://..."
+  databaseUrl: "postgres://..."
+  redisUrl: "redis://..."
   kafkaBootstrapServers: "kafka:9092,..."
-  mongodbURL: "mongodb://..."
+  mongodbUrl: "mongodb://..."
 ```
 
 ## Configuration Options
