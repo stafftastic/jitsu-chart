@@ -8,13 +8,13 @@ app.kubernetes.io/component: console
 {{- define "jitsu.console.env" -}}
 {{- with .Values.console.config -}}
 - name: JITSU_PUBLIC_URL
-  value: {{ .jitsuPublicUrl | quote }}
+  value: {{ .jitsuPublicUrl | default (include "jitsu.publicUrl" $) | quote }}
 - name: NEXTAUTH_URL
-  value: {{ .nextauthUrl | default .jitsuPublicUrl | quote }}
+  value: {{ .nextauthUrl | default .jitsuPublicUrl | default (include "jitsu.publicUrl" $) | quote }}
 - name: NEXTAUTH_URL_INTERNAL
   value: {{ .nextauthUrlInternal | default (printf "http://%s-console:%d" (include "jitsu.fullname" $) (int $.Values.console.service.port)) | quote }}
 - name: JITSU_INGEST_PUBLIC_URL
-  value: {{ .jitsuIngestPublicUrl | quote }}
+  value: {{ .jitsuIngestPublicUrl | default (include "jitsu.publicUrl" $) | quote }}
 - name: DATABASE_URL
   value: {{ .databaseUrl | default (include "jitsu.databaseUrl" $) | quote }}
 {{- if and (not .bulkerUrl) (not $.Values.config.bulkerUrl) $.Values.bulker.enabled }}

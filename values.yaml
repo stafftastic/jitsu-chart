@@ -4,7 +4,6 @@ fullnameOverride: ""
 
 # Common configuration values shared across multiple components.
 config:
-
   # Postgres database URL in the format of: postgres://username:password@host:port/database?options
   # Will be configured automatically if left empty and using the PostgreSQL subchart.
   databaseUrl: ""
@@ -32,6 +31,17 @@ config:
   bulkerUrl: ""
   rotorUrl: ""
 
+# Unified and simplified ingress definition.
+# Uses a single host for both console and ingest and automatically configures public URL options.
+ingress:
+  enabled: true
+  className: ""
+  annotations: {}
+  host: jitsu.example.com
+  tls: false
+  # Only used for URL generation if your Ingress controller listens to a non-standard port.
+  port: ""
+
 tokenGenerator:
   # Generate inter-service auth tokens automatically upon deployment.
   enabled: true
@@ -57,11 +67,13 @@ global:
 console:
   enabled: true
   config:
-    # The URL where the Jitsu Console will be available
+    # The URL where the Jitsu Console will be available.
+    # If using unified ingress (ingress.enabled) leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#jitsu_public_url
     jitsuPublicUrl: ""
 
     # The external URL of the ingest service.
+    # If using unified ingress (ingress.enabled) leave empty to configure automatically.
     jitsuIngestPublicUrl: ""
 
     # Leave empty to default to jitsuPublicUrl.
@@ -157,7 +169,7 @@ console:
     type: ClusterIP
     port: 3000
   ingress:
-    enabled: true
+    enabled: false
     className: ''
     annotations: {}
     hosts:
@@ -166,9 +178,9 @@ console:
           - path: /
             pathType: Prefix
     tls: []
-    # - secretName: jitsu-example-org-tls
+    # - secretName: jitsu-example-com-tls
     #   hosts:
-    #     - jitsu.example.org
+    #     - jitsu.example.com
   probes:
     enabled: true
   autoscaling:
@@ -405,6 +417,7 @@ ingest:
   enabled: true
   config:
     # Public domain where ingest service is deployed.
+    # If using unified ingress (ingress.enabled) leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#ingest_data_domain
     dataDomain: ""
 
@@ -468,7 +481,7 @@ ingest:
     type: ClusterIP
     port: 3049
   ingress:
-    enabled: true
+    enabled: false
     className: ''
     annotations: {}
     hosts:
@@ -477,9 +490,9 @@ ingest:
           - path: /
             pathType: Prefix
     tls: []
-    # - secretName: jitsu-example-org-tls
+    # - secretName: jitsu-example-com-tls
     #   hosts:
-    #     - jitsu.example.org
+    #     - jitsu.example.com
   probes:
     enabled: true
   autoscaling:

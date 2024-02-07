@@ -8,7 +8,7 @@ app.kubernetes.io/component: ingest
 {{- define "jitsu.ingest.env" -}}
 {{- with .Values.ingest.config }}
 - name: INGEST_DATA_DOMAIN
-  value: {{ .dataDomain | quote }}
+  value: {{ .dataDomain | default ($.Values.ingress.enabled | ternary $.Values.ingress.host "") | quote }}
 - name: INGEST_REDIS_URL
   value: {{ .redisUrl | default (include "jitsu.redisUrl" $) | quote }}
 {{- if and (not .authTokens) $.Values.tokenGenerator.enabled }}

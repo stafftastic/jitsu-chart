@@ -61,6 +61,16 @@ Create the name of the service account to use
 {{- end }}
 {{- end }}
 
+{{- define "jitsu.publicUrl" }}
+{{- if .Values.ingress.enabled }}
+{{- printf "http%s://%s%s"
+  (.Values.ingress.tls | ternary "s" "")
+  .Values.ingress.host
+  (not .Values.ingress.port | ternary "" (printf ":%s" .Values.ingress.port))
+-}}
+{{- end }}
+{{- end }}
+
 {{- define "jitsu.databaseUrl" -}}
 {{- if and (not .Values.config.databaseUrl) .Values.postgresql.enabled }}
 {{- with $.Values.postgresql.auth -}}

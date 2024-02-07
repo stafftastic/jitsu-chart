@@ -2,9 +2,19 @@
 
 ## TL;DR
 ```bash
-helm install jitsu oci://registry-1.docker.io/stafftasticcharts/jitsu -f values.yaml
+helm install jitsu oci://registry-1.docker.io/stafftasticcharts/jitsu -f-<<EOF
+ingress:
+  host: "jitsu.example.com"
+console:
+  config:
+    seedUserEmail: "me@example.com"
+    seedUserPassword: "changeMe"
 ```
 
+For a production deployment it is recommended to read through `values.yaml` and make conscious
+decisions in order to ensure the deployment is secure, reliable and scalable.
+
+## Basic Configuration
 `values.yaml`:
 ```yaml
 postgresql:
@@ -16,30 +26,19 @@ mongodb:
 redis:
   auth:
     password: "changeMe"
+
+ingress:
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt"
+  host: "jitsu.example.com"
+  tls: true
+
 console:
   config:
-    jitsuPublicURL: "http://jitsu.example.com"
-    jitsuIngestURL: "http://data.jitsu.example.com"
-    seedUserEmail: "admin@example.com"
-    seedUserPassword: "changeMe"
-    # or...
-    # githubClientID: "..."
-    # githubClientSecret: "..."
-  ingress:
-    className: "nginx"
-    hosts:
-      - host: "jitsu.example.com"
-        paths:
-          - path: "/"
-            pathType: "Prefix"
-ingest:
-  ingress:
-    className: "nginx"
-    hosts:
-      - host: "data.jitsu.example.com"
-        paths:
-          - path: "/"
-            pathType: "Prefix"
+    # Populate with GitHub OAuth client credentials
+    githubClientID: "..."
+    githubClientSecret: "..."
 ```
 
 See [values.yaml](values.yaml) for more configuration options.
@@ -107,7 +106,7 @@ bulker:
 
 Becomes:
 
-```sh
+```bash
 BULKER_DESTINATION_POSTGRES='{"id":"postgres"}'
 BULKER_DESTINATION_S3='{"id":"s3"}'
 ```
@@ -118,3 +117,9 @@ hashes to verify. These can be managed manually, however by default they are gen
 stored in a secret. Each service then gets access to the tokens they need through the environment.
 
 In order to disable this, set `tokenGenerator.enabled` to `false` and supply the tokens manually.
+
+## Running Connectors in a Different Namespace
+By default syncctl runs connectors in the same namespace as the rest of the Jitsu services. If you
+wish to run these ephemeral and to some degree user-controlled workloads in a separate namespace you
+can set `syncctl.config.kubernetesNamespace` to the desired namespace, and the chart will create the
+namespace, service proxies for the bulker and databse, and the necessary RBAC resources for you.
