@@ -38,7 +38,7 @@ ingress:
 console:
   config:
     # Populate with GitHub OAuth client credentials
-    githubClientID: "..."
+    githubClientId: "..."
     githubClientSecret: "..."
 ```
 
