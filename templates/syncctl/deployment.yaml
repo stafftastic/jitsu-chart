@@ -66,7 +66,9 @@ spec:
               path: /health
           {{- end }}
           env:
+            {{- if .Values.syncctl.config.enabled }}
             {{- include "jitsu.syncctl.env" . | nindent 12 }}
+            {{- end }}
             {{- with .Values.syncctl.env }}
             {{- toYaml . | nindent 12 }}
             {{- end }}

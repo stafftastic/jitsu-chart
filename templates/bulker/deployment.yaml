@@ -81,7 +81,9 @@ spec:
               path: /ready
           {{- end }}
           env:
+            {{- if .Values.bulker.config.enabled }}
             {{- include "jitsu.bulker.env" . | nindent 12 }}
+            {{- end }}
             {{- with .Values.bulker.env }}
             {{- toYaml . | nindent 12 }}
             {{- end }}

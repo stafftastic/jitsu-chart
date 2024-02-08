@@ -68,6 +68,9 @@ global:
 console:
   enabled: true
   config:
+    # Set to false to disable config abstractions in order to configure manually.
+    enabled: true
+
     # The URL where the Jitsu Console will be available.
     # If using unified ingress (ingress.enabled) leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#jitsu_public_url
@@ -205,6 +208,9 @@ console:
 bulker:
   enabled: true
   config:
+    # Set to false to disable config abstractions in order to configure manually.
+    enabled: true
+
     # UUID of bulker instance
     # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_instance_id
     instanceID: ""
@@ -328,6 +334,9 @@ bulker:
 rotor:
   enabled: true
   config:
+    # Set to false to disable config abstractions in order to configure manually.
+    enabled: true
+
     # Leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#repository_base_url
     repositoryBaseUrl: ""
@@ -417,6 +426,9 @@ rotor:
 ingest:
   enabled: true
   config:
+    # Set to false to disable config abstractions in order to configure manually.
+    enabled: true
+
     # Public domain where ingest service is deployed.
     # If using unified ingress (ingress.enabled) leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#ingest_data_domain
@@ -526,6 +538,9 @@ syncctl:
   # the default cluster domain "cluster.local" this can be overridden here.
   clusterDomain: ""
   config:
+    # Set to false to disable config abstractions in order to configure manually.
+    enabled: true
+
     # Leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#syncctl_auth_tokens
     authTokens: ""
@@ -605,6 +620,13 @@ syncctl:
 
 migration:
   enabled: true
+  config:
+    # Set to false to disable config abstractions in order to configure manually.
+    enabled: true
+
+    # Leave empty to use global jitsu.databaseUrl
+    # https://docs.jitsu.com/self-hosting/configuration#database_url
+    databaseUrl: ""
   image:
     repository: jitsucom/console
     pullPolicy: IfNotPresent

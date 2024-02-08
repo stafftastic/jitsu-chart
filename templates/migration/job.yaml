@@ -40,8 +40,10 @@ spec:
           command: [prisma]
           args: [db, push, --skip-generate, --schema, /app/schema.prisma]
           env:
+            {{- if .Values.migration.config.enabled }}
             - name: DATABASE_URL
-              value: {{ include "jitsu.databaseUrl" . | quote }}
+              value: {{ .Values.migration.config.databaseUrl | default (include "jitsu.databaseUrl" .) | quote }}
+            {{- end }}
             {{- with .Values.migration.env }}
             {{- toYaml . | nindent 12 }}
             {{- end }}

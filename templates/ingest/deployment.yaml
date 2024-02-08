@@ -81,7 +81,9 @@ spec:
               path: /health
           {{- end }}
           env:
+            {{- if .Values.ingest.config.enabled }}
             {{- include "jitsu.ingest.env" . | nindent 12 }}
+            {{- end }}
             {{- with .Values.ingest.env }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
