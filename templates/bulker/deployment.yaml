@@ -80,6 +80,10 @@ spec:
               port: http
               path: /ready
           {{- end }}
+          {{- if .Values.bulker.envFrom }}
+          envFrom:
+            {{- toYaml .Values.bulker.envFrom | nindent 12 }}
+          {{- end }}
           env:
             {{- if .Values.bulker.config.enabled }}
             {{- include "jitsu.bulker.env" . | nindent 12 }}

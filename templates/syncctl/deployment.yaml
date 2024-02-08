@@ -65,6 +65,10 @@ spec:
               port: http
               path: /health
           {{- end }}
+          {{- if .Values.syncctl.envFrom }}
+          envFrom:
+            {{- toYaml .Values.syncctl.envFrom | nindent 12 }}
+          {{- end }}
           env:
             {{- if .Values.syncctl.config.enabled }}
             {{- include "jitsu.syncctl.env" . | nindent 12 }}

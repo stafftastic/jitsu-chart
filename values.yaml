@@ -196,7 +196,8 @@ console:
   podDisruptionBudget:
     enabled: false
     minAvailable: 1
-  env: {}
+  env: []
+  envFrom: []
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}
@@ -322,7 +323,8 @@ bulker:
   podDisruptionBudget:
     enabled: false
     minAvailable: 1
-  env: {}
+  env: []
+  envFrom: []
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}
@@ -411,7 +413,8 @@ rotor:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
-  env: {}
+  env: []
+  envFrom: []
   podDisruptionBudget:
     enabled: false
     minAvailable: 1
@@ -517,7 +520,8 @@ ingest:
   podDisruptionBudget:
     enabled: false
     minAvailable: 1
-  env: {}
+  env: []
+  envFrom: []
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}
@@ -609,7 +613,8 @@ syncctl:
   podDisruptionBudget:
     enabled: false
     minAvailable: 1
-  env: {}
+  env: []
+  envFrom: []
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}
@@ -632,7 +637,8 @@ migration:
     pullPolicy: IfNotPresent
     tag: ""
   restartPolicy: Never
-  env: {}
+  env: []
+  envFrom: []
   jobAnnotations: {}
   podAnnotations: {}
   podSecurityContext: {}

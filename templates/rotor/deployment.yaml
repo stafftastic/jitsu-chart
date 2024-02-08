@@ -85,6 +85,10 @@ spec:
               port: http
               path: /health
           {{- end }}
+          {{- if .Values.rotor.envFrom }}
+          envFrom:
+            {{- toYaml .Values.rotor.envFrom | nindent 12 }}
+          {{- end }}
           env:
             {{- if .Values.rotor.config.enabled }}
             {{- include "jitsu.rotor.env" . | nindent 12 }}

@@ -65,6 +65,10 @@ spec:
               port: http
               path: /api/healthcheck
           {{- end }}
+          {{- if .Values.console.envFrom }}
+          envFrom:
+            {{- toYaml .Values.console.envFrom | nindent 12 }}
+          {{- end }}
           env:
             {{- if .Values.console.config.enabled }}
             {{- include "jitsu.console.env" . | nindent 12 }}

@@ -39,6 +39,10 @@ spec:
           imagePullPolicy: {{ .Values.migration.image.pullPolicy }}
           command: [prisma]
           args: [db, push, --skip-generate, --schema, /app/schema.prisma]
+          {{- if .Values.migration.envFrom }}
+          envFrom:
+            {{- toYaml .Values.migration.envFrom | nindent 12 }}
+          {{- end }}
           env:
             {{- if .Values.migration.config.enabled }}
             - name: DATABASE_URL

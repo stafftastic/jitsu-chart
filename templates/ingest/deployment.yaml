@@ -80,6 +80,10 @@ spec:
               port: http
               path: /health
           {{- end }}
+          {{- if .Values.ingest.envFrom }}
+          envFrom:
+            {{- toYaml .Values.ingest.envFrom | nindent 12 }}
+          {{- end }}
           env:
             {{- if .Values.ingest.config.enabled }}
             {{- include "jitsu.ingest.env" . | nindent 12 }}
