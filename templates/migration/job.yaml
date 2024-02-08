@@ -45,8 +45,14 @@ spec:
           {{- end }}
           env:
             {{- if .Values.migration.config.enabled }}
+            {{- if or .databaseUrlFrom $.Values.config.databaseUrlFrom }}
+            - name: DATABASE_URL
+              valueFrom:
+                {{- toYaml (.databaseUrlFrom | default $.Values.config.databaseUrlFrom) | nindent 4 }}
+            {{- else }}
             - name: DATABASE_URL
               value: {{ .Values.migration.config.databaseUrl | default (include "jitsu.databaseUrl" .) | quote }}
+            {{- end }}
             {{- end }}
             {{- with .Values.migration.env }}
             {{- toYaml . | nindent 12 }}

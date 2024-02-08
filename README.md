@@ -83,6 +83,21 @@ services where every environment variable is prefixed with the service name, the
 otherwise the keys are naïvely converted to camel case, with each letter that would follow an
 underscore capitalized.
 
+Some values, in particular those that contain sensitive information or connection information, also
+allow you to reference a secret or configmap. In `values.yaml` these are suffixed with `From`. E.g.
+to read the database URL (`config.databaseUrl`) from a secret, set it as you would an environment
+variable:
+
+```yaml
+config:
+  databaseUrlFrom:
+    secretKeyRef:
+      name: database-secret-name
+      key: database-url-key
+```
+
+For the full list of variables that support this syntax, see `values.yaml`.
+
 Many of the configuration values will be set automatically when left empty, such as connection
 parameters for services deployed by the subcharts, tokens and URLs for inter-service communication
 and values that can be directly derived from other values. When this is the case it is noted in the
