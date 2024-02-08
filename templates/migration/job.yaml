@@ -44,7 +44,7 @@ spec:
             {{- toYaml .Values.migration.envFrom | nindent 12 }}
           {{- end }}
           env:
-            {{- if .Values.migration.config.enabled }}
+            {{- if and .Values.config.enabled .Values.migration.config.enabled }}
             {{- if or .databaseUrlFrom $.Values.config.databaseUrlFrom }}
             - name: DATABASE_URL
               valueFrom:

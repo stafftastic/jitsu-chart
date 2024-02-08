@@ -70,7 +70,7 @@ spec:
             {{- toYaml .Values.console.envFrom | nindent 12 }}
           {{- end }}
           env:
-            {{- if .Values.console.config.enabled }}
+            {{- if and .Values.config.enabled .Values.console.config.enabled }}
             {{- include "jitsu.console.env" . | nindent 12 }}
             {{- end }}
             {{- with .Values.console.env }}

@@ -85,7 +85,7 @@ spec:
             {{- toYaml .Values.ingest.envFrom | nindent 12 }}
           {{- end }}
           env:
-            {{- if .Values.ingest.config.enabled }}
+            {{- if and .Values.config.enabled .Values.ingest.config.enabled }}
             {{- include "jitsu.ingest.env" . | nindent 12 }}
             {{- end }}
             {{- with .Values.ingest.env }}

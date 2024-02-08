@@ -85,7 +85,7 @@ spec:
             {{- toYaml .Values.bulker.envFrom | nindent 12 }}
           {{- end }}
           env:
-            {{- if .Values.bulker.config.enabled }}
+            {{- if and .Values.config.enabled .Values.bulker.config.enabled }}
             {{- include "jitsu.bulker.env" . | nindent 12 }}
             {{- end }}
             {{- with .Values.bulker.env }}

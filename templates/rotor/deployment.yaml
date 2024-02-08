@@ -90,7 +90,7 @@ spec:
             {{- toYaml .Values.rotor.envFrom | nindent 12 }}
           {{- end }}
           env:
-            {{- if .Values.rotor.config.enabled }}
+            {{- if and .Values.config.enabled .Values.rotor.config.enabled }}
             {{- include "jitsu.rotor.env" . | nindent 12 }}
             {{- end }}
             {{- with .Values.rotor.env }}

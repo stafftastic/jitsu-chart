@@ -4,6 +4,9 @@ fullnameOverride: ""
 
 # Common configuration values shared across multiple components.
 config:
+  # Set to false to disable config abstractions for all services in order to configure them manually.
+  enabled: true
+
   # Postgres database URL in the format of: postgres://username:password@host:port/database?options
   # Will be configured automatically if left empty and using the PostgreSQL subchart.
   databaseUrl: ""
