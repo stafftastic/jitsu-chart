@@ -38,5 +38,12 @@ spec:
                 name: {{ include "jitsu.fullname" . }}-ingest
                 port:
                   number: {{ .Values.ingest.service.port }}
+          - path: /v1/batch
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "jitsu.fullname" . }}-ingest
+                port:
+                  number: {{ .Values.ingest.service.port }}
           {{- end }}
 {{- end }}
