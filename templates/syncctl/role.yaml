@@ -1,0 +1,22 @@
+{{- if and .Values.syncctl.enabled .Values.syncctl.serviceAccount.rbac.create (not .Values.syncctl.config.kubernetesClientConfig) }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "jitsu.fullname" . }}-syncctl
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+  namespace: {{ .Values.syncctl.config.kubernetesNamespace | default .Release.Namespace }}
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["create","delete"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["delete"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get","list","watch","create","delete"]
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get"]
+{{- end }}

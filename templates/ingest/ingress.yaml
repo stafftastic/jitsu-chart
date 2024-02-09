@@ -1,21 +1,8 @@
 {{- if .Values.ingest.ingress.enabled -}}
-{{- $fullName := include "jitsu.fullname" . -}}
-{{- $svcPort := .Values.ingest.service.port -}}
-{{- if and .Values.ingest.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
-  {{- if not (hasKey .Values.ingest.ingress.annotations "kubernetes.io/ingress.class") }}
-  {{- $_ := set .Values.ingest.ingress.annotations "kubernetes.io/ingress.class" .Values.ingest.ingress.className}}
-  {{- end }}
-{{- end }}
-{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1
-{{- else if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
-apiVersion: networking.k8s.io/v1beta1
-{{- else -}}
-apiVersion: extensions/v1beta1
-{{- end }}
 kind: Ingress
 metadata:
-  name: {{ $fullName }}-ingest
+  name: {{ include "jitsu.fullname" . }}-ingest
   labels:
     {{- include "jitsu.labels" . | nindent 4 }}
   {{- with .Values.ingest.ingress.annotations }}
@@ -23,9 +10,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
-  {{- if and .Values.ingest.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
   ingressClassName: {{ .Values.ingest.ingress.className }}
-  {{- end }}
   {{- if .Values.ingest.ingress.tls }}
   tls:
     {{- range .Values.ingest.ingress.tls }}
@@ -43,19 +28,12 @@ spec:
         paths:
           {{- range .paths }}
           - path: {{ .path }}
-            {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
             pathType: {{ .pathType }}
-            {{- end }}
             backend:
-              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
-                name: {{ $fullName }}-ingest
+                name: {{ include "jitsu.fullname" $ }}-ingest
                 port:
-                  number: {{ $svcPort }}
-              {{- else }}
-              serviceName: {{ $fullName }}-ingest
-              servicePort: {{ $svcPort }}
-              {{- end }}
+                  number: {{ $.Values.ingest.service.port }}
           {{- end }}
     {{- end }}
 {{- end }}

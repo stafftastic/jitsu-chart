@@ -34,6 +34,32 @@ spec:
       serviceAccountName: {{ include "jitsu.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        {{- if .Values.tokenGenerator.enabled }}
+        - name: wait-for-tokens
+          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          args: ["job-wr", "{{ include "jitsu.fullname" . }}-token-generator-{{ sha1sum (toJson .Values) | substr 0 8 }}"]
+        {{- end }}
+        {{- if .Values.redis.enabled }}
+        - name: wait-for-redis
+          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          args: ["service", "{{ .Release.Name }}-redis-master"]
+        {{- end }}
+        {{- if .Values.kafka.enabled }}
+        - name: wait-for-kafka
+          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          args: ["service", "{{ .Release.Name }}-kafka"]
+        {{- end }}
+        {{- if .Values.migration.enabled }}
+        - name: wait-for-migration
+          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          args: ["job-wr", "{{ include "jitsu.fullname" . }}-migration-{{ sha1sum (toJson .Values) | substr 0 8 }}"]
+        {{- end }}
+        {{- if .Values.console.enabled }}
+        - name: wait-for-console
+          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          args: ["service", "{{ include "jitsu.fullname" . }}-console"]
+        {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -54,11 +80,16 @@ spec:
               port: http
               path: /ready
           {{- end }}
+          {{- if .Values.bulker.envFrom }}
+          envFrom:
+            {{- toYaml .Values.bulker.envFrom | nindent 12 }}
+          {{- end }}
           env:
-            {{- $env := merge (deepCopy .Values.bulker.environment) .Values.jitsu.environment -}}
-            {{- range $k, $v := $env }}
-              - name: {{ $k | quote }}
-                {{- toYaml $v | nindent 16 }}
+            {{- if and .Values.config.enabled .Values.bulker.config.enabled }}
+            {{- include "jitsu.bulker.env" . | nindent 12 }}
+            {{- end }}
+            {{- with .Values.bulker.env }}
+            {{- toYaml . | nindent 12 }}
             {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

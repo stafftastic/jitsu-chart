@@ -1,0 +1,49 @@
+{{- if and .Values.ingress.enabled (or .Values.console.enabled .Values.ingest.enabled) -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "jitsu.fullname" . }}
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- if .Values.ingress.tls }}
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host | quote }}
+      secretName: {{ include "jitsu.fullname" . }}-tls
+  {{- end }}
+  rules:
+    - host: {{ .Values.ingress.host | quote }}
+      http:
+        paths:
+          {{- if .Values.console.enabled }}
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "jitsu.fullname" . }}-console
+                port:
+                  number: {{ .Values.console.service.port }}
+          {{- end }}
+          {{- if .Values.ingest.enabled }}
+          - path: /api/s/
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "jitsu.fullname" . }}-ingest
+                port:
+                  number: {{ .Values.ingest.service.port }}
+          - path: /v1/batch
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ include "jitsu.fullname" . }}-ingest
+                port:
+                  number: {{ .Values.ingest.service.port }}
+          {{- end }}
+{{- end }}

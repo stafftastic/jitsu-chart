@@ -1,0 +1,16 @@
+{{- if and .Values.tokenGenerator.enabled .Values.tokenGenerator.serviceAccount.rbac.create }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "jitsu.fullname" . }}-token-generator
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "jitsu.fullname" . }}-token-generator
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "jitsu.tokenGenerator.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+{{- end }}

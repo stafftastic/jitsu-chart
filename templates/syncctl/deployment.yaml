@@ -31,9 +31,20 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "jitsu.serviceAccountName" . }}
+      serviceAccountName: {{ include "jitsu.syncctl.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        {{- if .Values.tokenGenerator.enabled }}
+        - name: wait-for-tokens
+          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          args: ["job-wr", "{{ include "jitsu.fullname" . }}-token-generator-{{ sha1sum (toJson .Values) | substr 0 8 }}"]
+        {{- end }}
+        {{- if .Values.migration.enabled }}
+        - name: wait-for-migration
+          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          args: ["job-wr", "{{ include "jitsu.fullname" . }}-migration-{{ sha1sum (toJson .Values) | substr 0 8 }}"]
+        {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -54,11 +65,16 @@ spec:
               port: http
               path: /health
           {{- end }}
+          {{- if .Values.syncctl.envFrom }}
+          envFrom:
+            {{- toYaml .Values.syncctl.envFrom | nindent 12 }}
+          {{- end }}
           env:
-            {{- $env := merge (deepCopy .Values.syncctl.environment) .Values.jitsu.environment -}}
-            {{- range $k, $v := $env }}
-              - name: {{ $k | quote }}
-                {{- toYaml $v | nindent 16 }}
+            {{- if and .Values.config.enabled .Values.syncctl.config.enabled }}
+            {{- include "jitsu.syncctl.env" . | nindent 12 }}
+            {{- end }}
+            {{- with .Values.syncctl.env }}
+            {{- toYaml . | nindent 12 }}
             {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

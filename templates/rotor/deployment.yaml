@@ -34,6 +34,37 @@ spec:
       serviceAccountName: {{ include "jitsu.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        {{- if .Values.tokenGenerator.enabled }}
+        - name: wait-for-tokens
+          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          args: ["job-wr", "{{ include "jitsu.fullname" . }}-token-generator-{{ sha1sum (toJson .Values) | substr 0 8 }}"]
+        {{- end }}
+        {{- if .Values.redis.enabled }}
+        - name: wait-for-redis
+          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          args: ["service", "{{ include "jitsu.fullname" . }}-redis-master"]
+        {{- end }}
+        {{- if .Values.kafka.enabled }}
+        - name: wait-for-kafka
+          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          args: ["service", "{{ include "jitsu.fullname" . }}-kafka"]
+        {{- end }}
+        {{- if .Values.mongodb.enabled }}
+        - name: wait-for-mongodb
+          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          args: ["service", "{{ .Release.Name }}-mongodb"]
+        {{- end }}
+        {{- if .Values.console.enabled }}
+        - name: wait-for-console
+          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          args: ["service", "{{ include "jitsu.fullname" . }}-console"]
+        {{- end }}
+        {{- if .Values.bulker.enabled }}
+        - name: wait-for-bulker
+          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          args: ["service", "{{ include "jitsu.fullname" . }}-bulker"]
+        {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -54,11 +85,16 @@ spec:
               port: http
               path: /health
           {{- end }}
+          {{- if .Values.rotor.envFrom }}
+          envFrom:
+            {{- toYaml .Values.rotor.envFrom | nindent 12 }}
+          {{- end }}
           env:
-            {{- $env := merge (deepCopy .Values.rotor.environment) .Values.jitsu.environment -}}
-            {{- range $k, $v := $env }}
-              - name: {{ $k | quote }}
-                {{- toYaml $v | nindent 16 }}
+            {{- if and .Values.config.enabled .Values.rotor.config.enabled }}
+            {{- include "jitsu.rotor.env" . | nindent 12 }}
+            {{- end }}
+            {{- with .Values.rotor.env }}
+            {{- toYaml .Values.rotor.env | nindent 12 }}
             {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

@@ -1,0 +1,17 @@
+{{- if and .Values.syncctl.enabled .Values.syncctl.serviceAccount.rbac.create (not .Values.syncctl.config.kubernetesClientConfig) }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "jitsu.fullname" . }}-syncctl
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+  namespace: {{ .Values.syncctl.config.kubernetesNamespace | default .Release.Namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "jitsu.fullname" . }}-syncctl
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "jitsu.syncctl.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+{{- end }}

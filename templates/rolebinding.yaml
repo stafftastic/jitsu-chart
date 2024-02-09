@@ -1,0 +1,23 @@
+{{- if or .Values.serviceAccount.rbac.create .Values.syncctl.serviceAccount.rbac.create }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "jitsu.fullname" . }}-k8s-wait-for
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "jitsu.fullname" . }}-k8s-wait-for
+subjects:
+  {{- if .Values.serviceAccount.rbac.create }}
+  - kind: ServiceAccount
+    name: {{ include "jitsu.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+  {{- end }}
+  {{- if .Values.syncctl.serviceAccount.rbac.create }}
+  - kind: ServiceAccount
+    name: {{ include "jitsu.syncctl.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+  {{- end }}
+{{- end }}

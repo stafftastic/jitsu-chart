@@ -2,23 +2,69 @@ nameOverride: ""
 
 fullnameOverride: ""
 
-jitsu:
-  environment:
-    DATABASE_URL:
-      # postgres://username:password@host:port/database?options
-      value: ""
-    REDIS_URL:
-      # redis://username:password@host:port
-      value: ""
-    BULKER_URL:
-      value: "http://jitsu-bulker:3042"
+# Common configuration values shared across multiple components.
+config:
+  # Set to false to disable config abstractions for all services in order to configure them manually.
+  enabled: true
+
+  # Postgres database URL in the format of: postgres://username:password@host:port/database?options
+  # Will be configured automatically if left empty and using the PostgreSQL subchart.
+  databaseUrl: ""
+  databaseUrlFrom: {}
+
+  # Global Redis URL in the format of: redis://:password@host:port
+  # Will be configured automatically if left empty and using the Redis subchart.
+  redisUrl: ""
+  redisUrlFrom: {}
+
+  # Global Kafka configuration. Leave empty if using Kafka subchart.
+  # List of hosts in the format of: host:port,...
+  kafkaBootstrapServers: ""
+  # Enable/disable SSL
+  kafkaSsl: ""
+  # Dict or JSON string with SASL configuration. Leave empty to disable.
+  kafkaSasl: ""
+  kafkaSaslFrom: {}
+
+  # Global MongoDB URL. Leave empty if using MongoDB subchart.
+  mongodbUrl: ""
+  mongodbUrlFrom: {}
+
+  # Global hash secret used by console, bulker and ingest.
+  # Configured automatically when tokenGenerator.enabled is true.
+  globalHashSecret: ""
+  globalHashSecretFrom: {}
+
+  # Use these values to override service URLs if deployed externally.
+  bulkerUrl: ""
+  rotorUrl: ""
+  syncctlUrl: ""
+
+# Unified and simplified ingress definition.
+# Uses a single host for both console and ingest and automatically configures public URL options.
+ingress:
+  enabled: true
+  className: ""
+  annotations: {}
+  host: jitsu.example.com
+  tls: false
+  # Only used for URL generation if your Ingress controller listens to a non-standard port.
+  port: ""
+
+tokenGenerator:
+  # Generate inter-service auth tokens automatically upon deployment.
+  enabled: true
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+    rbac:
+      create: true
+  tokenLength: 32
+  secretLength: 32
+  saltLength: 32
 
 global:
-  postgresql:
-    auth:
-      username: ""
-      password: ""
-      database: ""
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}
@@ -29,27 +75,139 @@ global:
 
 console:
   enabled: true
+  config:
+    # Set to false to disable config abstractions in order to configure manually.
+    enabled: true
+
+    # The URL where the Jitsu Console will be available.
+    # If using unified ingress (ingress.enabled) leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#jitsu_public_url
+    jitsuPublicUrl: ""
+
+    # The external URL of the ingest service.
+    # If using unified ingress (ingress.enabled) leave empty to configure automatically.
+    jitsuIngestPublicUrl: ""
+
+    # Leave empty to default to jitsuPublicUrl.
+    nextauthUrl: ""
+
+    # Leave empty to default to the console service.
+    nextauthUrlInternal: ""
+
+    # Initial admin user. Required if not using GitHub OAuth.
+    seedUserEmail: ""
+    seedUserEmailFrom: {}
+    seedUserPassword: ""
+    seedUserPasswordFrom: {}
+
+    # Enable GitHub OAuth
+    # https://docs.jitsu.com/self-hosting/configuration#github_client_id
+    githubClientId: ""
+    githubClientIdFrom: {}
+    githubClientSecret: ""
+    githubClientSecretFrom: {}
+
+    # Disable sign-up
+    # https://github.com/jitsucom/jitsu/blob/newjitsu/docker/README.md#further-steps
+    disableSignup: "false"
+
+    # Enable credentials login regardless of seedUser* being set or not.
+    enableCredentialsLogin: ""
+
+    # Leave empty to configure automatically
+    # https://docs.jitsu.com/self-hosting/configuration#console_auth_tokens
+    consoleAuthTokens: ""
+    consoleAuthTokensFrom: {}
+
+    # Leave empty to configure automatically
+    # https://docs.jitsu.com/self-hosting/configuration#global_hash_secret
+    globalHashSecret: ""
+    globalHashSecretFrom: {}
+
+    # Plain, non-hashed tokens. Not recommended for production.
+    # https://docs.jitsu.com/self-hosting/configuration#console_raw_auth_tokens
+    consoleRawAuthTokens: ""
+    consoleRawAuthTokensFrom: {}
+
+    # Leave empty to use global jitsu.databaseUrl
+    # https://docs.jitsu.com/self-hosting/configuration#database_url
+    databaseUrl: ""
+    databaseUrlFrom: {}
+
+    # Only needed if the bulker is deployed outside of this chart. Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#bulker_url-1
+    bulkerUrl: ""
+
+    # Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#bulker_auth_key-1
+    bulkerAuthKey: ""
+    bulkerAuthKeyFrom: {}
+
+    # Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#rotor_url
+    rotorUrl: ""
+
+    # Public domain where ingest service is available. Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#ingest_host
+    ingestHost: ""
+
+    # HTTP port of the ingest service. Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#ingest_port
+    ingestPort: ""
+
+    # Whether to enable the Connectors Syncs feature in the Jitsu Console UI. Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#syncs_enabled
+    syncsEnabled: ""
+
+    # The URL of the Syncctl service. Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#syncctl_url
+    syncctlUrl: ""
+
+    # Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#syncctl_auth_key
+    syncctlAuthKey: ""
+    syncctlAuthKeyFrom: {}
+
+    # Enables Connectors Sync Scheduler feature. Google Service Account Key in JSON format.
+    # https://docs.jitsu.com/self-hosting/configuration#syncctl_auth_key
+    googleSchedulerKey: ""
+    googleSchedulerKeyFrom: {}
+
+    # ClickHouse configuration
+    # https://docs.jitsu.com/self-hosting/configuration#clickhouse_metrics_schema
+    clickhouseMetricsSchema: ""
+    clickhouseMetricsSchemaFrom: {}
+    clickhouseUrl: ""
+    clickhouseUrlFrom: {}
+    clickhouseUsername: ""
+    clickhouseUsernameFrom: {}
+    clickhousePassword: ""
+    clickhousePasswordFrom: {}
+
+    # Log format. One of "text", "json".
+    # https://docs.jitsu.com/self-hosting/configuration#log_format-1
+    logFormat: "text"
   replicaCount: 1
   image:
     repository: jitsucom/console
     pullPolicy: IfNotPresent
-    tag: "latest"
+    tag: ""
   service:
     type: ClusterIP
     port: 3000
   ingress:
-    enabled: true
+    enabled: false
     className: ''
     annotations: {}
-    hosts: []
-    # - host: jitsu.example.org
-    #   paths:
-    #     - path: /
-    #       pathType: Prefix
+    hosts:
+      - host: jitsu.example.com
+        paths:
+          - path: /
+            pathType: Prefix
     tls: []
-    # - secretName: jitsu-example-org-tls
+    # - secretName: jitsu-example-com-tls
     #   hosts:
-    #     - jitsu.example.org
+    #     - jitsu.example.com
   probes:
     enabled: true
   autoscaling:
@@ -61,45 +219,8 @@ console:
   podDisruptionBudget:
     enabled: false
     minAvailable: 1
-  environment:
-    NEXTAUTH_URL:
-      value: ""
-    JITSU_PUBLIC_URL:
-      value: ""
-    JITSU_INGEST_PUBLIC_URL:
-      value: ""
-    CONSOLE_AUTH_TOKENS:
-      # https://docs.jitsu.com/self-hosting/configuration#console_auth_tokens
-      # needed by ingest
-      value: ""
-    ROTOR_URL:
-      value: "http://jitsu-rotor:3401"
-    BULKER_AUTH_KEY:
-      # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_auth_tokens
-      value: ""
-    DISABLE_SIGNUP:
-      value: "false"
-    GITHUB_CLIENT_ID:
-      value: ""
-    GITHUB_CLIENT_SECRET:
-      value: ""
-  podAnnotations: {}
-  podSecurityContext: {}
-  securityContext: {}
-  resources: {}
-  nodeSelector: {}
-  tolerations: []
-  affinity: {}
-
-migration:
-  enabled: true
-  image:
-    repository: jitsucom/console
-    pullPolicy: IfNotPresent
-    tag: "latest"
-  restartPolicy: Never
-  environment: {}
-  jobAnnotations: {}
+  env: []
+  envFrom: []
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}
@@ -110,12 +231,115 @@ migration:
 
 bulker:
   enabled: true
+  config:
+    # Set to false to disable config abstractions in order to configure manually.
+    enabled: true
+
+    # UUID of bulker instance
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_instance_id
+    instanceId: ""
+    instanceIdFrom: {}
+
+    # Leave empty to configure automatically.
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_config_source
+    configSource: ""
+
+    # Leave empty to configure automatically.
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_config_source_http_auth_token
+    configSourceHttpAuthToken: ""
+    configSourceHttpAuthTokenFrom: {}
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_config_refresh_period_sec
+    configRefreshPeriodSec: ""
+
+    # Dict of dicts converted to JSON environment variables, e.g.:
+    # bulkerDestination:
+    #   postgres:
+    #     id: postgres
+    # results in: BULKER_DESTINATION_POSTGRES='{"id": "postgres"}'
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#with-bulker_destination_-environment-variables
+    destination: {}
+
+    # Leave empty to automatically configure.
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_auth_tokens
+    authTokens: ""
+    authTokensFrom: {}
+
+    # Leave empty to automatically configure.
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_token_secret
+    tokenSecret: ""
+    tokenSecretFrom: {}
+
+    # Leave empty to automatically configure.
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_raw_auth_tokens
+    rawAuthTokens: ""
+    rawAuthTokensFrom: {}
+
+    # Leave empty to automatically configure.
+    globalHashSecret: ""
+    globalHashSecretFrom: {}
+
+    # Leave empty to automatically configure.
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_kafka_bootstrap_servers
+    kafkaBootstrapServers: ""
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_kafka_ssl
+    kafkaSsl: "false"
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_kafka_ssl_skip_verify
+    kafkaSslSkipVerify: ""
+
+    # Can be either a string or a dict.
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_kafka_sasl-aka-kafka-auth
+    kafkaSasl: ""
+    kafkaSaslFrom: {}
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_batch_runner_default_period_sec
+    batchRunnerDefaultPeriodSec: ""
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_batch_runner_default_batch_size
+    batchRunnerDefaultBatchSize: ""
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_messages_retry_count
+    messagesRetryCount: ""
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_messages_retry_backoff_base
+    messagesRetryBackoffBase: ""
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_messages_retry_backoff_max_delay
+    messagesRetryBackoffMaxDelay: ""
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_batch_runner_default_retry_period_sec
+    batchRunnerDefaultRetryPeriodSec: ""
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_batch_runner_default_retry_batch_size
+    batchRunnerDefaultRetryBatchSize: ""
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_kafka_topic_retention_hours
+    kafkaTopicRetentionHours: ""
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_kafka_retry_topic_retention_hours
+    kafkaRetryTopicRetentionHours: ""
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_kafka_dead_topic_retention_hours
+    kafkaDeadTopicRetentionHours: ""
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_kafka_topic_replication_factor
+    kafkaTopicReplicationFactor: ""
+
+    # Store history of processed events in Redis. Leave empty to configure automatically if config.redisUrl is set and/or Redis subchart is being used.
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#connection-to-redis-optional
+    redisUrl: ""
+    redisUrlFrom: {}
+
+    # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#connection-to-redis-optional
+    eventsLogMaxSize: ""
   replicaCount: 1
   image:
     repository: jitsucom/bulker
     pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
-    tag: "latest"
+    tag: ""
   service:
     type: ClusterIP
     port: 3042
@@ -130,34 +354,8 @@ bulker:
   podDisruptionBudget:
     enabled: false
     minAvailable: 1
-  environment:
-    BULKER_AUTH_TOKENS:
-      # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_auth_tokens
-      value: ""
-    BULKER_KAFKA_BOOTSTRAP_SERVERS:
-      value: ""
-    BULKER_CONFIG_SOURCE:
-      value: "redis"
-    BULKER_INTERNAL_TASK_LOG:
-      value: |
-        {
-        "id": "task_log",
-        "metricsKeyPrefix": "syncs",
-        "usesBulker": true,
-        "type": "postgres",
-        "options":{
-          "mode": "stream"
-        },
-        "credentials":{
-          "host": "",
-          "port": 5432,
-          "sslMode": "disable",
-          "database": "",
-          "password": "",
-          "username": "",
-          "defaultSchema":"public"
-          }
-        }
+  env: []
+  envFrom: []
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}
@@ -168,11 +366,78 @@ bulker:
 
 rotor:
   enabled: true
+  config:
+    # Set to false to disable config abstractions in order to configure manually.
+    enabled: true
+
+    # Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#repository_base_url
+    repositoryBaseUrl: ""
+
+    # Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#repository_auth_token
+    repositoryAuthToken: ""
+    repositoryAuthTokenFrom: {}
+
+    # https://docs.jitsu.com/self-hosting/configuration#repository_refresh_period_sec
+    repositoryRefreshPeriodSec: ""
+
+    # Leave empty to configure automatically if config.redisUrl is set or Redis subchart is being used.
+    # https://docs.jitsu.com/self-hosting/configuration#redis_url
+    redisUrl: ""
+    redisUrlFrom: {}
+
+    # Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#bulker_url
+    bulkerUrl: ""
+
+    # Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#bulker_auth_key
+    bulkerAuthKey: ""
+    bulkerAuthKeyFrom: {}
+
+    # Leave empty to configure automatically if config.kafkaBootstrapServers is set or Kafka subchart is being used.
+    # https://docs.jitsu.com/self-hosting/configuration#kafka_bootstrap_servers
+    kafkaBootstrapServers: ""
+
+    # https://docs.jitsu.com/self-hosting/configuration#kafka_ssl
+    kafkaSsl: "false"
+
+    # Can be either a string or a dict.
+    # https://docs.jitsu.com/self-hosting/configuration#kafka_sasl-aka-kafka-auth
+    kafkaSasl: ""
+    kafkaSaslFrom: {}
+
+    # Leave empty to configure automatically if MongoDB subchart is being used.
+    # https://docs.jitsu.com/self-hosting/configuration#mongodb_url
+    mongodbUrl: ""
+    mongodbUrlFrom: {}
+
+    # https://docs.jitsu.com/self-hosting/configuration#metrics_destination_id
+    metricsDestinationId: ""
+
+    # https://docs.jitsu.com/self-hosting/configuration#events_log_max_size
+    eventsLogMaxSize: ""
+
+    # https://docs.jitsu.com/self-hosting/configuration#concurrency
+    concurrency: ""
+
+    # https://docs.jitsu.com/self-hosting/configuration#messages_retry_count
+    messagesRetryCount: ""
+
+    # https://docs.jitsu.com/self-hosting/configuration#messages_retry_backoff_base
+    messagesRetryBackoffBase: ""
+
+    # https://docs.jitsu.com/self-hosting/configuration#messages_retry_backoff_max_delay
+    messagesRetryBackoffMaxDelay: ""
+
+    # https://docs.jitsu.com/self-hosting/configuration#log_format
+    logFormat: "text"
   replicaCount: 1
   image:
     repository: jitsucom/rotor
     pullPolicy: IfNotPresent
-    tag: "latest"
+    tag: ""
   service:
     type: ClusterIP
     port: 3401
@@ -184,19 +449,8 @@ rotor:
     maxReplicas: 100
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
-  environment:
-    MONGODB_URL:
-      # mongodb://username:password@host:port
-      value: ""
-    KAFKA_BOOTSTRAP_SERVERS:
-      # host:port
-      value: ""
-    BULKER_AUTH_KEY:
-      # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_auth_tokens
-      value: ""
-    CONFIG_STORE_DATABASE_URL:
-      # postgres://username:password@host:port/database?options
-      value: ""
+  env: []
+  envFrom: []
   podDisruptionBudget:
     enabled: false
     minAvailable: 1
@@ -210,27 +464,94 @@ rotor:
 
 ingest:
   enabled: true
+  config:
+    # Set to false to disable config abstractions in order to configure manually.
+    enabled: true
+
+    # Public domain where ingest service is deployed.
+    # If using unified ingress (ingress.enabled) leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#ingest_data_domain
+    dataDomain: ""
+
+    # Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#ingest_auth_tokens
+    authTokens: ""
+    authTokensFrom: {}
+
+    # Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#ingest_token_secret
+    tokenSecret: ""
+    tokenSecretFrom: {}
+
+    # https://docs.jitsu.com/self-hosting/configuration#ingest_raw_auth_tokens
+    rawAuthTokens: ""
+    rawAuthTokensFrom: {}
+
+    # Leave empty to automatically configure.
+    globalHashSecret: ""
+    globalHashSecretFrom: {}
+
+    # Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#ingest_repository_url
+    repositoryUrl: ""
+
+    # Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#ingest_repository_auth_token
+    repositoryAuthToken: ""
+    repositoryAuthTokenFrom: {}
+
+    # https://docs.jitsu.com/self-hosting/configuration#ingest_repository_refresh_period_sec
+    repositoryRefreshPeriodSec: ""
+
+    # Leave empty to configure automatically when Kafka subchart is enabled or config.kafkaBootstrapServers is set.
+    # https://docs.jitsu.com/self-hosting/configuration#ingest_kafka_bootstrap_servers
+    kafkaBootstrapServers: ""
+
+    # https://docs.jitsu.com/self-hosting/configuration#ingest_kafka_ssl
+    kafkaSsl: ""
+
+    # https://docs.jitsu.com/self-hosting/configuration#ingest_kafka_ssl_skip_verify
+    kafkaSslSkipVerify: ""
+
+    # https://docs.jitsu.com/self-hosting/configuration#ingest_kafka_sasl-aka-kafka-auth
+    kafkaSasl: ""
+    kafkaSaslFrom: {}
+
+    # Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#ingest_rotor_url
+    rotorUrl: ""
+
+    # Leave empty to configure automatically when Redis subchart is enabled or config.redisUrl is set.
+    # https://docs.jitsu.com/self-hosting/configuration#ingest_redis_url
+    redisUrl: ""
+    redisUrlFrom: {}
+
+    # https://docs.jitsu.com/self-hosting/configuration#ingest_events_log_max_size
+    eventsLogMaxSize: ""
+
+    # https://docs.jitsu.com/self-hosting/configuration#ingest_log_format
+    logFormat: "text"
   replicaCount: 1
   image:
     repository: jitsucom/ingest
     pullPolicy: IfNotPresent
-    tag: "latest"
+    tag: ""
   service:
     type: ClusterIP
-    port: 3043
+    port: 3049
   ingress:
-    enabled: true
+    enabled: false
     className: ''
     annotations: {}
-    hosts: []
-    # - host: jitsu.example.org
-    #   paths:
-    #     - path: /api/s/
-    #       pathType: Prefix
+    hosts:
+      - host: data.jitsu.example.com
+        paths:
+          - path: /
+            pathType: Prefix
     tls: []
-    # - secretName: jitsu-example-org-tls
+    # - secretName: jitsu-example-com-tls
     #   hosts:
-    #     - jitsu.example.org
+    #     - jitsu.example.com
   probes:
     enabled: true
   autoscaling:
@@ -242,27 +563,8 @@ ingest:
   podDisruptionBudget:
     enabled: false
     minAvailable: 1
-  environment:
-    INGEST_PUBLIC_URL:
-      value: ""
-    INGEST_AUTH_TOKENS:
-      # https://docs.jitsu.com/self-hosting/configuration#ingest_auth_tokens
-      value: ""
-    INGEST_KAFKA_BOOTSTRAP_SERVERS:
-      # host:port
-      value: ""
-    INGEST_REPOSITORY_URL:
-      value: "http://jitsu-console:3000/api/admin/export/streams-with-destionations"
-    INGEST_REPOSITORY_AUTH_TOKEN:
-      # https://docs.jitsu.com/self-hosting/configuration#console_auth_tokens
-      # service-admin-account:console-token
-      value: ""
-    INGEST_SCRIPT_ORIGIN:
-      value: "http://jitsu-console:3000/api/s/javascript-library"
-    INGEST_ROTOR_URL:
-      value: "http://jitsu-rotor:3401"
-    INGEST_REDIS_URL:
-      value: ""
+  env: []
+  envFrom: []
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}
@@ -273,11 +575,82 @@ ingest:
 
 syncctl:
   enabled: true
+
+  # Create the syncctl namespace if it's not the same as the deployment namespace and we're
+  # using the service account to talk to Kubernetes.
+  createNamespace: true
+
+  # If using the Postgres subchart and a separate namespace for syncctl workloads, we need to
+  # create proxy services to Postgres and the Bulker in the new namespace. If you're not using
+  # the default cluster domain "cluster.local" this can be overridden here.
+  clusterDomain: ""
+  config:
+    # Set to false to disable config abstractions in order to configure manually.
+    enabled: true
+
+    # Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#syncctl_auth_tokens
+    authTokens: ""
+    authTokensFrom: {}
+
+    # Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#syncctl_token_secret
+    tokenSecret: ""
+    tokenSecretFrom: {}
+
+    # https://docs.jitsu.com/self-hosting/configuration#syncctl_raw_auth_tokens
+    rawAuthTokens: ""
+    rawAuthTokensFrom: {}
+
+    # Leave empty to configure automatically when Postgres subchart is used or config.databaseUrl is set.
+    # https://docs.jitsu.com/self-hosting/configuration#syncctl_database_url
+    databaseUrl: ""
+    databaseUrlFrom: {}
+
+    # https://docs.jitsu.com/self-hosting/configuration#syncctl_sidecar_database_url
+    sidecarDatabaseUrl: ""
+    sidecarDatabaseUrlFrom: {}
+
+    # Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#syncctl_bulker_url
+    bulkerUrl: ""
+
+    # Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#syncctl_bulker_auth_key
+    bulkerAuthToken: ""
+    bulkerAuthTokenFrom: {}
+
+    # https://docs.jitsu.com/self-hosting/configuration#syncctl_kubernetes_client_config
+    kubernetesClientConfig: ""
+    kubernetesClientConfigFrom: {}
+
+    # https://docs.jitsu.com/self-hosting/configuration#syncctl_kubernetes_client_config
+    kubernetesContext: ""
+    kubernetesContextFrom: {}
+
+    # Leave empty to use the deployment namespace. If syncctl.serviceAccount.rbac.create is true
+    # and syncctl.config.kubernetesClientConfig is unset a Role and RoleBinding will be created in
+    # this namespace.
+    # https://docs.jitsu.com/self-hosting/configuration#syncctl_task_timeout_hours
+    kubernetesNamespace: ""
+    kubernetesNamespaceFrom: {}
+
+    # https://docs.jitsu.com/self-hosting/configuration#syncctl_task_timeout_hours
+    taskTimeoutHours: ""
+
+    # https://docs.jitsu.com/self-hosting/configuration#syncctl_log_format
+    logFormat: "text"
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+    rbac:
+      create: true
   replicaCount: 1
   image:
     repository: jitsucom/syncctl
     pullPolicy: IfNotPresent
-    tag: "latest"
+    tag: ""
   service:
     type: ClusterIP
     port: 3043
@@ -292,24 +665,34 @@ syncctl:
   podDisruptionBudget:
     enabled: false
     minAvailable: 1
-  environment:
-    SYNCCTL_AUTH_TOKENS:
-      value: ""
-    SYNCCTL_TOKEN_SECRET:
-      value: ""
-    SYNCCTL_DATABASE_URL:
-      value: ""
-    SYNCCTL_KUBERNETES_CLIENT_CONFIG:
-      value: local
-    SYNCCTL_KUBERNETES_CONTEXT:
-      value: ""
-    SYNCCTL_KUBERNETES_NAMESPACE:
-      # This needs to be abstracted
-      value: '{{ .Release.Namespace }}'
-    SYNCCTL_BULKER_URL:
-      value: "http://jitsu-bulker:3042"
-    SYNCCTL_BULKER_AUTH_KEY:
-      value: ""
+  env: []
+  envFrom: []
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+migration:
+  enabled: true
+  config:
+    # Set to false to disable config abstractions in order to configure manually.
+    enabled: true
+
+    # Leave empty to use global jitsu.databaseUrl
+    # https://docs.jitsu.com/self-hosting/configuration#database_url
+    databaseUrl: ""
+    databaseUrlFrom: {}
+  image:
+    repository: jitsucom/console
+    pullPolicy: IfNotPresent
+    tag: ""
+  restartPolicy: Never
+  env: []
+  envFrom: []
+  jobAnnotations: {}
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}
@@ -324,12 +707,29 @@ serviceAccount:
   create: true
   annotations: {}
   name: ""
+  rbac:
+    create: true
 
 postgresql:
   enabled: true
+  auth:
+    database: "jitsu"
+    username: "jitsu"
+    password: "jitsu"
 
 redis:
   enabled: true
+  auth:
+    enabled: true
+    password: "jitsu"
+
+mongodb:
+  enabled: true
+  auth:
+    enabled: true
+    databases: ["jitsu"]
+    usernames: ["jitsu"]
+    passwords: ["jitsu"]
 
 kafka:
   enabled: true
@@ -341,6 +741,3 @@ kafka:
     client:
       protocol: PLAINTEXT
       external: PLAINTEXT
-
-mongodb:
-  enabled: true

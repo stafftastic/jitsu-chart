@@ -60,3 +60,60 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{- define "jitsu.publicUrl" }}
+{{- if .Values.ingress.enabled }}
+{{- printf "http%s://%s%s"
+  (.Values.ingress.tls | ternary "s" "")
+  .Values.ingress.host
+  (not .Values.ingress.port | ternary "" (printf ":%s" .Values.ingress.port))
+-}}
+{{- end }}
+{{- end }}
+
+{{- define "jitsu.databaseUrl" -}}
+{{- if and (not .Values.config.databaseUrl) .Values.postgresql.enabled }}
+{{- with $.Values.postgresql.auth -}}
+{{ printf "postgres://%s:%s@%s:%d/%s?schema=newjitsu"
+  .username
+  .password
+  (printf "%s-postgresql" $.Release.Name)
+  5432
+  .database
+}}
+{{- end }}
+{{- else -}}
+{{ .Values.config.databaseUrl }}
+{{- end }}
+{{- end }}
+
+{{- define "jitsu.redisUrl" -}}
+{{- if and (not .Values.config.redisUrl) .Values.redis.enabled }}
+{{- with $.Values.redis -}}
+{{ printf "redis://:%s@%s:%d"
+  .auth.password
+  (printf "%s-redis-master" $.Release.Name)
+  6379
+}}
+{{- end }}
+{{- else -}}
+{{ .Values.config.redisUrl }}
+{{- end }}
+{{- end }}
+
+{{- define "jitsu.mongodbUrl" -}}
+{{- if and (not .Values.config.mongodbUrl) .Values.mongodb.enabled }}
+{{- with $.Values.mongodb.auth -}}
+{{ printf "mongodb://%s:%s@%s:%d/%s?authSource=%s"
+  (index .usernames 0)
+  (index .passwords 0)
+  (printf "%s-mongodb" $.Release.Name)
+  27017
+  (index .databases 0)
+  (index .databases 0)
+}}
+{{- end }}
+{{- else -}}
+{{ .Values.config.mongodbUrl }}
+{{- end }}
+{{- end }}

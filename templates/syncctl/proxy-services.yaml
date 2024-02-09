@@ -1,0 +1,20 @@
+{{- if and
+  .Values.syncctl.enabled
+  (not (eq (.Values.syncctl.config.kubernetesNamespace | default .Release.Namespace) .Release.Namespace))
+  (not .Values.syncctl.config.kubernetesClientConfig)
+}}
+{{- range list
+  (printf "%s-postgresql" .Release.Name)
+  (printf "%s-bulker" (include "jitsu.fullname" .))
+}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ . | quote }}
+  namespace: {{ $.Values.syncctl.config.kubernetesNamespace }}
+spec:
+  type: ExternalName
+  externalName: {{ printf "%s.%s.svc.%s" . $.Release.Namespace ($.Values.syncctl.clusterDomain | default "cluster.local") | quote }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,11 @@
+{{- if and
+  .Values.syncctl.enabled
+  .Values.syncctl.createNamespace
+  (not (eq (.Values.syncctl.config.kubernetesNamespace | default .Release.Namespace) .Release.Namespace))
+  (not .Values.syncctl.config.kubernetesClientConfig)
+}}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.syncctl.config.kubernetesNamespace }}
+{{- end }}
