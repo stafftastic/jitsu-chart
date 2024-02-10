@@ -16,7 +16,12 @@ spec:
       serviceAccountName: {{ include "jitsu.tokenGenerator.serviceAccountName" . }}
       containers:
         - name: token-generator
-          image: "alpine/k8s:{{ .Capabilities.KubeVersion.Version | trimPrefix "v"}}"
+          {{- if .Values.tokenGenerator.image.tag }}
+          image: "{{ .Values.tokenGenerator.image.repository }}:{{ .Values.tokenGenerator.image.tag }}"
+          {{- else }}
+          {{- $v := semver .Capabilities.KubeVersion.Version }}
+          image: "{{ .Values.tokenGenerator.image.repository }}:{{ printf "%d.%d.%d" $v.Major $v.Minor $v.Patch }}"
+          {{- end }}
           env:
             - name: FULLNAME
               value: {{ include "jitsu.fullname" . }}
