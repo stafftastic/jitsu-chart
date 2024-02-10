@@ -54,6 +54,9 @@ ingress:
 tokenGenerator:
   # Generate inter-service auth tokens automatically upon deployment.
   enabled: true
+  image:
+    repository: alpine/k8s
+    tag: ""
   serviceAccount:
     create: true
     annotations: {}
