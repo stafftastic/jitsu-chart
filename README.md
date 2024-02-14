@@ -146,3 +146,8 @@ By default syncctl runs connectors in the same namespace as the rest of the Jits
 wish to run these ephemeral and to some degree user-controlled workloads in a separate namespace you
 can set `syncctl.config.kubernetesNamespace` to the desired namespace, and the chart will create the
 namespace, service proxies for the bulker and databse, and the necessary RBAC resources for you.
+
+## Ensuring Idempotence
+If using tools that render the chart without access to the cluster, such as Argo CD, set
+`kafka.kraft.clusterId` to a random string to ensure it's not regnerated every time. This is only
+necessary if you're using the Kafka subchart.
