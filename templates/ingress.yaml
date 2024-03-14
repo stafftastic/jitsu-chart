@@ -46,7 +46,7 @@ spec:
                 port:
                   number: {{ .Values.ingest.service.port }}
           - path: /p.js
-            pathType: Prefix
+            pathType: Exact
             backend:
               service:
                 name: {{ include "jitsu.fullname" . }}-ingest
