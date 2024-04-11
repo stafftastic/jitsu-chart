@@ -1,5 +1,7 @@
 # Jitsu Helm Chart
 
+[Check this before upgrading](#upgrading)
+
 ## TL;DR
 ```bash
 helm install jitsu oci://registry-1.docker.io/stafftasticcharts/jitsu -f-<<EOF
@@ -151,3 +153,20 @@ namespace, service proxies for the bulker and databse, and the necessary RBAC re
 If using tools that render the chart without access to the cluster, such as Argo CD, set
 `kafka.kraft.clusterId` to a random string to ensure it's not regnerated every time. This is only
 necessary if you're using the Kafka subchart.
+
+## Upgrading
+It's not necessary to go through all intermediate versions when upgrading, however if upgrading to a
+version greater or equal to one mentioned below, additional steps may be required.
+
+### v1.1.0
+The Rotor is now also protected with an auth token when using the token generator (enabled by
+default). This means that if you have an old token secret you will either need to add values for the
+Rotor to the secret or delete the secret and let the token generator create a new one upon
+deployment. Deleting the secret will also use the uniform format across services introduced in Jitsu
+v2.4.5.
+
+### v1.4.0
+This release disables the Redis deployment by default as it is no longer required by Jitsu v2.5.0.
+If you have functions persistent storage or identity stitching data you wish to keep, set
+`redis.enabled` to `true` to enable "double read" mode as outlined in the [release notes for Jitsu
+v2.5.0](https://github.com/jitsucom/jitsu/releases/tag/jitsu2-v2.5.0).
