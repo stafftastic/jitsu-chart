@@ -5,17 +5,33 @@ metadata:
   name: {{ include "jitsu.fullname" . }}-token-generator-{{ sha1sum (toJson .Values) | substr 0 8 }}
   labels:
     {{- include "jitsu.labels" . | nindent 4 }}
+  {{- with .Values.tokenGenerator.jobAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   backoffLimit: 1
   template:
     metadata:
       labels:
         {{- include "jitsu.selectorLabels" . | nindent 8 }}
+      {{- with (merge (deepCopy .Values.tokenGenerator.podAnnotations) .Values.global.podAnnotations) }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
     spec:
       restartPolicy: Never
       serviceAccountName: {{ include "jitsu.tokenGenerator.serviceAccountName" . }}
+      {{- with (.Values.tokenGenerator.podSecurityContext | default .Values.global.podSecurityContext) }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: token-generator
+          {{- with (.Values.tokenGenerator.securityContext | default .Values.global.securityContext) }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           {{- if .Values.tokenGenerator.image.tag }}
           image: "{{ .Values.tokenGenerator.image.repository }}:{{ .Values.tokenGenerator.image.tag }}"
           {{- else }}
@@ -31,6 +47,10 @@ spec:
               value: {{ .Values.tokenGenerator.tokenLength | default "32" | quote }}
             - name: SALT_LENGTH
               value: {{ .Values.tokenGenerator.saltLength | default "32" | quote }}
+          {{- with (.Values.tokenGenerator.resources | default .Values.global.resources) }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           command: ["sh", "-c"]
           args:
             - |
@@ -96,4 +116,16 @@ spec:
                 syncctlAuthTokens: "$syncctlAuthTokens"
                 consoleAuthTokens: "$consoleAuthTokens"
               EOF
+      {{- with (.Values.tokenGenerator.nodeSelector | default .Values.global.nodeSelector) }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with (.Values.tokenGenerator.affinity | default .Values.global.affinity) }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with (.Values.tokenGenerator.tolerations | default .Values.global.tolerations) }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 {{- end }}

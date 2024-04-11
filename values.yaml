@@ -66,6 +66,14 @@ tokenGenerator:
   tokenLength: 32
   secretLength: 32
   saltLength: 32
+  jobAnnotations: {}
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
 
 global:
   podAnnotations: {}

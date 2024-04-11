@@ -15,6 +15,10 @@ spec:
     metadata:
       labels:
         {{- include "jitsu.selectorLabels" . | nindent 8 }}
+      {{- with (merge (deepCopy .Values.migration.podAnnotations) .Values.global.podAnnotations) }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -22,19 +26,35 @@ spec:
       {{- end }}
       restartPolicy: "Never"
       serviceAccountName: {{ include "jitsu.serviceAccountName" . }}
+      {{- with (.Values.migration.podSecurityContext | default .Values.global.podSecurityContext) }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       initContainers:
         {{- if .Values.tokenGenerator.enabled }}
         - name: wait-for-tokens
+          {{- with (.Values.migration.securityContext | default .Values.global.securityContext) }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           image: ghcr.io/groundnuty/k8s-wait-for:v2.0
           args: ["job-wr", "{{ include "jitsu.fullname" . }}-token-generator-{{ sha1sum (toJson .Values) | substr 0 8 }}"]
           {{- end }}
         {{- if .Values.postgresql.enabled }}
         - name: wait-for-postgresql
+          {{- with (.Values.migration.securityContext | default .Values.global.securityContext) }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           image: ghcr.io/groundnuty/k8s-wait-for:v2.0
           args: ["service", "{{ .Release.Name }}-postgresql"]
         {{- end }}
       containers:
         - name: {{ .Chart.Name }}
+          {{- with (.Values.migration.securityContext | default .Values.global.securityContext) }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           image: "{{ .Values.migration.image.repository }}:{{ .Values.migration.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.migration.image.pullPolicy }}
           command: [prisma]
@@ -57,4 +77,16 @@ spec:
             {{- with .Values.migration.env }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
+      {{- with (.Values.migration.nodeSelector | default .Values.global.nodeSelector) }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with (.Values.migration.affinity | default .Values.global.affinity) }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with (.Values.migration.tolerations | default .Values.global.affinity) }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
 {{- end }}

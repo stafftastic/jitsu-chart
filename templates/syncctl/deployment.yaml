@@ -19,7 +19,7 @@ spec:
       {{- include "jitsu.syncctl.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
+      {{- with (merge (deepCopy .Values.syncctl.podAnnotations) .Values.global.podAnnotations) }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -32,23 +32,35 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "jitsu.syncctl.serviceAccountName" . }}
+      {{- with (.Values.syncctl.podSecurityContext | default .Values.global.podSecurityContext) }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       initContainers:
         {{- if .Values.tokenGenerator.enabled }}
         - name: wait-for-tokens
+          {{- with (.Values.syncctl.securityContext | default .Values.global.securityContext) }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           image: ghcr.io/groundnuty/k8s-wait-for:v2.0
           args: ["job-wr", "{{ include "jitsu.fullname" . }}-token-generator-{{ sha1sum (toJson .Values) | substr 0 8 }}"]
         {{- end }}
         {{- if .Values.migration.enabled }}
         - name: wait-for-migration
+          {{- with (.Values.syncctl.securityContext | default .Values.global.securityContext) }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           image: ghcr.io/groundnuty/k8s-wait-for:v2.0
           args: ["job-wr", "{{ include "jitsu.fullname" . }}-migration-{{ sha1sum (toJson .Values) | substr 0 8 }}"]
         {{- end }}
       containers:
         - name: {{ .Chart.Name }}
+          {{- with (.Values.syncctl.securityContext | default .Values.global.securityContext) }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           image: "{{ .Values.syncctl.image.repository }}:{{ .Values.syncctl.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.syncctl.image.pullPolicy }}
           ports:
@@ -76,17 +88,19 @@ spec:
             {{- with .Values.syncctl.env }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
+          {{- with (.Values.syncctl.resources | default .Values.global.resources) }}
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with (.Values.syncctl.nodeSelector | default .Values.global.nodeSelector) }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.affinity }}
+      {{- with (.Values.syncctl.affinity | default .Values.global.affinity) }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.tolerations }}
+      {{- with (.Values.syncctl.tolerations | default .Values.global.tolerations) }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
