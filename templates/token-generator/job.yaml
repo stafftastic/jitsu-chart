@@ -69,9 +69,6 @@ spec:
                 secret="$3"
                 echo -n "$token$salt$secret" | sha512sum | awk '{print $1}' | tr -d '\n'
               }
-              base64_hash_token() {
-                hex_hash_token "$@" | xxd -r -p | base64 -w 0 | tr -d '='
-              }
               globalHashSecret=$(random_string $SECRET_LENGTH)
               ingestTokenSecret=$(random_string $SECRET_LENGTH)
               bulkerTokenSecret=$(random_string $SECRET_LENGTH)
@@ -87,9 +84,9 @@ spec:
               bulkerAuthTokenSalt=$(random_string $SALT_LENGTH)
               syncctlAuthTokenSalt=$(random_string $SALT_LENGTH)
 
-              ingestAuthTokens="$ingestAuthTokenSalt.$(base64_hash_token $ingestAuthToken $ingestAuthTokenSalt $ingestTokenSecret)"
-              bulkerAuthTokens="$bulkerAuthTokenSalt.$(base64_hash_token $bulkerAuthToken $bulkerAuthTokenSalt $bulkerTokenSecret)"
-              syncctlAuthTokens="$syncctlAuthTokenSalt.$(base64_hash_token $syncctlAuthToken $syncctlAuthTokenSalt $syncctlTokenSecret)"
+              ingestAuthTokens="$ingestAuthTokenSalt.$(hex_hash_token $ingestAuthToken $ingestAuthTokenSalt $ingestTokenSecret)"
+              bulkerAuthTokens="$bulkerAuthTokenSalt.$(hex_hash_token $bulkerAuthToken $bulkerAuthTokenSalt $bulkerTokenSecret)"
+              syncctlAuthTokens="$syncctlAuthTokenSalt.$(hex_hash_token $syncctlAuthToken $syncctlAuthTokenSalt $syncctlTokenSecret)"
 
               consoleAuthTokens="$consoleAuthTokenSalt.$(hex_hash_token $consoleAuthToken $consoleAuthTokenSalt $globalHashSecret)"
 
