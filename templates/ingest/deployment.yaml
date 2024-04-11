@@ -42,6 +42,15 @@ spec:
           image: ghcr.io/groundnuty/k8s-wait-for:v2.0
           args: ["job-wr", "{{ include "jitsu.fullname" . }}-token-generator-{{ sha1sum (toJson .Values) | substr 0 8 }}"]
         {{- end }}
+        {{- if .Values.clickhouse.enabled }}
+        - name: wait-for-clickhouse
+          {{- with (.Values.ingest.securityContext | default .Values.global.securityContext) }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          args: ["service", "{{ .Release.Name }}-clickhouse"]
+        {{- end }}
         {{- if .Values.redis.enabled }}
         - name: wait-for-redis
           {{- with (.Values.ingest.securityContext | default .Values.global.securityContext) }}

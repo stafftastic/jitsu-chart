@@ -30,6 +30,18 @@ config:
   mongodbUrl: ""
   mongodbUrlFrom: {}
 
+  # Global Clickhouse configuration.
+  # Will be configured automatically if left empty and using the Clickhouse subchart.
+  clickhouseHost: ""
+  clickhouseHostFrom: {}
+  clickhouseDatabase: ""
+  clickhouseDatabaseFrom: {}
+  clickhouseUsername: ""
+  clickhouseUsernameFrom: {}
+  clickhousePassword: ""
+  clickhousePasswordFrom: {}
+  clickhouseSsl: ""
+
   # Global hash secret used by console, bulker and ingest.
   # Configured automatically when tokenGenerator.enabled is true.
   globalHashSecret: ""
@@ -194,12 +206,17 @@ console:
     # https://docs.jitsu.com/self-hosting/configuration#clickhouse_metrics_schema
     clickhouseMetricsSchema: ""
     clickhouseMetricsSchemaFrom: {}
-    clickhouseUrl: ""
-    clickhouseUrlFrom: {}
+
+    # Leave empty to configure automatically when using Clickhouse subchart.
+    clickhouseHost: ""
+    clickhouseHostFrom: {}
+    clickhouseDatabase: ""
+    clickhouseDatabaseFrom: {}
     clickhouseUsername: ""
     clickhouseUsernameFrom: {}
     clickhousePassword: ""
     clickhousePasswordFrom: {}
+    clickhouseSsl: ""
 
     # Log format. One of "text", "json".
     # https://docs.jitsu.com/self-hosting/configuration#log_format-1
@@ -311,6 +328,17 @@ bulker:
     kafkaSasl: ""
     kafkaSaslFrom: {}
 
+    # Leave empty to configure automatically when using Clickhouse subchart.
+    clickhouseHost: ""
+    clickhouseHostFrom: {}
+    clickhouseDatabase: ""
+    clickhouseDatabaseFrom: {}
+    clickhouseUsername: ""
+    clickhouseUsernameFrom: {}
+    clickhousePassword: ""
+    clickhousePasswordFrom: {}
+    clickhouseSsl: ""
+
     # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_batch_runner_default_period_sec
     batchRunnerDefaultPeriodSec: ""
 
@@ -414,6 +442,17 @@ rotor:
     # https://docs.jitsu.com/self-hosting/configuration#redis_url
     redisUrl: ""
     redisUrlFrom: {}
+
+    # Leave empty to configure automatically when using Clickhouse subchart.
+    clickhouseHost: ""
+    clickhouseHostFrom: {}
+    clickhouseDatabase: ""
+    clickhouseDatabaseFrom: {}
+    clickhouseUsername: ""
+    clickhouseUsernameFrom: {}
+    clickhousePassword: ""
+    clickhousePasswordFrom: {}
+    clickhouseSsl: "false"
 
     # Leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#bulker_url
@@ -544,6 +583,17 @@ ingest:
     # https://docs.jitsu.com/self-hosting/configuration#ingest_kafka_sasl-aka-kafka-auth
     kafkaSasl: ""
     kafkaSaslFrom: {}
+
+    # Leave empty to configure automatically when using Clickhouse subchart.
+    clickhouseHost: ""
+    clickhouseHostFrom: {}
+    clickhouseDatabase: ""
+    clickhouseDatabaseFrom: {}
+    clickhouseUsername: ""
+    clickhouseUsernameFrom: {}
+    clickhousePassword: ""
+    clickhousePasswordFrom: {}
+    clickhouseSsl: "false"
 
     # Leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#ingest_rotor_url
@@ -774,3 +824,13 @@ kafka:
     client:
       protocol: PLAINTEXT
       external: PLAINTEXT
+
+clickhouse:
+  enabled: true
+  auth:
+    username: "jitsu"
+    password: "jitsu"
+  keeper:
+    enabled: true
+  zookeeper:
+    enabled: false

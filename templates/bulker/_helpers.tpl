@@ -10,7 +10,6 @@ app.kubernetes.io/component: bulker
 - name: BULKER_INSTANCE_ID
   value: {{ .instanceId | quote }}
 
-
 {{- if or .redisUrlFrom $.Values.config.redisUrlFrom }}
 - name: BULKER_REDIS_URL
   valueFrom:
@@ -166,6 +165,47 @@ app.kubernetes.io/component: bulker
   value: {{ toJson . | quote }}
   {{- end }}
 {{- end }}
+{{- end }}
+
+{{- if or .clickhouseHostFrom $.Values.config.clickhouseHostFrom }}
+- name: BULKER_CLICKHOUSE_HOST
+  valueFrom:
+    {{- toYaml (.clickhouseHostFrom | default $.Values.config.clickhouseHostFrom) | nindent 4 }}
+{{- else }}
+- name: BULKER_CLICKHOUSE_HOST
+  value: {{ .clickhouseHost | default (include "jitsu.clickhouseHost" $) | quote }}
+{{- end }}
+
+{{- if or .clickhouseDatabaseFrom $.Values.config.clickhouseDatabaseFrom }}
+- name: BULKER_CLICKHOUSE_DATABASE
+  valueFrom:
+    {{- toYaml (.clickhouseDatabaseFrom | default $.Values.config.clickhouseDatabaseFrom) | nindent 4 }}
+{{- else }}
+- name: BULKER_CLICKHOUSE_DATABASE
+  value: {{ .clickhouseDatabase | default (include "jitsu.clickhouseDatabase" $) | quote }}
+{{- end }}
+
+{{- if or .clickhouseUsernameFrom $.Values.config.clickhouseUsernameFrom }}
+- name: BULKER_CLICKHOUSE_USERNAME
+  valueFrom:
+    {{- toYaml (.clickhouseUsernameFrom | default $.Values.config.clickhouseUsernameFrom) | nindent 4 }}
+{{- else }}
+- name: BULKER_CLICKHOUSE_USERNAME
+  value: {{ .clickhouseUsername | default (include "jitsu.clickhouseUsername" $) | quote }}
+{{- end }}
+
+{{- if or .clickhousePasswordFrom $.Values.config.clickhousePasswordFrom }}
+- name: BULKER_CLICKHOUSE_PASSWORD
+  valueFrom:
+    {{- toYaml (.clickhousePasswordFrom | default $.Values.config.clickhousePasswordFrom) | nindent 4 }}
+{{- else }}
+- name: BULKER_CLICKHOUSE_PASSWORD
+  value: {{ .clickhousePassword | default (include "jitsu.clickhousePassword" $) | quote }}
+{{- end }}
+
+{{- with (.clickhouseSsl | default $.Values.config.clickhouseSsl) }}
+- name: BULKER_CLICKHOUSE_SSL
+  value: {{ . | quote }}
 {{- end }}
 
 {{- with .batchRunnerDefaultPeriodSec }}

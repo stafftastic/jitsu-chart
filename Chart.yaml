@@ -23,3 +23,7 @@ dependencies:
     version: ^14.8.2
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: mongodb.enabled
+  - name: clickhouse
+    version: ^6.0.2
+    repository: oci://registry-1.docker.io/bitnamicharts
+    condition: clickhouse.enabled
