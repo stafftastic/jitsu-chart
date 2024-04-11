@@ -801,7 +801,7 @@ postgresql:
     password: "jitsu"
 
 redis:
-  enabled: true
+  enabled: false
   auth:
     enabled: true
     password: "jitsu"
