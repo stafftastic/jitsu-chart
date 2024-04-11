@@ -112,6 +112,11 @@ spec:
             httpGet:
               port: http
               path: /health
+          startupProbe:
+            httpGet:
+              port: http
+              path: /health
+            failureThreshold: 60
           {{- end }}
           {{- if .Values.rotor.envFrom }}
           envFrom:
