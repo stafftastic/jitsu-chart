@@ -37,6 +37,42 @@ app.kubernetes.io/component: rotor
   value: {{ . | quote }}
 {{- end }}
 
+{{- if .authTokensFrom }}
+- name: ROTOR_AUTH_TOKENS
+  valueFrom:
+    {{- toYaml .authTokensFrom | nindent 4 }}
+{{- else }}
+{{- if and (not .authTokens) $.Values.tokenGenerator.enabled }}
+- name: ROTOR_AUTH_TOKENS
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "jitsu.fullname" $ }}-tokens
+      key: rotorAuthTokens
+{{- end }}
+{{- with .authTokens}}
+- name: ROTOR_AUTH_TOKENS
+  value: {{ . | quote }}
+{{- end }}
+{{- end }}
+
+{{- if .tokenSecretFrom }}
+- name: ROTOR_TOKEN_SECRET
+  valueFrom:
+    {{- toYaml .tokenSecretFrom | nindent 4 }}
+{{- else }}
+{{- if and (not .tokenSecret) $.Values.tokenGenerator.enabled }}
+- name: ROTOR_TOKEN_SECRET
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "jitsu.fullname" $ }}-tokens
+      key: rotorTokenSecret
+{{- end }}
+{{- with .tokenSecret }}
+- name: ROTOR_TOKEN_SECRET
+  value: {{ . | quote }}
+{{- end }}
+{{- end }}
+
 {{- if .repositoryAuthTokenFrom }}
 - name: REPOSITORY_AUTH_TOKEN
   valueFrom:

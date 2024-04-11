@@ -69,29 +69,29 @@ spec:
                 secret="$3"
                 echo -n "$token$salt$secret" | sha512sum | awk '{print $1}' | tr -d '\n'
               }
-              base64_hash_token() {
-                hex_hash_token "$@" | xxd -r -p | base64 -w 0 | tr -d '='
-              }
               globalHashSecret=$(random_string $SECRET_LENGTH)
               ingestTokenSecret=$(random_string $SECRET_LENGTH)
               bulkerTokenSecret=$(random_string $SECRET_LENGTH)
               syncctlTokenSecret=$(random_string $SECRET_LENGTH)
+              rotorTokenSecret=$(random_string $SECRET_LENGTH)
 
               consoleAuthToken=$(random_string $TOKEN_LENGTH)
               ingestAuthToken=$(random_string $TOKEN_LENGTH)
               bulkerAuthToken=$(random_string $TOKEN_LENGTH)
               syncctlAuthToken=$(random_string $TOKEN_LENGTH)
+              rotorAuthToken=$(random_string $TOKEN_LENGTH)
 
               consoleAuthTokenSalt=$(random_string $SALT_LENGTH)
               ingestAuthTokenSalt=$(random_string $SALT_LENGTH)
               bulkerAuthTokenSalt=$(random_string $SALT_LENGTH)
               syncctlAuthTokenSalt=$(random_string $SALT_LENGTH)
+              rotorAuthTokenSalt=$(random_string $SALT_LENGTH)
 
-              ingestAuthTokens="$ingestAuthTokenSalt.$(base64_hash_token $ingestAuthToken $ingestAuthTokenSalt $ingestTokenSecret)"
-              bulkerAuthTokens="$bulkerAuthTokenSalt.$(base64_hash_token $bulkerAuthToken $bulkerAuthTokenSalt $bulkerTokenSecret)"
-              syncctlAuthTokens="$syncctlAuthTokenSalt.$(base64_hash_token $syncctlAuthToken $syncctlAuthTokenSalt $syncctlTokenSecret)"
-
+              ingestAuthTokens="$ingestAuthTokenSalt.$(hex_hash_token $ingestAuthToken $ingestAuthTokenSalt $ingestTokenSecret)"
+              bulkerAuthTokens="$bulkerAuthTokenSalt.$(hex_hash_token $bulkerAuthToken $bulkerAuthTokenSalt $bulkerTokenSecret)"
+              syncctlAuthTokens="$syncctlAuthTokenSalt.$(hex_hash_token $syncctlAuthToken $syncctlAuthTokenSalt $syncctlTokenSecret)"
               consoleAuthTokens="$consoleAuthTokenSalt.$(hex_hash_token $consoleAuthToken $consoleAuthTokenSalt $globalHashSecret)"
+              rotorAuthTokens="$rotorAuthTokenSalt.$(hex_hash_token $rotorAuthToken $rotorAuthTokenSalt $globalHashSecret)"
 
               kubectl apply -f- <<EOF
               apiVersion: v1
@@ -105,16 +105,19 @@ spec:
                 ingestTokenSecret: "$ingestTokenSecret"
                 bulkerTokenSecret: "$bulkerTokenSecret"
                 syncctlTokenSecret: "$syncctlTokenSecret"
+                rotorTokenSecret: "$rotorTokenSecret"
 
                 ingestAuthToken: "$ingestAuthToken"
                 bulkerAuthToken: "$bulkerAuthToken"
                 syncctlAuthToken: "$syncctlAuthToken"
                 consoleAuthToken: "service-admin-account:$consoleAuthToken"
+                rotorAuthToken: "$rotorAuthToken"
 
                 ingestAuthTokens: "$ingestAuthTokens"
                 bulkerAuthTokens: "$bulkerAuthTokens"
                 syncctlAuthTokens: "$syncctlAuthTokens"
                 consoleAuthTokens: "$consoleAuthTokens"
+                rotorAuthTokens: "$rotorAuthTokens"
               EOF
       {{- with (.Values.tokenGenerator.nodeSelector | default .Values.global.nodeSelector) }}
       nodeSelector:
