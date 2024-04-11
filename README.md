@@ -1,6 +1,6 @@
 # Jitsu Helm Chart
 
-[Check this before upgrading](#upgrading)
+[:warning: Check this before upgrading](#upgrading)
 
 ## TL;DR
 ```bash
