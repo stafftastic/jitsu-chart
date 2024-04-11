@@ -19,6 +19,47 @@ app.kubernetes.io/component: ingest
   value: {{ .redisUrl | default (include "jitsu.redisUrl" $) | quote }}
 {{- end }}
 
+{{- if or .clickhouseHostFrom $.Values.config.clickhouseHostFrom }}
+- name: INGEST_CLICKHOUSE_HOST
+  valueFrom:
+    {{- toYaml (.clickhouseHostFrom | default $.Values.config.clickhouseHostFrom) | nindent 4 }}
+{{- else }}
+- name: INGEST_CLICKHOUSE_HOST
+  value: {{ .clickhouseHost | default (include "jitsu.clickhouseHost" $) | quote }}
+{{- end }}
+
+{{- if or .clickhouseDatabaseFrom $.Values.config.clickhouseDatabaseFrom }}
+- name: INGEST_CLICKHOUSE_DATABASE
+  valueFrom:
+    {{- toYaml (.clickhouseDatabaseFrom | default $.Values.config.clickhouseDatabaseFrom) | nindent 4 }}
+{{- else }}
+- name: INGEST_CLICKHOUSE_DATABASE
+  value: {{ .clickhouseDatabase | default (include "jitsu.clickhouseDatabase" $) | quote }}
+{{- end }}
+
+{{- if or .clickhouseUsernameFrom $.Values.config.clickhouseUsernameFrom }}
+- name: INGEST_CLICKHOUSE_USERNAME
+  valueFrom:
+    {{- toYaml (.clickhouseUsernameFrom | default $.Values.config.clickhouseUsernameFrom) | nindent 4 }}
+{{- else }}
+- name: INGEST_CLICKHOUSE_USERNAME
+  value: {{ .clickhouseUsername | default (include "jitsu.clickhouseUsername" $) | quote }}
+{{- end }}
+
+{{- if or .clickhousePasswordFrom $.Values.config.clickhousePasswordFrom }}
+- name: INGEST_CLICKHOUSE_PASSWORD
+  valueFrom:
+    {{- toYaml (.clickhousePasswordFrom | default $.Values.config.clickhousePasswordFrom) | nindent 4 }}
+{{- else }}
+- name: INGEST_CLICKHOUSE_PASSWORD
+  value: {{ .clickhousePassword | default (include "jitsu.clickhousePassword" $) | quote }}
+{{- end }}
+
+{{- with (.clickhouseSsl | default $.Values.config.clickhouseSsl) }}
+- name: INGEST_CLICKHOUSE_SSL
+  value: {{ . | quote }}
+{{- end }}
+
 {{- if .authTokensFrom }}
 - name: INGEST_AUTH_TOKENS
   valueFrom:

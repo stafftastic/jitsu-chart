@@ -117,3 +117,35 @@ Create the name of the service account to use
 {{ .Values.config.mongodbUrl }}
 {{- end }}
 {{- end }}
+
+{{- define "jitsu.clickhouseHost" -}}
+{{- if and (not .Values.config.clickhouseHost) .Values.clickhouse.enabled }}
+{{ .Release.Name }}-clickhouse:8123
+{{- else }}
+{{ .Values.config.clickhouseHost }}
+{{- end }}
+{{- end }}
+
+{{- define "jitsu.clickhouseDatabase" -}}
+{{- if and (not .Values.config.clickhouseDatabase) .Values.clickhouse.enabled }}
+default
+{{- else }}
+{{ .Values.config.clickhouseDatabase }}
+{{- end }}
+{{- end }}
+
+{{- define "jitsu.clickhouseUsername" -}}
+{{- if and (not .Values.config.clickhouseUsername) .Values.clickhouse.enabled }}
+jitsu
+{{- else }}
+{{ .Values.config.clickhouseUsername }}
+{{- end }}
+{{- end }}
+
+{{- define "jitsu.clickhousePassword" -}}
+{{- if and (not .Values.config.clickhousePassword) .Values.clickhouse.enabled }}
+jitsu
+{{- else }}
+{{ .Values.config.clickhousePassword }}
+{{- end }}
+{{- end }}

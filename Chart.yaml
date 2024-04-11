@@ -4,7 +4,7 @@ type: application
 
 # Chart version is set automatically as part of the release process
 version: 0.0.0
-appVersion: 2.4.6
+appVersion: 2.5.0
 
 dependencies:
   - name: postgresql
@@ -23,3 +23,7 @@ dependencies:
     version: ^14.8.2
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: mongodb.enabled
+  - name: clickhouse
+    version: ^6.0.2
+    repository: oci://registry-1.docker.io/bitnamicharts
+    condition: clickhouse.enabled
