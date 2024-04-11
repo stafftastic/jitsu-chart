@@ -158,6 +158,12 @@ console:
     # https://docs.jitsu.com/self-hosting/configuration#rotor_url
     rotorUrl: ""
 
+    # Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#ingest
+    rotorAuthKey: ""
+    rotorAuthKeyFrom: ""
+    
+
     # Public domain where ingest service is available. Leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#ingest_host
     ingestHost: ""
@@ -393,6 +399,17 @@ rotor:
     # https://docs.jitsu.com/self-hosting/configuration#repository_refresh_period_sec
     repositoryRefreshPeriodSec: ""
 
+    # Leave empty to automatically configure.
+    # https://docs.jitsu.com/self-hosting/configuration#rotor
+    authTokens: ""
+    authTokensFrom: {}
+
+    # Leave empty to automatically configure.
+    # https://docs.jitsu.com/self-hosting/configuration#rotor
+    tokenSecret: ""
+    tokenSecretFrom: {}
+
+
     # Leave empty to configure automatically if config.redisUrl is set or Redis subchart is being used.
     # https://docs.jitsu.com/self-hosting/configuration#redis_url
     redisUrl: ""
@@ -531,6 +548,11 @@ ingest:
     # Leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#ingest_rotor_url
     rotorUrl: ""
+
+    # Leave empty to configure automatically.
+    # https://docs.jitsu.com/self-hosting/configuration#console
+    rotorAuthKey: ""
+    rotorAuthKeyFrom: ""
 
     # Leave empty to configure automatically when Redis subchart is enabled or config.redisUrl is set.
     # https://docs.jitsu.com/self-hosting/configuration#ingest_redis_url

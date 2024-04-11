@@ -61,6 +61,24 @@ app.kubernetes.io/component: console
   value: {{ . | quote }}
 {{- end }}
 
+{{- if .rotorAuthKeyFrom }}
+- name: ROTOR_AUTH_KEY
+  valueFrom:
+    {{- toYaml .rotorAuthKeyFrom | nindent 4 }}
+{{- else }}
+{{- if and (not .rotorAuthKey) $.Values.rotor.enabled $.Values.tokenGenerator.enabled }}
+- name: ROTOR_AUTH_KEY
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "jitsu.fullname" $ }}-tokens
+      key: rotorAuthToken
+{{- end }}
+{{- with .rotorAuthKey }}
+- name: ROTOR_AUTH_KEY
+  value: {{ . | quote }}
+{{- end }}
+{{- end }}
+
 {{- if and (not .ingestHost) (not $.Values.config.ingestHost) $.Values.ingest.enabled }}
 - name: INGEST_HOST
   value: {{ $.Values.ingest.config.dataDomain | default (printf "%s-ingest" (include "jitsu.fullname" $)) | quote }}
