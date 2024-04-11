@@ -19,7 +19,7 @@ spec:
       {{- include "jitsu.rotor.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
+      {{- with (merge (deepCopy .Values.rotor.podAnnotations) .Values.global.podAnnotations) }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -32,43 +32,71 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "jitsu.serviceAccountName" . }}
+      {{- with (.Values.rotor.podSecurityContext | default .Values.global.podSecurityContext) }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       initContainers:
         {{- if .Values.tokenGenerator.enabled }}
         - name: wait-for-tokens
+          {{- with (.Values.rotor.securityContext | default .Values.global.securityContext) }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           image: ghcr.io/groundnuty/k8s-wait-for:v2.0
           args: ["job-wr", "{{ include "jitsu.fullname" . }}-token-generator-{{ sha1sum (toJson .Values) | substr 0 8 }}"]
         {{- end }}
         {{- if .Values.redis.enabled }}
         - name: wait-for-redis
+          {{- with (.Values.rotor.securityContext | default .Values.global.securityContext) }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           image: ghcr.io/groundnuty/k8s-wait-for:v2.0
           args: ["service", "{{ include "jitsu.fullname" . }}-redis-master"]
         {{- end }}
         {{- if .Values.kafka.enabled }}
         - name: wait-for-kafka
+          {{- with (.Values.rotor.securityContext | default .Values.global.securityContext) }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           image: ghcr.io/groundnuty/k8s-wait-for:v2.0
           args: ["service", "{{ include "jitsu.fullname" . }}-kafka"]
         {{- end }}
         {{- if .Values.mongodb.enabled }}
         - name: wait-for-mongodb
+          {{- with (.Values.rotor.securityContext | default .Values.global.securityContext) }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           image: ghcr.io/groundnuty/k8s-wait-for:v2.0
           args: ["service", "{{ .Release.Name }}-mongodb"]
         {{- end }}
         {{- if .Values.console.enabled }}
         - name: wait-for-console
+          {{- with (.Values.rotor.securityContext | default .Values.global.securityContext) }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           image: ghcr.io/groundnuty/k8s-wait-for:v2.0
           args: ["service", "{{ include "jitsu.fullname" . }}-console"]
         {{- end }}
         {{- if .Values.bulker.enabled }}
         - name: wait-for-bulker
+          {{- with (.Values.rotor.securityContext | default .Values.global.securityContext) }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           image: ghcr.io/groundnuty/k8s-wait-for:v2.0
           args: ["service", "{{ include "jitsu.fullname" . }}-bulker"]
         {{- end }}
       containers:
         - name: {{ .Chart.Name }}
+          {{- with (.Values.rotor.securityContext | default .Values.global.securityContext) }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           image: "{{ .Values.rotor.image.repository }}:{{ .Values.rotor.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.rotor.image.pullPolicy }}
           ports:
@@ -96,17 +124,19 @@ spec:
             {{- with .Values.rotor.env }}
             {{- toYaml .Values.rotor.env | nindent 12 }}
             {{- end }}
+          {{- with (.Values.rotor.resources | default .Values.global.resources) }}
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with (.Values.rotor.nodeSelector | default .Values.global.nodeSelector) }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.affinity }}
+      {{- with (.Values.rotor.affinity | default .Values.global.affinity) }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.tolerations }}
+      {{- with (.Values.rotor.tolerations | default .Values.global.tolerations) }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
