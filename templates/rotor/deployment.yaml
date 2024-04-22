@@ -154,3 +154,5 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      topologySpreadConstraints:
+        {{- tpl .Values.rotor.topologySpreadConstraints . | nindent 8 }}

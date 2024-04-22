@@ -104,3 +104,5 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      topologySpreadConstraints:
+        {{- tpl .Values.syncctl.topologySpreadConstraints . | nindent 8 }}
