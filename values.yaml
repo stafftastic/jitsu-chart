@@ -174,7 +174,7 @@ console:
     # https://docs.jitsu.com/self-hosting/configuration#ingest
     rotorAuthKey: ""
     rotorAuthKeyFrom: ""
-    
+
 
     # Public domain where ingest service is available. Leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#ingest_host
@@ -262,7 +262,29 @@ console:
   nodeSelector: {}
   tolerations: []
   affinity: {}
-  topologySpreadConstraints: ""
+  topologySpreadConstraints:
+  # Allows use of a string template:
+  #
+  # topologySpreadConstraints: |
+  # - maxSkew: 1
+  #   topologyKey: "topology.kubernetes.io/zone"
+  #   whenUnsatisfiable: DoNotSchedule
+  #   labelSelector:
+  #     matchLabels:
+  #       {{- include "jitsu.selectorLabels" . | nindent 10 }}
+  #       {{- include "jitsu.console.selectorLabels" . | nindent 10 }}
+  #
+  # or a yaml structure:
+  #
+  # topologySpreadConstraints:
+  #   - maxSkew: 1
+  #     topologyKey: "topology.kubernetes.io/zone"
+  #     whenUnsatisfiable: DoNotSchedule
+  #     labelSelector:
+  #       matchLabels:
+  #         app.kubernetes.io/name: jitsu
+  #         app.kubernetes.io/instance: jitsu
+  #         app.kubernetes.io/component: console
 
 bulker:
   enabled: true
@@ -409,7 +431,7 @@ bulker:
   nodeSelector: {}
   tolerations: []
   affinity: {}
-  topologySpreadConstraints: ""
+  topologySpreadConstraints:
 
 rotor:
   enabled: true
@@ -530,7 +552,7 @@ rotor:
   nodeSelector: {}
   tolerations: []
   affinity: {}
-  topologySpreadConstraints: ""
+  topologySpreadConstraints:
 
 ingest:
   enabled: true
@@ -658,7 +680,7 @@ ingest:
   nodeSelector: {}
   tolerations: []
   affinity: {}
-  topologySpreadConstraints: ""
+  topologySpreadConstraints:
 
 syncctl:
   enabled: true
@@ -761,7 +783,7 @@ syncctl:
   nodeSelector: {}
   tolerations: []
   affinity: {}
-  topologySpreadConstraints: ""
+  topologySpreadConstraints:
 
 migration:
   enabled: true

@@ -136,5 +136,11 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- with .Values.bulker.topologySpreadConstraints }}
       topologySpreadConstraints:
-        {{- tpl .Values.bulker.topologySpreadConstraints . | nindent 8 }}
+        {{- if kindIs "string" . }}
+        {{- tpl . $ | nindent 8 }}
+        {{- else }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- end }}
