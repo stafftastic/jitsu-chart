@@ -119,33 +119,33 @@ Create the name of the service account to use
 {{- end }}
 
 {{- define "jitsu.clickhouseHost" -}}
-{{- if and (not .Values.config.clickhouseHost) .Values.clickhouse.enabled }}
-{{ .Release.Name }}-clickhouse:8123
-{{- else }}
+{{- if and (not .Values.config.clickhouseHost) .Values.clickhouse.enabled -}}
+{{ .Release.Name }}-clickhouse:9000
+{{- else -}}
 {{ .Values.config.clickhouseHost }}
 {{- end }}
 {{- end }}
 
 {{- define "jitsu.clickhouseDatabase" -}}
-{{- if and (not .Values.config.clickhouseDatabase) .Values.clickhouse.enabled }}
+{{- if and (not .Values.config.clickhouseDatabase) .Values.clickhouse.enabled -}}
 default
-{{- else }}
+{{- else -}}
 {{ .Values.config.clickhouseDatabase }}
 {{- end }}
 {{- end }}
 
 {{- define "jitsu.clickhouseUsername" -}}
-{{- if and (not .Values.config.clickhouseUsername) .Values.clickhouse.enabled }}
+{{- if and (not .Values.config.clickhouseUsername) .Values.clickhouse.enabled -}}
 jitsu
-{{- else }}
+{{- else -}}
 {{ .Values.config.clickhouseUsername }}
 {{- end }}
 {{- end }}
 
 {{- define "jitsu.clickhousePassword" -}}
-{{- if and (not .Values.config.clickhousePassword) .Values.clickhouse.enabled }}
+{{- if and (not .Values.config.clickhousePassword) .Values.clickhouse.enabled -}}
 jitsu
-{{- else }}
+{{- else -}}
 {{ .Values.config.clickhousePassword }}
 {{- end }}
 {{- end }}

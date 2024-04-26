@@ -31,7 +31,7 @@ app.kubernetes.io/component: console
     {{- toYaml (.clickhouseHostFrom | default $.Values.config.clickhouseHostFrom) | nindent 4 }}
 {{- else }}
 - name: CLICKHOUSE_HOST
-  value: {{ .clickhouseHost | default (include "jitsu.clickhouseHost" $) | quote }}
+  value: {{ .clickhouseHost | default ((include "jitsu.clickhouseHost" $) | replace "9000" "8123") | quote }}
 {{- end }}
 
 {{- if or .clickhouseDatabaseFrom $.Values.config.clickhouseDatabaseFrom }}
