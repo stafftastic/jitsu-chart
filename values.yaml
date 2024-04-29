@@ -32,8 +32,11 @@ config:
 
   # Global Clickhouse configuration.
   # Will be configured automatically if left empty and using the Clickhouse subchart.
-  clickhouseHost: ""
-  clickhouseHostFrom: {}
+  # HTTP/TCP endpoints are separate as different components require the use of different protocols.
+  clickhouseHttpHost: ""
+  clickhouseHttpHostFrom: {}
+  clickhouseTcpHost: ""
+  clickhouseTcpHostFrom: {}
   clickhouseDatabase: ""
   clickhouseDatabaseFrom: {}
   clickhouseUsername: ""
