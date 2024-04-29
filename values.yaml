@@ -861,6 +861,6 @@ clickhouse:
     username: "jitsu"
     password: "jitsu"
   keeper:
-    enabled: true
-  zookeeper:
     enabled: false
+  zookeeper:
+    enabled: true
