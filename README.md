@@ -170,3 +170,10 @@ This release disables the Redis deployment by default as it is no longer require
 If you have functions persistent storage or identity stitching data you wish to keep, set
 `redis.enabled` to `true` to enable "double read" mode as outlined in the [release notes for Jitsu
 v2.5.0](https://github.com/jitsucom/jitsu/releases/tag/jitsu2-v2.5.0).
+
+### TODO: TBD
+This release splits the `config.clickhouseHost` and `config.clickhouseHostFrom` parameters up into
+separate parameters for HTTP and TCP, as different components require different protocols. If you
+were using these parameters, simply set `config.clickhouseHttpHost` and `config.clickhouseTcpHost`
+(or the equivalent `...From` variants) making sure to set the correct port. If you were setting this
+on a per-component basis or letting the chart configure it for you no action is needed.
