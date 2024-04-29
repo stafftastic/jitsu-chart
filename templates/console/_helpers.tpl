@@ -25,13 +25,13 @@ app.kubernetes.io/component: console
   value: {{ .databaseUrl | default (include "jitsu.databaseUrl" $) | quote }}
 {{- end }}
 
-{{- if or .clickhouseHostFrom $.Values.config.clickhouseHostFrom }}
+{{- if or .clickhouseHostFrom $.Values.config.clickhouseHttpHostFrom }}
 - name: CLICKHOUSE_HOST
   valueFrom:
-    {{- toYaml (.clickhouseHostFrom | default $.Values.config.clickhouseHostFrom) | nindent 4 }}
+    {{- toYaml (.clickhouseHostFrom | default $.Values.config.clickhouseHttpHostFrom) | nindent 4 }}
 {{- else }}
 - name: CLICKHOUSE_HOST
-  value: {{ .clickhouseHost | default ((include "jitsu.clickhouseHost" $) | replace "9000" "8123") | quote }}
+  value: {{ .clickhouseHost | default (include "jitsu.clickhouseHttpHost" $) | quote }}
 {{- end }}
 
 {{- if or .clickhouseDatabaseFrom $.Values.config.clickhouseDatabaseFrom }}

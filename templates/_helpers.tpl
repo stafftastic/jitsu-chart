@@ -118,11 +118,19 @@ Create the name of the service account to use
 {{- end }}
 {{- end }}
 
-{{- define "jitsu.clickhouseHost" -}}
-{{- if and (not .Values.config.clickhouseHost) .Values.clickhouse.enabled -}}
+{{- define "jitsu.clickhouseHttpHost" -}}
+{{- if and (not .Values.config.clickhouseHttpHost) .Values.clickhouse.enabled -}}
+{{ .Release.Name }}-clickhouse:8123
+{{- else -}}
+{{ .Values.config.clickhouseHttpHost }}
+{{- end }}
+{{- end }}
+
+{{- define "jitsu.clickhouseTcpHost" -}}
+{{- if and (not .Values.config.clickhouseTcpHost) .Values.clickhouse.enabled -}}
 {{ .Release.Name }}-clickhouse:9000
 {{- else -}}
-{{ .Values.config.clickhouseHost }}
+{{ .Values.config.clickhouseTcpHost }}
 {{- end }}
 {{- end }}
 
