@@ -177,3 +177,8 @@ separate parameters for HTTP and TCP, as different components require different 
 were using these parameters, simply set `config.clickhouseHttpHost` and `config.clickhouseTcpHost`
 (or the equivalent `...From` variants) making sure to set the correct port. If you were setting this
 on a per-component basis or letting the chart configure it for you no action is needed.
+
+ClickHouse is now also set up to use Zookeeper instead of ClickHouse Keeper as it is currently
+broken in Bitnami's Helm chart for ClickHouse: https://github.com/bitnami/charts/issues/15935. If
+you had a working configuration using ClickHouse Keeper, you will need to explicitly enable it and
+disable Zookeeper to avoid switching over to a fresh Zookeeper deployment.
