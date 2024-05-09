@@ -803,6 +803,7 @@ migration:
     pullPolicy: IfNotPresent
     tag: ""
   restartPolicy: Never
+  command: [prisma, db, push, --skip-generate, --schema, /app/schema.prisma]
   env: []
   envFrom: []
   jobAnnotations: {}
