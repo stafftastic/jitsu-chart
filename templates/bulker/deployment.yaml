@@ -99,6 +99,9 @@ spec:
             - name: http
               containerPort: {{ .Values.bulker.service.port }}
               protocol: TCP
+            - name: metrics
+              containerPort: {{ .Values.bulker.service.metricsPort }}
+              protocol: TCP
           {{- if .Values.console.probes.enabled }}
           livenessProbe:
             httpGet:

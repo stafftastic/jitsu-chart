@@ -112,6 +112,9 @@ spec:
             - name: http
               containerPort: {{ .Values.rotor.service.port }}
               protocol: TCP
+            - name: metrics
+              containerPort: {{ .Values.rotor.service.metricsPort }}
+              protocol: TCP
           {{- if .Values.rotor.probes.enabled }}
           livenessProbe:
             httpGet:

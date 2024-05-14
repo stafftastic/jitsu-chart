@@ -414,6 +414,7 @@ bulker:
   service:
     type: ClusterIP
     port: 3042
+    metricsPort: 9091
   probes:
     enabled: true
   autoscaling:
@@ -535,6 +536,7 @@ rotor:
   service:
     type: ClusterIP
     port: 3401
+    metricsPort: 9091
   probes:
     enabled: true
   autoscaling:
@@ -650,6 +652,7 @@ ingest:
   service:
     type: ClusterIP
     port: 3049
+    metricsPort: 9091
   ingress:
     enabled: false
     className: ''

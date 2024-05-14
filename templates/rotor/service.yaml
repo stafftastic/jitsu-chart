@@ -11,6 +11,10 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    - port: {{ .Values.rotor.service.metricsPort }}
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
   selector:
     {{- include "jitsu.selectorLabels" . | nindent 4 }}
     {{- include "jitsu.rotor.selectorLabels" . | nindent 4 }}
