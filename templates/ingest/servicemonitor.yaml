@@ -1,0 +1,35 @@
+{{- if .Values.ingest.serviceMonitor.enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "jitsu.fullname" . }}-ingest
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+    {{- include "jitsu.ingest.selectorLabels" . | nindent 4 }}
+    {{- with .Values.ingest.serviceMonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with .Values.serviceMonitors.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  endpoints:
+    - path: /metrics
+      port: metrics
+      scheme: http
+      interval: {{ .Values.ingest.serviceMonitor.interval | default .Values.serviceMonitors.interval }}
+      relabelings:
+        {{- with .Values.ingest.serviceMonitor.relabelings }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.serviceMonitors.relabelings }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      {{- include "jitsu.selectorLabels" . | nindent 6 }}
+      {{- include "jitsu.ingest.selectorLabels" . | nindent 6 }}
+{{- end -}}

@@ -4,6 +4,7 @@ metadata:
   name: {{ include "jitsu.fullname" . }}-bulker
   labels:
     {{- include "jitsu.labels" . | nindent 4 }}
+    {{- include "jitsu.bulker.selectorLabels" . | nindent 4 }}
 spec:
   type: {{ .Values.bulker.service.type }}
   ports:

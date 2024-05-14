@@ -435,7 +435,15 @@ bulker:
   nodeSelector: {}
   tolerations: []
   affinity: {}
-  topologySpreadConstraints:
+  topologySpreadConstraints: ~
+  serviceMonitor:
+    enabled: false
+    labels: {}
+    interval: ~
+    relabelings:
+      - action: replace
+        targetLabel: service
+        replacement: bulker
 
 rotor:
   enabled: true
@@ -557,7 +565,15 @@ rotor:
   nodeSelector: {}
   tolerations: []
   affinity: {}
-  topologySpreadConstraints:
+  topologySpreadConstraints: ~
+  serviceMonitor:
+    enabled: false
+    labels: {}
+    interval: ~
+    relabelings:
+      - action: replace
+        targetLabel: service
+        replacement: rotor
 
 ingest:
   enabled: true
@@ -686,7 +702,15 @@ ingest:
   nodeSelector: {}
   tolerations: []
   affinity: {}
-  topologySpreadConstraints:
+  topologySpreadConstraints: ~
+  serviceMonitor:
+    enabled: false
+    labels: {}
+    interval: ~
+    relabelings:
+      - action: replace
+        targetLabel: service
+        replacement: ingest
 
 syncctl:
   enabled: true
@@ -826,6 +850,14 @@ serviceAccount:
   name: ""
   rbac:
     create: true
+
+serviceMonitors:
+  interval: 60s
+  labels: {}
+  relabelings:
+    - action: replace
+      targetLabel: job
+      replacement: jitsu
 
 postgresql:
   enabled: true

@@ -4,6 +4,7 @@ metadata:
   name: {{ include "jitsu.fullname" . }}-rotor
   labels:
     {{- include "jitsu.labels" . | nindent 4 }}
+    {{- include "jitsu.rotor.selectorLabels" . | nindent 4 }}
 spec:
   type: {{ .Values.rotor.service.type }}
   ports:

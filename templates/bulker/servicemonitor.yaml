@@ -1,0 +1,35 @@
+{{- if .Values.bulker.serviceMonitor.enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "jitsu.fullname" . }}-bulker
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+    {{- include "jitsu.bulker.selectorLabels" . | nindent 4 }}
+    {{- with .Values.bulker.serviceMonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with .Values.serviceMonitors.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  endpoints:
+    - path: /metrics
+      port: metrics
+      scheme: http
+      interval: {{ .Values.bulker.serviceMonitor.interval | default .Values.serviceMonitors.interval }}
+      relabelings:
+        {{- with .Values.bulker.serviceMonitor.relabelings }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.serviceMonitors.relabelings }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      {{- include "jitsu.selectorLabels" . | nindent 6 }}
+      {{- include "jitsu.bulker.selectorLabels" . | nindent 6 }}
+{{- end -}}
