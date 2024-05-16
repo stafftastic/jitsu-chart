@@ -91,7 +91,7 @@ app.kubernetes.io/component: bulker
   valueFrom:
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
-      key: bulkerTokenSecret
+      key: globalHashSecret
 {{- end }}
 {{- with .tokenSecret }}
 - name: BULKER_TOKEN_SECRET

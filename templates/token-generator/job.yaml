@@ -41,6 +41,8 @@ spec:
           env:
             - name: FULLNAME
               value: {{ include "jitsu.fullname" . }}
+            - name: LABELS
+              value: {{ include "jitsu.labels" . | fromYaml | toJson | quote }}
             - name: SECRET_LENGTH
               value: {{ .Values.tokenGenerator.secretLength | default "32" | quote }}
             - name: TOKEN_LENGTH
@@ -51,74 +53,9 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          command: ["sh", "-c"]
+          command: ["python3", "-c"]
           args:
-            - |
-              if kubectl get secrets "$FULLNAME-tokens" > /dev/null 2>&1; then
-                echo "Secret $FULLNAME-tokens already exists, skipping generation"
-                exit 0
-              fi
-              set -e
-              random_string() {
-                length="$1"
-                cat /dev/urandom | tr -dc 'a-zA-Z0-9_-' | head -c "$length"
-              }
-              hex_hash_token() {
-                token="$1"
-                salt="$2"
-                secret="$3"
-                echo -n "$token$salt$secret" | sha512sum | awk '{print $1}' | tr -d '\n'
-              }
-              globalHashSecret=$(random_string $SECRET_LENGTH)
-              ingestTokenSecret=$(random_string $SECRET_LENGTH)
-              bulkerTokenSecret=$(random_string $SECRET_LENGTH)
-              syncctlTokenSecret=$(random_string $SECRET_LENGTH)
-              rotorTokenSecret=$(random_string $SECRET_LENGTH)
-
-              consoleAuthToken=$(random_string $TOKEN_LENGTH)
-              ingestAuthToken=$(random_string $TOKEN_LENGTH)
-              bulkerAuthToken=$(random_string $TOKEN_LENGTH)
-              syncctlAuthToken=$(random_string $TOKEN_LENGTH)
-              rotorAuthToken=$(random_string $TOKEN_LENGTH)
-
-              consoleAuthTokenSalt=$(random_string $SALT_LENGTH)
-              ingestAuthTokenSalt=$(random_string $SALT_LENGTH)
-              bulkerAuthTokenSalt=$(random_string $SALT_LENGTH)
-              syncctlAuthTokenSalt=$(random_string $SALT_LENGTH)
-              rotorAuthTokenSalt=$(random_string $SALT_LENGTH)
-
-              ingestAuthTokens="$ingestAuthTokenSalt.$(hex_hash_token $ingestAuthToken $ingestAuthTokenSalt $ingestTokenSecret)"
-              bulkerAuthTokens="$bulkerAuthTokenSalt.$(hex_hash_token $bulkerAuthToken $bulkerAuthTokenSalt $bulkerTokenSecret)"
-              syncctlAuthTokens="$syncctlAuthTokenSalt.$(hex_hash_token $syncctlAuthToken $syncctlAuthTokenSalt $syncctlTokenSecret)"
-              consoleAuthTokens="$consoleAuthTokenSalt.$(hex_hash_token $consoleAuthToken $consoleAuthTokenSalt $globalHashSecret)"
-              rotorAuthTokens="$rotorAuthTokenSalt.$(hex_hash_token $rotorAuthToken $rotorAuthTokenSalt $globalHashSecret)"
-
-              kubectl apply -f- <<EOF
-              apiVersion: v1
-              kind: Secret
-              metadata:
-                name: $FULLNAME-tokens
-              type: Opaque
-              stringData:
-                globalHashSecret: "$globalHashSecret"
-
-                ingestTokenSecret: "$ingestTokenSecret"
-                bulkerTokenSecret: "$bulkerTokenSecret"
-                syncctlTokenSecret: "$syncctlTokenSecret"
-                rotorTokenSecret: "$rotorTokenSecret"
-
-                ingestAuthToken: "$ingestAuthToken"
-                bulkerAuthToken: "$bulkerAuthToken"
-                syncctlAuthToken: "$syncctlAuthToken"
-                consoleAuthToken: "service-admin-account:$consoleAuthToken"
-                rotorAuthToken: "$rotorAuthToken"
-
-                ingestAuthTokens: "$ingestAuthTokens"
-                bulkerAuthTokens: "$bulkerAuthTokens"
-                syncctlAuthTokens: "$syncctlAuthTokens"
-                consoleAuthTokens: "$consoleAuthTokens"
-                rotorAuthTokens: "$rotorAuthTokens"
-              EOF
+            - {{ .Files.Get "scripts/token-generator.py" | quote }}
       {{- with (.Values.tokenGenerator.nodeSelector | default .Values.global.nodeSelector) }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
