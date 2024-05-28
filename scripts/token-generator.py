@@ -50,7 +50,7 @@ def getSecret(fullname):
     return None 
 
 def updateSecret(secret):
-    proc = subprocess.run(
+    subprocess.run(
         [
             "kubectl",
             "apply",
@@ -58,6 +58,7 @@ def updateSecret(secret):
             "-",
         ],
         input=json.dumps(secret).encode(),
+        check=True,
     )
 
 def generateTokenSet(service, globalHashSecret):
@@ -103,6 +104,7 @@ def __main__():
     try:
         globalHashSecret = b64decode(secret["data"].get("globalHashSecret"))
     except:
+        log("No global hash secret found, generating one...")
         globalHashSecret = secrets.token_urlsafe(SECRET_LENGTH)
         secret["data"]["globalHashSecret"] = b64encode(globalHashSecret)
 
@@ -114,6 +116,7 @@ def __main__():
                 b64decode(secret["data"].get(f"{service}AuthTokens")),
                 globalHashSecret
             )
+            log(f"Token for {service} is valid.")
         except:
             log(f"Generating token for {service}...")
             secret["data"].update(generateTokenSet(service, globalHashSecret))
