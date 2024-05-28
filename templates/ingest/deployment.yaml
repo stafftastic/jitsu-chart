@@ -99,6 +99,9 @@ spec:
             - name: http
               containerPort: {{ .Values.ingest.service.port }}
               protocol: TCP
+            - name: metrics
+              containerPort: {{ .Values.ingest.service.metricsPort }}
+              protocol: TCP
           {{- if .Values.ingest.probes.enabled }}
           livenessProbe:
             httpGet:

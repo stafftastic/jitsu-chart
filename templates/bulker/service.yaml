@@ -4,6 +4,7 @@ metadata:
   name: {{ include "jitsu.fullname" . }}-bulker
   labels:
     {{- include "jitsu.labels" . | nindent 4 }}
+    {{- include "jitsu.bulker.selectorLabels" . | nindent 4 }}
 spec:
   type: {{ .Values.bulker.service.type }}
   ports:
@@ -11,6 +12,10 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    - port: {{ .Values.bulker.service.metricsPort }}
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
   selector:
     {{- include "jitsu.selectorLabels" . | nindent 4 }}
     {{- include "jitsu.bulker.selectorLabels" . | nindent 4 }}

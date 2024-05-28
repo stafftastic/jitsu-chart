@@ -1,0 +1,35 @@
+{{- if .Values.rotor.serviceMonitor.enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "jitsu.fullname" . }}-rotor
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+    {{- include "jitsu.rotor.selectorLabels" . | nindent 4 }}
+    {{- with .Values.rotor.serviceMonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with .Values.serviceMonitors.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  endpoints:
+    - path: /metrics
+      port: metrics
+      scheme: http
+      interval: {{ .Values.rotor.serviceMonitor.interval | default .Values.serviceMonitors.interval }}
+      relabelings:
+        {{- with .Values.rotor.serviceMonitor.relabelings }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.serviceMonitors.relabelings }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      {{- include "jitsu.selectorLabels" . | nindent 6 }}
+      {{- include "jitsu.rotor.selectorLabels" . | nindent 6 }}
+{{- end -}}

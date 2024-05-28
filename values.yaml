@@ -414,6 +414,7 @@ bulker:
   service:
     type: ClusterIP
     port: 3042
+    metricsPort: 9091
   probes:
     enabled: true
   autoscaling:
@@ -434,7 +435,15 @@ bulker:
   nodeSelector: {}
   tolerations: []
   affinity: {}
-  topologySpreadConstraints:
+  topologySpreadConstraints: ~
+  serviceMonitor:
+    enabled: false
+    labels: {}
+    interval: ~
+    relabelings:
+      - action: replace
+        targetLabel: service
+        replacement: bulker
 
 rotor:
   enabled: true
@@ -535,6 +544,7 @@ rotor:
   service:
     type: ClusterIP
     port: 3401
+    metricsPort: 9091
   probes:
     enabled: true
   autoscaling:
@@ -555,7 +565,15 @@ rotor:
   nodeSelector: {}
   tolerations: []
   affinity: {}
-  topologySpreadConstraints:
+  topologySpreadConstraints: ~
+  serviceMonitor:
+    enabled: false
+    labels: {}
+    interval: ~
+    relabelings:
+      - action: replace
+        targetLabel: service
+        replacement: rotor
 
 ingest:
   enabled: true
@@ -650,6 +668,7 @@ ingest:
   service:
     type: ClusterIP
     port: 3049
+    metricsPort: 9091
   ingress:
     enabled: false
     className: ''
@@ -683,7 +702,15 @@ ingest:
   nodeSelector: {}
   tolerations: []
   affinity: {}
-  topologySpreadConstraints:
+  topologySpreadConstraints: ~
+  serviceMonitor:
+    enabled: false
+    labels: {}
+    interval: ~
+    relabelings:
+      - action: replace
+        targetLabel: service
+        replacement: ingest
 
 syncctl:
   enabled: true
@@ -823,6 +850,14 @@ serviceAccount:
   name: ""
   rbac:
     create: true
+
+serviceMonitors:
+  interval: 60s
+  labels: {}
+  relabelings:
+    - action: replace
+      targetLabel: job
+      replacement: jitsu
 
 postgresql:
   enabled: true

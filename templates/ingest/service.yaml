@@ -4,6 +4,7 @@ metadata:
   name: {{ include "jitsu.fullname" . }}-ingest
   labels:
     {{- include "jitsu.labels" . | nindent 4 }}
+    {{- include "jitsu.ingest.selectorLabels" . | nindent 4 }}
 spec:
   type: {{ .Values.ingest.service.type }}
   ports:
@@ -11,6 +12,10 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    - port: {{ .Values.ingest.service.metricsPort }}
+      targetPort: metrics
+      protocol: TCP
+      name: metrics
   selector:
     {{- include "jitsu.selectorLabels" . | nindent 4 }}
     {{- include "jitsu.ingest.selectorLabels" . | nindent 4 }}
