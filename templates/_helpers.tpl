@@ -51,6 +51,13 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
+Hash, used as a unique label for the Chart version + value set
+*/}}
+{{- define "jitsu.hash" -}}
+{{- sha1sum (printf "%s%s" (toJson .Values) (.Chart.Version)) | substr 0 8 -}}
+{{- end }}
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "jitsu.serviceAccountName" -}}

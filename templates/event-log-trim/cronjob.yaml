@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ include "jitsu.fullname" . }}-event-log-trim-{{ sha1sum (toJson .Values) | substr 0 8 }}
+  name: {{ include "jitsu.fullname" . }}-event-log-trim
   labels:
     {{- include "jitsu.labels" . | nindent 4 }}
   {{- with .Values.eventLogTrim.jobAnnotations }}
@@ -41,7 +41,7 @@ spec:
                 {{- toYaml . | nindent 16 }}
               {{- end }}
               image: ghcr.io/groundnuty/k8s-wait-for:v2.0
-              args: ["job-wr", "{{ include "jitsu.fullname" . }}-token-generator-{{ sha1sum (toJson .Values) | substr 0 8 }}"]
+              args: ["job-wr", "{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}"]
               {{- end }}
             {{- if .Values.console.enabled }}
             - name: wait-for-console

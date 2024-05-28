@@ -2,7 +2,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "jitsu.fullname" . }}-token-generator-{{ sha1sum (toJson .Values) | substr 0 8 }}
+  name: {{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}
   labels:
     {{- include "jitsu.labels" . | nindent 4 }}
   {{- with .Values.tokenGenerator.jobAnnotations }}
