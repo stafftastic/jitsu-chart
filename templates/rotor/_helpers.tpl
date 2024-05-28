@@ -106,7 +106,7 @@ app.kubernetes.io/component: rotor
   valueFrom:
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
-      key: rotorTokenSecret
+      key: globalHashSecret
 {{- end }}
 {{- with .tokenSecret }}
 - name: ROTOR_TOKEN_SECRET

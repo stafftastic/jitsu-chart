@@ -88,7 +88,7 @@ app.kubernetes.io/component: ingest
   valueFrom:
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
-      key: ingestTokenSecret
+      key: globalHashSecret
 {{- end }}
 {{- with .tokenSecret }}
 - name: INGEST_TOKEN_SECRET

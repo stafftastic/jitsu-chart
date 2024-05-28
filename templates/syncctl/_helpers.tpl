@@ -52,7 +52,7 @@ app.kubernetes.io/component: syncctl
   valueFrom:
     secretKeyRef:
       name: {{ include "jitsu.fullname" $ }}-tokens
-      key: syncctlTokenSecret
+      key: globalHashSecret
 {{- end }}
 {{- with .tokenSecret }}
 - name: SYNCCTL_TOKEN_SECRET
