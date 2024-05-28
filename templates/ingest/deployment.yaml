@@ -40,7 +40,7 @@ spec:
         {{- if .Values.tokenGenerator.enabled }}
         - name: wait-for-tokens
           image: ghcr.io/groundnuty/k8s-wait-for:v2.0
-          args: ["job-wr", "{{ include "jitsu.fullname" . }}-token-generator-{{ sha1sum (toJson .Values) | substr 0 8 }}"]
+          args: ["job-wr", "{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}"]
         {{- end }}
         {{- if .Values.clickhouse.enabled }}
         - name: wait-for-clickhouse
