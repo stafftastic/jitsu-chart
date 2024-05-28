@@ -842,6 +842,34 @@ migration:
   tolerations: []
   affinity: {}
 
+eventLogInit:
+  enabled: true
+  config:
+    # Set to false to disable config abstractions in order to configure manually.
+    enabled: true
+
+    # Leave empty to configure automatically
+    consoleEndpoint: ""
+
+    # Configured automatically when using the token generator
+    consoleAuthToken: ""
+    consoleAuthTokenFrom: {}
+  image:
+    repository: jitsucom/console
+    pullPolicy: IfNotPresent
+    tag: ""
+  restartPolicy: Never
+  env: []
+  envFrom: []
+  jobAnnotations: {}
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
 imagePullSecrets: []
 
 serviceAccount:
