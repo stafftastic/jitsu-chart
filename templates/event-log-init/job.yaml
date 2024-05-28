@@ -1,0 +1,109 @@
+{{- if .Values.eventLogInit.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "jitsu.fullname" . }}-event-log-init-{{ sha1sum (toJson .Values) | substr 0 8 }}
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+  {{- with .Values.eventLogInit.jobAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        {{- include "jitsu.selectorLabels" . | nindent 8 }}
+      {{- with (merge (deepCopy .Values.eventLogInit.podAnnotations) .Values.global.podAnnotations) }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      restartPolicy: "Never"
+      serviceAccountName: {{ include "jitsu.serviceAccountName" . }}
+      {{- with (.Values.eventLogInit.podSecurityContext | default .Values.global.podSecurityContext) }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+        {{- if .Values.tokenGenerator.enabled }}
+        - name: wait-for-tokens
+          {{- with (.Values.eventLogInit.securityContext | default .Values.global.securityContext) }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          args: ["job-wr", "{{ include "jitsu.fullname" . }}-token-generator-{{ sha1sum (toJson .Values) | substr 0 8 }}"]
+          {{- end }}
+        {{- if .Values.console.enabled }}
+        - name: wait-for-console
+          {{- with (.Values.eventLogInit.securityContext | default .Values.global.securityContext) }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          args: ["service", "{{ .Release.Name }}-console"]
+        {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- with (.Values.eventLogInit.securityContext | default .Values.global.securityContext) }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.eventLogInit.image.repository }}:{{ .Values.eventLogInit.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.eventLogInit.image.pullPolicy }}
+          command:
+            - sh
+            - -c
+            - >
+              curl --silent --output /dev/null --show-error -H "Authorization: Bearer $CONSOLE_AUTH_TOKEN" "$CONSOLE_ENDPOINT"
+          {{- if .Values.eventLogInit.envFrom }}
+          envFrom:
+            {{- toYaml .Values.eventLogInit.envFrom | nindent 12 }}
+          {{- end }}
+          env:
+            {{- if and .Values.config.enabled .Values.eventLogInit.config.enabled }}
+            - name: CONSOLE_ENDPOINT
+              value: {{ printf "http://%s-console:%d/api/admin/events-log-init"
+                (include "jitsu.fullname" .)
+                (int $.Values.console.service.port)
+              }}
+            {{- if .Values.eventLogInit.config.consoleAuthTokenFrom }}
+            - name: CONSOLE_AUTH_TOKEN
+              valueFrom:
+                {{- toYaml .Values.eventLogInit.config.consoleAuthTokenFrom | nindent 16 }}
+            {{- else }}
+            {{- if and (not .Values.eventLogInit.config.consoleAuthToken) .Values.console.enabled .Values.tokenGenerator.enabled }}
+            - name: CONSOLE_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "jitsu.fullname" . }}-tokens
+                  key: consoleAuthToken
+            {{- end }}
+            {{- with .Values.eventLogInit.config.consoleAuthToken }}
+            - name: CONSOLE_AUTH_TOKEN
+              value: {{ .Values.eventLogInit.config.consoleAuthToken | quote }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
+            {{- with .Values.eventLogInit.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+      {{- with (.Values.eventLogInit.nodeSelector | default .Values.global.nodeSelector) }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with (.Values.eventLogInit.affinity | default .Values.global.affinity) }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with (.Values.eventLogInit.tolerations | default .Values.global.affinity) }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
