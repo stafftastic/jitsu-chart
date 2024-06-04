@@ -13,6 +13,7 @@ spec:
     rollingUpdate:
       maxSurge: 10
       maxUnavailable: 0
+  restartPolicy: Always
   selector:
     matchLabels:
       {{- include "jitsu.selectorLabels" . | nindent 6 }}
