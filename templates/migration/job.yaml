@@ -67,7 +67,7 @@ spec:
             {{- if or .databaseUrlFrom $.Values.config.databaseUrlFrom }}
             - name: DATABASE_URL
               valueFrom:
-                {{- toYaml (.databaseUrlFrom | default $.Values.config.databaseUrlFrom) | nindent 4 }}
+                {{- toYaml (.databaseUrlFrom | default $.Values.config.databaseUrlFrom) | nindent 14 }}
             {{- else }}
             - name: DATABASE_URL
               value: {{ .Values.migration.config.databaseUrl | default (include "jitsu.databaseUrl" .) | quote }}
