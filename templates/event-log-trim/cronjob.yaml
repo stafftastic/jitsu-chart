@@ -105,7 +105,7 @@ spec:
           affinity:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with (.Values.eventLogTrim.tolerations | default .Values.global.affinity) }}
+          {{- with (.Values.eventLogTrim.tolerations | default .Values.global.tolerations) }}
           tolerations:
             {{- toYaml . | nindent 12 }}
           {{- end }}
