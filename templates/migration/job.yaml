@@ -84,7 +84,7 @@ spec:
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with (.Values.migration.tolerations | default .Values.global.affinity) }}
+      {{- with (.Values.migration.tolerations | default .Values.global.tolerations) }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
