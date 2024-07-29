@@ -140,7 +140,7 @@ spec:
             {{- include "jitsu.rotor.env" . | nindent 12 }}
             {{- end }}
             {{- with .Values.rotor.env }}
-            {{- toYaml .Values.rotor.env | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
             {{- end }}
           {{- with (.Values.rotor.resources | default .Values.global.resources) }}
           resources:
