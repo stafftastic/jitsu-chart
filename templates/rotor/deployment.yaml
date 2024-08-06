@@ -72,7 +72,7 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           image: ghcr.io/groundnuty/k8s-wait-for:v2.0
-          args: ["service", "{{ include "jitsu.fullname" . }}-kafka"]
+          args: ["service", "{{ .Release.Name }}-kafka"]
         {{- end }}
         {{- if .Values.mongodb.enabled }}
         - name: wait-for-mongodb
