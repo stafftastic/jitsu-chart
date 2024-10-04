@@ -87,7 +87,7 @@ spec:
             {{- end }}
             {{- with .Values.eventLogInit.config.consoleAuthToken }}
             - name: CONSOLE_AUTH_TOKEN
-              value: {{ .Values.eventLogInit.config.consoleAuthToken | quote }}
+              value: {{ . | quote }}
             {{- end }}
             {{- end }}
             {{- end }}

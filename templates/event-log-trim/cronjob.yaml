@@ -90,7 +90,7 @@ spec:
                 {{- end }}
                 {{- with .Values.eventLogTrim.config.consoleAuthToken }}
                 - name: CONSOLE_AUTH_TOKEN
-                  value: {{ .Values.eventLogTrim.config.consoleAuthToken | quote }}
+                  value: {{ . | quote }}
                 {{- end }}
                 {{- end }}
                 {{- end }}
