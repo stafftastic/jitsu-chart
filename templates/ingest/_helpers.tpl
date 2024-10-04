@@ -120,7 +120,7 @@ app.kubernetes.io/component: ingest
       key: globalHashSecret
 {{- end }}
 {{- with (.globalHashSecret | default $.Values.config.globalHashSecret) }}
-- name: GLOBAL_HASH_SECRET
+- name: INGEST_GLOBAL_HASH_SECRET
   value: {{ . | quote }}
 {{- end }}
 {{- end }}
