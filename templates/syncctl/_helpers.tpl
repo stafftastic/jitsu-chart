@@ -82,6 +82,9 @@ app.kubernetes.io/component: syncctl
 {{- end }}
 {{- end }}
 
+- name: SYNCCTL_SIDECAR_IMAGE
+  value: {{ .sidecarImage | default (printf "jitsucom/sidecar:%s" $.Chart.AppVersion) | quote }}
+
 {{- if and (not .bulkerUrl) (not $.Values.config.bulkerUrl) $.Values.bulker.enabled }}
 - name: SYNCCTL_BULKER_URL
   value: {{ printf "http://%s-bulker:%d" (include "jitsu.fullname" $) (int $.Values.bulker.service.port) | quote }}
