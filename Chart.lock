@@ -1,18 +1,18 @@
 dependencies:
 - name: postgresql
   repository: oci://registry-1.docker.io/bitnamicharts
-  version: 14.3.3
+  version: 16.0.1
 - name: redis
   repository: oci://registry-1.docker.io/bitnamicharts
-  version: 18.19.4
+  version: 20.2.0
 - name: kafka
   repository: oci://registry-1.docker.io/bitnamicharts
-  version: 26.11.4
+  version: 30.1.5
 - name: mongodb
   repository: oci://registry-1.docker.io/bitnamicharts
-  version: 14.13.0
+  version: 16.0.3
 - name: clickhouse
   repository: oci://registry-1.docker.io/bitnamicharts
-  version: 6.0.2
-digest: sha256:849a9bf101f0f355ef5462e3523a9b8aa848a5e80b9d24897cc75fb61407d6b2
-generated: "2024-04-11T08:04:50.759931548+02:00"
+  version: 6.2.27
+digest: sha256:3975824a58decad37bfddf78e2de3ed35c50c3199942d5d1756de5a2a3f12a11
+generated: "2024-10-11T12:01:43.61881714+02:00"
