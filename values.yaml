@@ -819,6 +819,19 @@ migration:
     # https://docs.jitsu.com/self-hosting/configuration#database_url
     databaseUrl: ""
     databaseUrlFrom: {}
+
+    # Leave empty to use global configuration
+    clickhouseHttpHost: ""
+    clickhouseHttpHostFrom: {}
+    clickhouseTcpHost: ""
+    clickhouseTcpHostFrom: {}
+    clickhouseDatabase: ""
+    clickhouseDatabaseFrom: {}
+    clickhouseUsername: ""
+    clickhouseUsernameFrom: {}
+    clickhousePassword: ""
+    clickhousePasswordFrom: {}
+    clickhouseSsl: ""
   image:
     repository: jitsucom/console
     pullPolicy: IfNotPresent

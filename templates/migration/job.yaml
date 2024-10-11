@@ -64,13 +64,55 @@ spec:
           {{- end }}
           env:
             {{- if and .Values.config.enabled .Values.migration.config.enabled }}
+            {{- with .Values.migration.config }}
             {{- if or .databaseUrlFrom $.Values.config.databaseUrlFrom }}
             - name: DATABASE_URL
               valueFrom:
                 {{- toYaml (.databaseUrlFrom | default $.Values.config.databaseUrlFrom) | nindent 16 }}
             {{- else }}
             - name: DATABASE_URL
-              value: {{ .Values.migration.config.databaseUrl | default (include "jitsu.databaseUrl" .) | quote }}
+              value: {{ .databaseUrl | default (include "jitsu.databaseUrl" $) | quote }}
+            {{- end }}
+            {{- if or .clickhouseHostFrom $.Values.config.clickhouseHttpHostFrom }}
+            - name: CLICKHOUSE_HOST
+              valueFrom:
+                {{- toYaml (.clickhouseHostFrom | default $.Values.config.clickhouseHttpHostFrom) | nindent 4 }}
+            {{- else }}
+            - name: CLICKHOUSE_HOST
+              value: {{ .clickhouseHost | default (include "jitsu.clickhouseHttpHost" $) | quote }}
+            {{- end }}
+
+            {{- if or .clickhouseDatabaseFrom $.Values.config.clickhouseDatabaseFrom }}
+            - name: CLICKHOUSE_DATABASE
+              valueFrom:
+                {{- toYaml (.clickhouseDatabaseFrom | default $.Values.config.clickhouseDatabaseFrom) | nindent 4 }}
+            {{- else }}
+            - name: CLICKHOUSE_DATABASE
+              value: {{ .clickhouseDatabase | default (include "jitsu.clickhouseDatabase" $) | quote }}
+            {{- end }}
+
+            {{- if or .clickhouseUsernameFrom $.Values.config.clickhouseUsernameFrom }}
+            - name: CLICKHOUSE_USERNAME
+              valueFrom:
+                {{- toYaml (.clickhouseUsernameFrom | default $.Values.config.clickhouseUsernameFrom) | nindent 4 }}
+            {{- else }}
+            - name: CLICKHOUSE_USERNAME
+              value: {{ .clickhouseUsername | default (include "jitsu.clickhouseUsername" $) | quote }}
+            {{- end }}
+
+            {{- if or .clickhousePasswordFrom $.Values.config.clickhousePasswordFrom }}
+            - name: CLICKHOUSE_PASSWORD
+              valueFrom:
+                {{- toYaml (.clickhousePasswordFrom | default $.Values.config.clickhousePasswordFrom) | nindent 4 }}
+            {{- else }}
+            - name: CLICKHOUSE_PASSWORD
+              value: {{ .clickhousePassword | default (include "jitsu.clickhousePassword" $) | quote }}
+            {{- end }}
+
+            {{- with (.clickhouseSsl | default $.Values.config.clickhouseSsl) }}
+            - name: CLICKHOUSE_SSL
+              value: {{ . | quote }}
+            {{- end }}
             {{- end }}
             {{- end }}
             {{- with .Values.migration.env }}
