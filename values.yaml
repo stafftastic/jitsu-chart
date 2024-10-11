@@ -750,7 +750,7 @@ syncctl:
     sidecarDatabaseUrl: ""
     sidecarDatabaseUrlFrom: {}
 
-    # Leave empty to default to jitsucom/sidecar:{{ .Chart.appVersion }}
+    # Leave empty to default to jitsucom/sidecar:{{ .Values.syncctl.image.tag | default .Chart.AppVersion }}
     sidecarImage: ""
 
     # https://docs.jitsu.com/self-hosting/configuration#syncctl_kubernetes_client_config

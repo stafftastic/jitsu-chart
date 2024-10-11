@@ -83,7 +83,7 @@ app.kubernetes.io/component: syncctl
 {{- end }}
 
 - name: SYNCCTL_SIDECAR_IMAGE
-  value: {{ .sidecarImage | default (printf "jitsucom/sidecar:%s" $.Chart.AppVersion) | quote }}
+  value: {{ .sidecarImage | default (printf "jitsucom/sidecar:%s" ($.Values.syncctl.image.tag | default $.Chart.AppVersion)) | quote }}
 
 {{- if .kubernetesClientConfigFrom }}
 - name: SYNCCTL_KUBERNETES_CLIENT_CONFIG
