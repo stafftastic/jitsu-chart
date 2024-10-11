@@ -15,7 +15,8 @@ EOF
 ```
 
 For a production deployment it is recommended to read through `values.yaml` and make conscious
-decisions in order to ensure the deployment is secure, reliable and scalable.
+decisions in order to ensure the deployment is secure, reliable and scalable. Dependencies are
+minimally configured and do not provide high-availability out of the box.
 
 ## Basic Configuration
 `values.yaml`:
@@ -26,7 +27,7 @@ postgresql:
 mongodb:
   auth:
     passwords: ["changeMe"]
-redis:
+clickhouse:
   auth:
     password: "changeMe"
 
@@ -54,19 +55,19 @@ This chart deploys the following dependencies by default in order to provide an 
 experience, however for production it is recommended you deploy these separately:
 
 * Postgres
-* Redis
 * Kafka
 * MongoDB
+* Clickhouse
 
 In order to use your own instances of these, disable them in with their respective options:
 ```yaml
 postgresql:
   enabled: false
-redis:
-  enabled: false
 kafka:
   enabled: false
 mongodb:
+  enabled: false
+clickhouse:
   enabled: false
 ```
 
@@ -74,9 +75,12 @@ Then supply the connection details in the `config` section (or specifically per 
 ```yaml
 config:
   databaseUrl: "postgres://..."
-  redisUrl: "redis://..."
   kafkaBootstrapServers: "kafka:9092,..."
   mongodbUrl: "mongodb://..."
+  clickhouseHttpHost: "...:8123"
+  clickhouseTcpHost: "...:9000"
+  clickhouseUsername: "..."
+  clickhousePassword: "..."
 ```
 
 ## Configuration Options
@@ -158,19 +162,6 @@ necessary if you're using the Kafka subchart.
 It's not necessary to go through all intermediate versions when upgrading, however if upgrading to a
 version greater or equal to one mentioned below, additional steps may be required.
 
-### v1.1.0
-The Rotor is now also protected with an auth token when using the token generator (enabled by
-default). This means that if you have an old token secret you will either need to add values for the
-Rotor to the secret or delete the secret and let the token generator create a new one upon
-deployment. Deleting the secret will also use the uniform format across services introduced in Jitsu
-v2.4.5.
-
-### v1.4.0
-This release disables the Redis deployment by default as it is no longer required by Jitsu v2.5.0.
-If you have functions persistent storage or identity stitching data you wish to keep, set
-`redis.enabled` to `true` to enable "double read" mode as outlined in the [release notes for Jitsu
-v2.5.0](https://github.com/jitsucom/jitsu/releases/tag/jitsu2-v2.5.0).
-
 ### v1.6.0
 This release splits the `config.clickhouseHost` and `config.clickhouseHostFrom` parameters up into
 separate parameters for HTTP and TCP, as different components require different protocols. If you
@@ -182,3 +173,16 @@ ClickHouse is now also set up to use Zookeeper instead of ClickHouse Keeper as i
 broken in Bitnami's Helm chart for ClickHouse: https://github.com/bitnami/charts/issues/15935. If
 you had a working configuration using ClickHouse Keeper, you will need to explicitly enable it and
 disable Zookeeper to avoid switching over to a fresh Zookeeper deployment.
+
+### v1.4.0
+This release disables the Redis deployment by default as it is no longer required by Jitsu v2.5.0.
+If you have functions persistent storage or identity stitching data you wish to keep, set
+`redis.enabled` to `true` to enable "double read" mode as outlined in the [release notes for Jitsu
+v2.5.0](https://github.com/jitsucom/jitsu/releases/tag/jitsu2-v2.5.0).
+
+### v1.1.0
+The Rotor is now also protected with an auth token when using the token generator (enabled by
+default). This means that if you have an old token secret you will either need to add values for the
+Rotor to the secret or delete the secret and let the token generator create a new one upon
+deployment. Deleting the secret will also use the uniform format across services introduced in Jitsu
+v2.4.5.
