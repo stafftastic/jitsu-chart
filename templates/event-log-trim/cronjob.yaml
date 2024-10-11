@@ -11,11 +11,11 @@ metadata:
   {{- end }}
 spec:
   schedule: {{ .Values.eventLogTrim.schedule | quote }}
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
   jobTemplate:
     spec:
       backoffLimit: 1
-      successfulJobsHistoryLimit: 1
-      failedJobsHistoryLimit: 1
       template:
         metadata:
           labels:
