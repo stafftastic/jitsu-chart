@@ -946,7 +946,8 @@ mongodb:
 
 kafka:
   enabled: true
-  replicaCount: 1
+  controller:
+    replicaCount: 1
   listeners:
     interbroker:
       protocol: PLAINTEXT
@@ -954,6 +955,7 @@ kafka:
       protocol: PLAINTEXT
     client:
       protocol: PLAINTEXT
+    external:
       external: PLAINTEXT
 
 clickhouse:
