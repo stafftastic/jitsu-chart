@@ -753,15 +753,6 @@ syncctl:
     # Leave empty to default to jitsucom/sidecar:{{ .Chart.appVersion }}
     sidecarImage: ""
 
-    # Leave empty to configure automatically.
-    # https://docs.jitsu.com/self-hosting/configuration#syncctl_bulker_url
-    bulkerUrl: ""
-
-    # Leave empty to configure automatically.
-    # https://docs.jitsu.com/self-hosting/configuration#syncctl_bulker_auth_key
-    bulkerAuthToken: ""
-    bulkerAuthTokenFrom: {}
-
     # https://docs.jitsu.com/self-hosting/configuration#syncctl_kubernetes_client_config
     kubernetesClientConfig: ""
     kubernetesClientConfigFrom: {}
