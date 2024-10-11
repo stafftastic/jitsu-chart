@@ -946,6 +946,7 @@ mongodb:
 
 kafka:
   enabled: true
+  replicaCount: 1
   listeners:
     interbroker:
       protocol: PLAINTEXT
