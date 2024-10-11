@@ -162,6 +162,18 @@ necessary if you're using the Kafka subchart.
 It's not necessary to go through all intermediate versions when upgrading, however if upgrading to a
 version greater or equal to one mentioned below, additional steps may be required.
 
+### v1.10.0
+This release sets the default ClickHouse database to `newjitsu_metrics` as some components did not
+behave correctly with the old default (`default`). If you have data you wish to keep in the old
+`default` database, you may need to manually migrate this.
+
+Kafka is now configured with only a single controller replica by default. It is recommended to
+explicitly set this to 3 replicas if you are upgrading and using the default configuration.
+
+ClickHouse is now configured with only a single shard and single replica by default. It is
+recommended to explicitly set this to 2 shards and 3 replicas if you are upgrading and using the
+default configuration.
+
 ### v1.6.0
 This release splits the `config.clickhouseHost` and `config.clickhouseHostFrom` parameters up into
 separate parameters for HTTP and TCP, as different components require different protocols. If you
