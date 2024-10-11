@@ -958,10 +958,12 @@ kafka:
 
 clickhouse:
   enabled: true
+  shards: 1
+  replicaCount: 1
   auth:
     username: "jitsu"
     password: "jitsu"
   keeper:
     enabled: false
   zookeeper:
-    enabled: true
+    enabled: false
