@@ -160,7 +160,9 @@ necessary if you're using the Kafka subchart.
 
 ## Upgrading
 It's not necessary to go through all intermediate versions when upgrading, however if upgrading to a
-version greater or equal to one mentioned below, additional steps may be required.
+version greater or equal to one mentioned below, additional steps may be required. This generally
+only encompasses breaking changes within the chart itself. New versions of Jitsu may still introduce
+breaking changes not covered here.
 
 ### v2.0.0
 This release sets the default ClickHouse database to `newjitsu_metrics` as some components did not
