@@ -162,7 +162,7 @@ necessary if you're using the Kafka subchart.
 It's not necessary to go through all intermediate versions when upgrading, however if upgrading to a
 version greater or equal to one mentioned below, additional steps may be required.
 
-### v1.10.0
+### v2.0.0
 This release sets the default ClickHouse database to `newjitsu_metrics` as some components did not
 behave correctly with the old default (`default`). If you have data you wish to keep in the old
 `default` database, you may need to manually migrate this.
