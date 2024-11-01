@@ -82,32 +82,8 @@ app.kubernetes.io/component: syncctl
 {{- end }}
 {{- end }}
 
-{{- if and (not .bulkerUrl) (not $.Values.config.bulkerUrl) $.Values.bulker.enabled }}
-- name: SYNCCTL_BULKER_URL
-  value: {{ printf "http://%s-bulker:%d" (include "jitsu.fullname" $) (int $.Values.bulker.service.port) | quote }}
-{{- end }}
-{{- with (.bulkerUrl | default $.Values.config.bulkerUrl) }}
-- name: SYNCCTL_BULKER_URL
-  value: {{ . | quote }}
-{{- end }}
-
-{{- if .bulkerAuthTokenFrom }}
-- name: SYNCCTL_BULKER_AUTH_TOKEN
-  valueFrom:
-    {{- toYaml .bulkerAuthTokenFrom | nindent 4 }}
-{{- else }}
-{{- if and (not .bulkerAuthToken ) $.Values.bulker.enabled $.Values.tokenGenerator.enabled }}
-- name: SYNCCTL_BULKER_AUTH_TOKEN
-  valueFrom:
-    secretKeyRef:
-      name: {{ include "jitsu.fullname" $ }}-tokens
-      key: bulkerAuthToken
-{{- end }}
-{{- with .bulkerAuthToken }}
-- name: SYNCCTL_BULKER_AUTH_TOKEN
-  value: {{ . | quote }}
-{{- end }}
-{{- end }}
+- name: SYNCCTL_SIDECAR_IMAGE
+  value: {{ .sidecarImage | default (printf "jitsucom/sidecar:%s" ($.Values.syncctl.image.tag | default $.Chart.AppVersion)) | quote }}
 
 {{- if .kubernetesClientConfigFrom }}
 - name: SYNCCTL_KUBERNETES_CLIENT_CONFIG

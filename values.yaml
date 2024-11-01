@@ -750,14 +750,8 @@ syncctl:
     sidecarDatabaseUrl: ""
     sidecarDatabaseUrlFrom: {}
 
-    # Leave empty to configure automatically.
-    # https://docs.jitsu.com/self-hosting/configuration#syncctl_bulker_url
-    bulkerUrl: ""
-
-    # Leave empty to configure automatically.
-    # https://docs.jitsu.com/self-hosting/configuration#syncctl_bulker_auth_key
-    bulkerAuthToken: ""
-    bulkerAuthTokenFrom: {}
+    # Leave empty to default to jitsucom/sidecar:{{ .Values.syncctl.image.tag | default .Chart.AppVersion }}
+    sidecarImage: ""
 
     # https://docs.jitsu.com/self-hosting/configuration#syncctl_kubernetes_client_config
     kubernetesClientConfig: ""
@@ -825,6 +819,19 @@ migration:
     # https://docs.jitsu.com/self-hosting/configuration#database_url
     databaseUrl: ""
     databaseUrlFrom: {}
+
+    # Leave empty to use global configuration
+    clickhouseHttpHost: ""
+    clickhouseHttpHostFrom: {}
+    clickhouseTcpHost: ""
+    clickhouseTcpHostFrom: {}
+    clickhouseDatabase: ""
+    clickhouseDatabaseFrom: {}
+    clickhouseUsername: ""
+    clickhouseUsernameFrom: {}
+    clickhousePassword: ""
+    clickhousePasswordFrom: {}
+    clickhouseSsl: ""
   image:
     repository: jitsucom/console
     pullPolicy: IfNotPresent
@@ -939,6 +946,8 @@ mongodb:
 
 kafka:
   enabled: true
+  controller:
+    replicaCount: 1
   listeners:
     interbroker:
       protocol: PLAINTEXT
@@ -946,14 +955,17 @@ kafka:
       protocol: PLAINTEXT
     client:
       protocol: PLAINTEXT
+    external:
       external: PLAINTEXT
 
 clickhouse:
   enabled: true
+  shards: 1
+  replicaCount: 1
   auth:
     username: "jitsu"
     password: "jitsu"
   keeper:
     enabled: false
   zookeeper:
-    enabled: true
+    enabled: false

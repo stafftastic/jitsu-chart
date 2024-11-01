@@ -143,7 +143,7 @@ Create the name of the service account to use
 
 {{- define "jitsu.clickhouseDatabase" -}}
 {{- if and (not .Values.config.clickhouseDatabase) .Values.clickhouse.enabled -}}
-default
+newjitsu_metrics
 {{- else -}}
 {{ .Values.config.clickhouseDatabase }}
 {{- end }}
