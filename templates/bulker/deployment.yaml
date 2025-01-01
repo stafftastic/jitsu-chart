@@ -44,7 +44,7 @@ spec:
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          image: "{{ .Values.k8s-wait-for.image.repository }}:{{ .Values.k8s-wait-for.image.tag }}"
           args: ["job-wr", "{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}"]
         {{- end }}
         {{- if .Values.clickhouse.enabled }}
@@ -53,7 +53,7 @@ spec:
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          image: "{{ .Values.k8s-wait-for.image.repository }}:{{ .Values.k8s-wait-for.image.tag }}"
           args: ["service", "{{ .Release.Name }}-clickhouse"]
         {{- end }}
         {{- if .Values.redis.enabled }}
@@ -62,7 +62,7 @@ spec:
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          image: "{{ .Values.k8s-wait-for.image.repository }}:{{ .Values.k8s-wait-for.image.tag }}"
           args: ["service", "{{ .Release.Name }}-redis-master"]
         {{- end }}
         {{- if .Values.kafka.enabled }}
@@ -71,7 +71,7 @@ spec:
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          image: "{{ .Values.k8s-wait-for.image.repository }}:{{ .Values.k8s-wait-for.image.tag }}"
           args: ["service", "{{ .Release.Name }}-kafka"]
         {{- end }}
         {{- if .Values.migration.enabled }}
@@ -80,12 +80,12 @@ spec:
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          image: "{{ .Values.k8s-wait-for.image.repository }}:{{ .Values.k8s-wait-for.image.tag }}"
           args: ["job-wr", "{{ include "jitsu.fullname" . }}-migration-{{ include "jitsu.hash" . }}"]
         {{- end }}
         {{- if .Values.console.enabled }}
         - name: wait-for-console
-          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          image: "{{ .Values.k8s-wait-for.image.repository }}:{{ .Values.k8s-wait-for.image.tag }}"
           args: ["service", "{{ include "jitsu.fullname" . }}-console"]
         {{- end }}
       containers:
