@@ -970,7 +970,7 @@ clickhouse:
   zookeeper:
     enabled: false
 
-k8s-wait-for:
+k8sWaitFor:
   image:
     repository: ghcr.io/groundnuty/k8s-wait-for
     tag: "v2.0"
