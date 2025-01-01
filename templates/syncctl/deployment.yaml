@@ -44,7 +44,7 @@ spec:
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          image: "{{ .Values.k8s-wait-for.image.repository }}:{{ .Values.k8s-wait-for.image.tag }}"
           args: ["job-wr", "{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}"]
         {{- end }}
         {{- if .Values.migration.enabled }}
@@ -53,7 +53,7 @@ spec:
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          image: ghcr.io/groundnuty/k8s-wait-for:v2.0
+          image: "{{ .Values.k8s-wait-for.image.repository }}:{{ .Values.k8s-wait-for.image.tag }}"
           args: ["job-wr", "{{ include "jitsu.fullname" . }}-migration-{{ include "jitsu.hash" . }}"]
         {{- end }}
       containers:
