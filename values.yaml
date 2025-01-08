@@ -72,6 +72,7 @@ tokenGenerator:
   image:
     repository: alpine/k8s
     tag: ""
+    pullPolicy: IfNotPresent
   serviceAccount:
     create: true
     annotations: {}
@@ -977,3 +978,4 @@ k8sWaitFor:
   image:
     repository: ghcr.io/groundnuty/k8s-wait-for
     tag: "v2.0"
+    pullPolicy: IfNotPresent

@@ -41,6 +41,7 @@ spec:
         {{- if .Values.tokenGenerator.enabled }}
         - name: wait-for-tokens
           image: "{{ .Values.k8sWaitFor.image.repository }}:{{ .Values.k8sWaitFor.image.tag }}"
+          imagePullPolicy: {{ .Values.k8sWaitFor.image.pullPolicy }}
           args: ["job-wr", "{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}"]
         {{- end }}
         {{- if .Values.clickhouse.enabled }}
@@ -50,6 +51,7 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           image: "{{ .Values.k8sWaitFor.image.repository }}:{{ .Values.k8sWaitFor.image.tag }}"
+          imagePullPolicy: {{ .Values.k8sWaitFor.image.pullPolicy }}
           args: ["service", "{{ .Release.Name }}-clickhouse"]
         {{- end }}
         {{- if .Values.redis.enabled }}
@@ -59,6 +61,7 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           image: "{{ .Values.k8sWaitFor.image.repository }}:{{ .Values.k8sWaitFor.image.tag }}"
+          imagePullPolicy: {{ .Values.k8sWaitFor.image.pullPolicy }}
           args: ["service", "{{ .Release.Name }}-redis-master"]
         {{- end }}
         {{- if .Values.kafka.enabled }}
@@ -68,6 +71,7 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           image: "{{ .Values.k8sWaitFor.image.repository }}:{{ .Values.k8sWaitFor.image.tag }}"
+          imagePullPolicy: {{ .Values.k8sWaitFor.image.pullPolicy }}
           args: ["service", "{{ .Release.Name }}-kafka"]
         {{- end }}
         {{- if .Values.console.enabled }}
@@ -77,6 +81,7 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           image: "{{ .Values.k8sWaitFor.image.repository }}:{{ .Values.k8sWaitFor.image.tag }}"
+          imagePullPolicy: {{ .Values.k8sWaitFor.image.pullPolicy }}
           args: ["service", "{{ include "jitsu.fullname" . }}-console"]
         {{- end }}
         {{- if .Values.rotor.enabled }}
@@ -86,6 +91,7 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           image: "{{ .Values.k8sWaitFor.image.repository }}:{{ .Values.k8sWaitFor.image.tag }}"
+          imagePullPolicy: {{ .Values.k8sWaitFor.image.pullPolicy }}
           args: ["service", "{{ include "jitsu.fullname" . }}-rotor"]
         {{- end }}
       containers:

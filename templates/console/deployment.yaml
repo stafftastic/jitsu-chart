@@ -45,6 +45,7 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           image: "{{ .Values.k8sWaitFor.image.repository }}:{{ .Values.k8sWaitFor.image.tag }}"
+          imagePullPolicy: {{ .Values.k8sWaitFor.image.pullPolicy }}
           args: ["job-wr", "{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}"]
         {{- end }}
         {{- if .Values.clickhouse.enabled }}
@@ -54,6 +55,7 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           image: "{{ .Values.k8sWaitFor.image.repository }}:{{ .Values.k8sWaitFor.image.tag }}"
+          imagePullPolicy: {{ .Values.k8sWaitFor.image.pullPolicy }}
           args: ["service", "{{ .Release.Name }}-clickhouse"]
         {{- end }}
         {{- if .Values.migration.enabled }}
@@ -63,6 +65,7 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           image: "{{ .Values.k8sWaitFor.image.repository }}:{{ .Values.k8sWaitFor.image.tag }}"
+          imagePullPolicy: {{ .Values.k8sWaitFor.image.pullPolicy }}
           args: ["job-wr", "{{ include "jitsu.fullname" . }}-migration-{{ include "jitsu.hash" . }}"]
         {{- end }}
       containers:

@@ -38,6 +38,7 @@ spec:
           {{- $v := semver .Capabilities.KubeVersion.Version }}
           image: "{{ .Values.tokenGenerator.image.repository }}:{{ printf "%d.%d.%d" $v.Major $v.Minor $v.Patch }}"
           {{- end }}
+          imagePullPolicy: {{ .Values.tokenGenerator.image.pullPolicy }}
           env:
             - name: FULLNAME
               value: {{ include "jitsu.fullname" . }}

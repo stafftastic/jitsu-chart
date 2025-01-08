@@ -43,6 +43,7 @@ spec:
                 {{- toYaml . | nindent 16 }}
               {{- end }}
               image: "{{ .Values.k8sWaitFor.image.repository }}:{{ .Values.k8sWaitFor.image.tag }}"
+              imagePullPolicy: {{ .Values.k8sWaitFor.image.pullPolicy }}
               args: ["job-wr", "{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}"]
               {{- end }}
             {{- if .Values.console.enabled }}
@@ -52,6 +53,7 @@ spec:
                 {{- toYaml . | nindent 16 }}
               {{- end }}
               image: "{{ .Values.k8sWaitFor.image.repository }}:{{ .Values.k8sWaitFor.image.tag }}"
+              imagePullPolicy: {{ .Values.k8sWaitFor.image.pullPolicy }}
               args: ["service", "{{ .Release.Name }}-console"]
             {{- end }}
           containers:
