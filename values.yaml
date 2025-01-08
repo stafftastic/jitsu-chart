@@ -947,10 +947,6 @@ mongodb:
     databases: ["jitsu"]
     usernames: ["jitsu"]
     passwords: ["jitsu"]
-  # TODO: remove this once this issue is resolved: https://github.com/bitnami/containers/issues/40947
-  extraEnvVars:
-    - name: EXPERIMENTAL_DOCKER_DESKTOP_FORCE_QEMU
-      value": "1"
 
 kafka:
   enabled: true
