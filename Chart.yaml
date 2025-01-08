@@ -9,22 +9,22 @@ appVersion: 2.8.2
 
 dependencies:
   - name: postgresql
-    version: ^15.5.38
+    version: ^16.3.5
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: postgresql.enabled
   - name: redis
-    version: ^20.2.0
+    version: ^20.6.2
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: redis.enabled
   - name: kafka
-    version: ^30.1.5
+    version: ^31.2.0
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: kafka.enabled
   - name: mongodb
-    version: ^16.0.3
+    version: ^16.4.0
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: mongodb.enabled
   - name: clickhouse
-    version: ^6.2.27
+    version: ^7.1.4
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: clickhouse.enabled
