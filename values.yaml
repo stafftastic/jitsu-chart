@@ -929,6 +929,9 @@ postgresql:
     database: "jitsu"
     username: "jitsu"
     password: "jitsu"
+  # TODO: remove this once upstream chart works properly with postgres image (17 vs. 16)
+  image:
+    tag: 16.6.0-debian-12-r2
 
 redis:
   enabled: false
