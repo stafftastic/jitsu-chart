@@ -5,7 +5,7 @@ type: application
 # Chart version is set automatically as part of the release process.
 # See releases on GitHub to find the latest version.
 version: 0.0.0
-appVersion: 2.8.2
+appVersion: 2.8.5
 
 dependencies:
   - name: postgresql
