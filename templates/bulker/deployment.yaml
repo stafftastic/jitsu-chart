@@ -112,6 +112,11 @@ spec:
             httpGet:
               port: http
               path: /ready
+          startupProbe:
+            httpGet:
+              port: http
+              path: /health
+            failureThreshold: 60
           {{- end }}
           {{- if .Values.bulker.envFrom }}
           envFrom:
