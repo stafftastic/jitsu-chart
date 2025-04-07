@@ -288,6 +288,7 @@ console:
   #         app.kubernetes.io/name: jitsu
   #         app.kubernetes.io/instance: jitsu
   #         app.kubernetes.io/component: console
+  revisionHistoryLimit: 2
 
 bulker:
   enabled: true
@@ -444,6 +445,7 @@ bulker:
       - action: replace
         targetLabel: service
         replacement: bulker
+  revisionHistoryLimit: 2
 
 rotor:
   enabled: true
@@ -574,6 +576,7 @@ rotor:
       - action: replace
         targetLabel: service
         replacement: rotor
+  revisionHistoryLimit: 2
 
 ingest:
   enabled: true
@@ -711,6 +714,7 @@ ingest:
       - action: replace
         targetLabel: service
         replacement: ingest
+  revisionHistoryLimit: 2
 
 syncctl:
   enabled: true
@@ -723,6 +727,7 @@ syncctl:
   # create proxy services to Postgres and the Bulker in the new namespace. If you're not using
   # the default cluster domain "cluster.local" this can be overridden here.
   clusterDomain: ""
+
   config:
     # Set to false to disable config abstractions in order to configure manually.
     enabled: true
@@ -808,6 +813,7 @@ syncctl:
   tolerations: []
   affinity: {}
   topologySpreadConstraints:
+  revisionHistoryLimit: 2
 
 migration:
   enabled: true

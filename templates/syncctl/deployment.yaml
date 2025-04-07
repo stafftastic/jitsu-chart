@@ -9,6 +9,7 @@ spec:
   {{- if not .Values.syncctl.autoscaling.enabled }}
   replicas: {{ .Values.syncctl.replicaCount }}
   {{- end }}
+  revisionHistoryLimit: {{ .Values.syncctl.revisionHistoryLimit }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
