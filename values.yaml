@@ -254,8 +254,8 @@ console:
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
   podDisruptionBudget:
-    enabled: false
-    minAvailable: 1
+    enabled: true
+    maxUnavailable: 1
   env: []
   envFrom: []
   podAnnotations: {}
@@ -424,8 +424,8 @@ bulker:
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
   podDisruptionBudget:
-    enabled: false
-    minAvailable: 1
+    enabled: true
+    maxUnavailable: 1
   env: []
   envFrom: []
   podAnnotations: {}
@@ -556,8 +556,8 @@ rotor:
   env: []
   envFrom: []
   podDisruptionBudget:
-    enabled: false
-    minAvailable: 1
+    enabled: true
+    maxUnavailable: 1
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}
@@ -691,8 +691,8 @@ ingest:
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
   podDisruptionBudget:
-    enabled: false
-    minAvailable: 1
+    enabled: true
+    maxUnavailable: 1
   env: []
   envFrom: []
   podAnnotations: {}
@@ -796,8 +796,8 @@ syncctl:
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
   podDisruptionBudget:
-    enabled: false
-    minAvailable: 1
+    enabled: true
+    maxUnavailable: 1
   env: []
   envFrom: []
   podAnnotations: {}

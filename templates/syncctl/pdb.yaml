@@ -7,7 +7,12 @@ metadata:
     {{- include "jitsu.labels" . | nindent 4 }}
     {{- include "jitsu.syncctl.selectorLabels" . | nindent 4 }}
 spec:
-  minAvailable: {{ .Values.syncctl.podDisruptionBudget.minAvailable }}
+  {{- with .Values.syncctl.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ . }}
+  {{- end }}
+  {{- with .Values.syncctl.podDisruptionBudget.maxUnavailable }}
+  maxUnavailable: {{ . }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "jitsu.selectorLabels" . | nindent 6 }}
