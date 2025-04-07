@@ -213,6 +213,11 @@ console:
     # Leave empty to configure automatically when using Clickhouse subchart.
     clickhouseHost: ""
     clickhouseHostFrom: {}
+    # Required to create a replicated Events Log table when using a
+    # clustered ClickHouse deployment.
+    # https://docs.jitsu.com/self-hosting/configuration#console
+    clickhouseCluster: ""
+    clickhouseClusterFrom: {}
     clickhouseDatabase: ""
     clickhouseDatabaseFrom: {}
     clickhouseUsername: ""
@@ -831,6 +836,11 @@ migration:
     clickhouseHttpHostFrom: {}
     clickhouseTcpHost: ""
     clickhouseTcpHostFrom: {}
+    # Required by the console to create a replicated Events Log table
+    # when using a clustered ClickHouse deployment.
+    # https://docs.jitsu.com/self-hosting/configuration#console
+    clickhouseCluster: ""
+    clickhouseClusterFrom: {}
     clickhouseDatabase: ""
     clickhouseDatabaseFrom: {}
     clickhouseUsername: ""

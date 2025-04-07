@@ -34,6 +34,15 @@ app.kubernetes.io/component: console
   value: {{ .clickhouseHost | default (include "jitsu.clickhouseHttpHost" $) | quote }}
 {{- end }}
 
+{{- if or .clickhouseClusterFrom $.Values.config.clickhouseClusterFrom }}
+- name: CLICKHOUSE_CLUSTER
+  valueFrom:
+    {{- toYaml (.clickhouseClusterFrom | default $.Values.config.clickhouseClusterFrom) | nindent 4 }}
+{{- else if or .clickhouseCluster $.Values.config.clickhouseCluster }}
+- name: CLICKHOUSE_CLUSTER
+  value: {{ .clickhouseCluster | default $.Values.config.clickhouseCluster | quote }}
+{{- end }}
+
 {{- if or .clickhouseDatabaseFrom $.Values.config.clickhouseDatabaseFrom }}
 - name: CLICKHOUSE_DATABASE
   valueFrom:
