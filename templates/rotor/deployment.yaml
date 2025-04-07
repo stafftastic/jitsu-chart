@@ -9,6 +9,7 @@ spec:
   {{- if not .Values.rotor.autoscaling.enabled }}
   replicas: {{ .Values.rotor.replicaCount }}
   {{- end }}
+  revisionHistoryLimit: {{ .Values.rotor.revisionHistoryLimit }}
   strategy:
     type: RollingUpdate
     rollingUpdate:

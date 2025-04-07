@@ -9,6 +9,7 @@ spec:
   {{- if not .Values.bulker.autoscaling.enabled }}
   replicas: {{ .Values.bulker.replicaCount }}
   {{- end }}
+  revisionHistoryLimit: {{ .Values.bulker.revisionHistoryLimit }}
   strategy:
     type: RollingUpdate
     rollingUpdate:

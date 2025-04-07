@@ -9,6 +9,7 @@ spec:
   {{- if not .Values.console.autoscaling.enabled }}
   replicas: {{ .Values.console.replicaCount }}
   {{- end }}
+  revisionHistoryLimit: {{ .Values.console.revisionHistoryLimit }}
   strategy:
     type: RollingUpdate
     rollingUpdate:

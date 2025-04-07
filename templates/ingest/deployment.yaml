@@ -9,6 +9,7 @@ spec:
   {{- if not .Values.ingest.autoscaling.enabled }}
   replicas: {{ .Values.ingest.replicaCount }}
   {{- end }}
+  revisionHistoryLimit: {{ .Values.ingest.revisionHistoryLimit }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
