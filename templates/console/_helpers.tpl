@@ -345,5 +345,10 @@ app.kubernetes.io/component: console
 - name: DISABLE_SIGNUP
   value: {{ . | quote }}
 {{- end }}
+
+{{- if $.Values.migration.enabled }}
+- name: UPDATE_DB
+  value: "false"
+{{- end }}
 {{- end }}
 {{- end }}
