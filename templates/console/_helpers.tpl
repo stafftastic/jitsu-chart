@@ -5,6 +5,15 @@ Console selector labels
 app.kubernetes.io/component: console
 {{- end }}
 
+{{- define "jitsu.console.kubectlSelectorLabels" -}}
+{{- $labels := merge (dict) (include "jitsu.selectorLabels" . | fromYaml) (include "jitsu.console.selectorLabels" . | fromYaml) }}
+{{- $args := list -}}
+{{- range $k, $v := $labels -}}
+{{ $args = append $args (printf "%s=%s" $k $v) -}}
+{{- end -}}
+{{- join "," $args -}}
+{{- end }}
+
 {{- define "jitsu.console.env" -}}
 {{- with .Values.console.config -}}
 - name: JITSU_PUBLIC_URL
