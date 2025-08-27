@@ -22,10 +22,10 @@ app.kubernetes.io/component: ingest
 {{- if or .clickhouseHostFrom $.Values.config.clickhouseTcpHostFrom }}
 - name: INGEST_CLICKHOUSE_HOST
   valueFrom:
-    {{- toYaml (.clickhouseHostFrom | default $.Values.config.clickhouseTcpHostFrom) | nindent 4 }}
+    {{- toYaml (.clickhouseHostFrom | default $.Values.config.clickhouseHttpHostFrom) | nindent 4 }}
 {{- else }}
 - name: INGEST_CLICKHOUSE_HOST
-  value: {{ .clickhouseHost | default (include "jitsu.clickhouseTcpHost" $) | quote }}
+  value: {{ .clickhouseHost | default (include "jitsu.clickhouseHttpHost" $) | quote }}
 {{- end }}
 
 {{- if or .clickhouseDatabaseFrom $.Values.config.clickhouseDatabaseFrom }}
