@@ -936,11 +936,43 @@ postgresql:
     username: "jitsu"
     password: "jitsu"
 
+  # Temporary workaround until we have a replacement for Bitnami
+  # components ready.
+  image:
+    repository: bitnamilegacy/postgresql
+  volumePermissions:
+    image:
+      repository: bitnamilegacy/os-shell
+  metrics:
+    image:
+      repository: bitnamilegacy/postgres-exporter
+
+
 redis:
   enabled: false
   auth:
     enabled: true
     password: "jitsu"
+
+  # Temporary workaround until we have a replacement for Bitnami
+  # components ready.
+  image:
+    repository: bitnamilegacy/redis
+  sentinel:
+    image:
+      repository: bitnamilegacy/redis-sentinel
+  metrics:
+    image:
+      repository: bitnamilegacy/redis-exporter
+  volumePermissions:
+    image:
+      repository: bitnamilegacy/os-shell
+  kubectl:
+    image:
+      repository: bitnamilegacy/kubectl
+  sysctl:
+    image:
+      repository: bitnamilegacy/os-shell
 
 mongodb:
   enabled: true
@@ -949,6 +981,26 @@ mongodb:
     databases: ["jitsu"]
     usernames: ["jitsu"]
     passwords: ["jitsu"]
+
+  # Temporary workaround until we have a replacement for Bitnami
+  # components ready.
+  image:
+    repository: bitnamilegacy/mongodb
+  tls:
+    image:
+      repository: bitnamilegacy/nginx
+  externalAccess:
+    autoDiscovery:
+      image.repository: bitnamilegacy/kubectl
+    dnsCheck:
+      image:
+        repository: bitnamilegacy/kubectl
+  volumePermissions:
+    image:
+      repository: bitnamilegacy/os-shell
+  metrics:
+    image:
+      repository: bitnamilegacy/mongodb-exporter
 
 kafka:
   enabled: true
@@ -964,6 +1016,22 @@ kafka:
     external:
       external: PLAINTEXT
 
+  # Temporary workaround until we have a replacement for Bitnami
+  # components ready.
+  image:
+    repository: bitnamilegacy/kafka
+  defaultInitContainers:
+    volumePermissions:
+      image:
+        repository: bitnamilegacy/os-shell
+    autoDiscovery:
+      image:
+        repository: bitnamilegacy/os-shell
+  metrics:
+    jmx:
+      image:
+        repository: bitnamilegacy/jmx-exporter
+
 clickhouse:
   enabled: true
   shards: 1
@@ -971,10 +1039,21 @@ clickhouse:
   auth:
     username: "jitsu"
     password: "jitsu"
-  keeper:
-    enabled: false
   zookeeper:
     enabled: false
+  keeper:
+    enabled: false
+
+  # Temporary workaround until we have a replacement for Bitnami
+  # components ready.
+    image:
+      repository: bitnamilegacy/clickhouse-keeper
+  image:
+    repository: bitnamilegacy/clickhouse
+  defaultInitContainers:
+    volumePermissions:
+      image:
+        repository: bitnamilegacy/os-shell
 
 k8sWaitFor:
   image:

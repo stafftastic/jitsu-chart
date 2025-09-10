@@ -1,6 +1,8 @@
 # Jitsu Helm Chart
 
-[:warning: Check this before upgrading](#upgrading)
+[:warning: Read this before upgrading](#upgrading)
+
+[:warning: Read this before using in production](#bitnami)
 
 ## TL;DR
 ```bash
@@ -157,6 +159,24 @@ namespace, service proxies for the bulker and databse, and the necessary RBAC re
 If using tools that render the chart without access to the cluster, such as Argo CD, set
 `kafka.kraft.clusterId` to a random string to ensure it's not regnerated every time. This is only
 necessary if you're using the Kafka subchart.
+
+## Bitnami
+This chart depends on Helm charts from [Bitnami Helm Charts](https://github.com/bitnami/charts).
+The intended use of these included dependencies is to provide an immediately functioning Jitsu
+deployment for use in evaluation, testing and development.
+
+Bitnami is retiring its public catalog of Helm charts and container images, meaning none of these
+components will receive updates. We have already switched over to `bitnamilegacy` images, which will
+remain available, but again receive no updates.
+
+**These dependencies should not be used in production, will not receive updates and will be removed
+from the chart.**
+
+See [Dependencies](#dependencies) for instructions on how to provide connection details to your own
+externally managed dependencies.
+
+See https://github.com/bitnami/charts/issues/35164 for information on the changes to Bitnami's
+public catalog.
 
 ## Upgrading
 It's not necessary to go through all intermediate versions when upgrading, however if upgrading to a
