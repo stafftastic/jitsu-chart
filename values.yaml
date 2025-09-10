@@ -103,6 +103,8 @@ global:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  volumes: []
+  volumeMounts: []
 
 console:
   enabled: true
@@ -299,6 +301,8 @@ console:
   #         app.kubernetes.io/instance: jitsu
   #         app.kubernetes.io/component: console
   revisionHistoryLimit: 2
+  volumes: []
+  volumeMounts: []
 
 bulker:
   enabled: true
@@ -456,6 +460,8 @@ bulker:
         targetLabel: service
         replacement: bulker
   revisionHistoryLimit: 2
+  volumes: []
+  volumeMounts: []
 
 rotor:
   enabled: true
@@ -587,6 +593,8 @@ rotor:
         targetLabel: service
         replacement: rotor
   revisionHistoryLimit: 2
+  volumes: []
+  volumeMounts: []
 
 ingest:
   enabled: true
@@ -725,6 +733,8 @@ ingest:
         targetLabel: service
         replacement: ingest
   revisionHistoryLimit: 2
+  volumes: []
+  volumeMounts: []
 
 syncctl:
   enabled: true
@@ -824,6 +834,8 @@ syncctl:
   affinity: {}
   topologySpreadConstraints:
   revisionHistoryLimit: 2
+  volumes: []
+  volumeMounts: []
 
 migration:
   enabled: true
@@ -869,6 +881,8 @@ migration:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  volumes: []
+  volumeMounts: []
 
 eventLogInit:
   enabled: true
