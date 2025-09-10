@@ -133,14 +133,6 @@ Create the name of the service account to use
 {{- end }}
 {{- end }}
 
-{{- define "jitsu.clickhouseTcpHost" -}}
-{{- if and (not .Values.config.clickhouseTcpHost) .Values.clickhouse.enabled -}}
-{{ .Release.Name }}-clickhouse:9000
-{{- else -}}
-{{ .Values.config.clickhouseTcpHost }}
-{{- end }}
-{{- end }}
-
 {{- define "jitsu.clickhouseDatabase" -}}
 {{- if and (not .Values.config.clickhouseDatabase) .Values.clickhouse.enabled -}}
 newjitsu_metrics

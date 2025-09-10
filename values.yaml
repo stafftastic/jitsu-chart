@@ -35,8 +35,6 @@ config:
   # HTTP/TCP endpoints are separate as different components require the use of different protocols.
   clickhouseHttpHost: ""
   clickhouseHttpHostFrom: {}
-  clickhouseTcpHost: ""
-  clickhouseTcpHostFrom: {}
   # Required by the console to create a replicated Events Log table
   # when using a clustered ClickHouse deployment.
   # https://docs.jitsu.com/self-hosting/configuration#console
@@ -851,8 +849,6 @@ migration:
     # Leave empty to use global configuration
     clickhouseHttpHost: ""
     clickhouseHttpHostFrom: {}
-    clickhouseTcpHost: ""
-    clickhouseTcpHostFrom: {}
     # Required by to create a replicated Events Log table when using a
     # clustered ClickHouse deployment.
     # https://docs.jitsu.com/self-hosting/configuration#console

@@ -176,13 +176,13 @@ app.kubernetes.io/component: bulker
 {{- end }}
 {{- end }}
 
-{{- if or .clickhouseHostFrom $.Values.config.clickhouseTcpHostFrom }}
+{{- if or .clickhouseHostFrom $.Values.config.clickhouseHttpHostFrom }}
 - name: BULKER_CLICKHOUSE_HOST
   valueFrom:
-    {{- toYaml (.clickhouseHostFrom | default $.Values.config.clickhouseTcpHostFrom) | nindent 4 }}
+    {{- toYaml (.clickhouseHostFrom | default $.Values.config.clickhouseHttpHostFrom) | nindent 4 }}
 {{- else }}
 - name: BULKER_CLICKHOUSE_HOST
-  value: {{ .clickhouseHost | default (include "jitsu.clickhouseTcpHost" $) | quote }}
+  value: {{ .clickhouseHost | default (include "jitsu.clickhouseHttpHost" $) | quote }}
 {{- end }}
 
 {{- if or .clickhouseDatabaseFrom $.Values.config.clickhouseDatabaseFrom }}

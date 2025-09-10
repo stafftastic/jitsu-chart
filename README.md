@@ -80,7 +80,6 @@ config:
   kafkaBootstrapServers: "kafka:9092,..."
   mongodbUrl: "mongodb://..."
   clickhouseHttpHost: "...:8123"
-  clickhouseTcpHost: "...:9000"
   clickhouseUsername: "..."
   clickhousePassword: "..."
 ```

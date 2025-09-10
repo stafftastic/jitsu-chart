@@ -19,7 +19,7 @@ app.kubernetes.io/component: ingest
   value: {{ .redisUrl | default (include "jitsu.redisUrl" $) | quote }}
 {{- end }}
 
-{{- if or .clickhouseHostFrom $.Values.config.clickhouseTcpHostFrom }}
+{{- if or .clickhouseHostFrom $.Values.config.clickhouseHttpHostFrom }}
 - name: INGEST_CLICKHOUSE_HOST
   valueFrom:
     {{- toYaml (.clickhouseHostFrom | default $.Values.config.clickhouseHttpHostFrom) | nindent 4 }}
