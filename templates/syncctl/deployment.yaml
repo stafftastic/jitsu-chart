@@ -94,6 +94,10 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          {{- with (concat .Values.syncctl.volumeMounts .Values.global.volumeMounts) }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       {{- with (.Values.syncctl.nodeSelector | default .Values.global.nodeSelector) }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -113,5 +117,9 @@ spec:
         {{- else }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
+      {{- end }}
+      {{- with (concat .Values.syncctl.volumes .Values.global.volumes) }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
       {{- end }}
 {{- end }}

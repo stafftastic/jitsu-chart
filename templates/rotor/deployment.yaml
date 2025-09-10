@@ -147,6 +147,10 @@ spec:
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          {{- with (concat .Values.rotor.volumeMounts .Values.global.volumeMounts) }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       {{- with (.Values.rotor.nodeSelector | default .Values.global.nodeSelector) }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -166,5 +170,9 @@ spec:
         {{- else }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
+      {{- end }}
+      {{- with (concat .Values.rotor.volumes .Values.global.volumes) }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
       {{- end }}
 {{- end }}

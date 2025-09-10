@@ -127,6 +127,10 @@ spec:
             {{- with .Values.migration.env }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
+          {{- with (concat .Values.migration.volumeMounts .Values.global.volumeMounts) }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
       {{- with (.Values.migration.nodeSelector | default .Values.global.nodeSelector) }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -137,6 +141,10 @@ spec:
       {{- end }}
       {{- with (.Values.migration.tolerations | default .Values.global.tolerations) }}
       tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with (concat .Values.migration.volumes .Values.global.volumes) }}
+      volumes:
         {{- toYaml . | nindent 8 }}
       {{- end }}
 {{- end }}
