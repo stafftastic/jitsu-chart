@@ -87,7 +87,7 @@ spec:
         {{- if .Values.console.enabled }}
         - name: wait-for-console
           image: "{{ .Values.k8sWaitFor.image.repository }}:{{ .Values.k8sWaitFor.image.tag }}"
-          args: ["service", "{{ include "jitsu.fullname" . }}-console"]
+          args: ["pod-wr", "-l{{ include "jitsu.console.kubectlSelectorLabels" . }}"]
         {{- end }}
       containers:
         - name: {{ .Chart.Name }}

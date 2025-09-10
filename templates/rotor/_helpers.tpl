@@ -5,6 +5,15 @@ Rotor selector labels
 app.kubernetes.io/component: rotor
 {{- end }}
 
+{{- define "jitsu.rotor.kubectlSelectorLabels" -}}
+{{- $labels := merge (dict) (include "jitsu.selectorLabels" . | fromYaml) (include "jitsu.rotor.selectorLabels" . | fromYaml) }}
+{{- $args := list -}}
+{{- range $k, $v := $labels -}}
+{{ $args = append $args (printf "%s=%s" $k $v) -}}
+{{- end -}}
+{{- join "," $args -}}
+{{- end }}
+
 {{- define "jitsu.rotor.env" -}}
 {{- with .Values.rotor.config }}
 {{- if or .redisUrlFrom $.Values.config.redisUrlFrom }}

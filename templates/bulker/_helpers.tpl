@@ -5,6 +5,15 @@ Bulker selector labels
 app.kubernetes.io/component: bulker
 {{- end }}
 
+{{- define "jitsu.bulker.kubectlSelectorLabels" -}}
+{{- $labels := merge (dict) (include "jitsu.selectorLabels" . | fromYaml) (include "jitsu.bulker.selectorLabels" . | fromYaml) }}
+{{- $args := list -}}
+{{- range $k, $v := $labels -}}
+{{ $args = append $args (printf "%s=%s" $k $v) -}}
+{{- end -}}
+{{- join "," $args -}}
+{{- end }}
+
 {{- define "jitsu.bulker.env" -}}
 {{- with .Values.bulker.config }}
 - name: BULKER_INSTANCE_ID
