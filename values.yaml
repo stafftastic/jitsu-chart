@@ -132,7 +132,7 @@ console:
     seedUserPasswordFrom: {}
 
     # Enable GitHub OAuth
-    # https:jitsu-rotor-5f85766d88-2llj8//docs.jitsu.com/self-hosting/configuration#github_client_id
+    # https://docs.jitsu.com/self-hosting/configuration#github_client_id
     githubClientId: ""
     githubClientIdFrom: {}
     githubClientSecret: ""
