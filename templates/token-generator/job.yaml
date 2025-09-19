@@ -32,12 +32,7 @@ spec:
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- if .Values.tokenGenerator.image.tag }}
-          image: "{{ .Values.tokenGenerator.image.repository }}:{{ .Values.tokenGenerator.image.tag }}"
-          {{- else }}
-          {{- $v := semver .Capabilities.KubeVersion.Version }}
-          image: "{{ .Values.tokenGenerator.image.repository }}:{{ printf "%d.%d.%d" $v.Major $v.Minor $v.Patch }}"
-          {{- end }}
+          image: {{ include "jitsu.tokenGenerator.image" . }}
           env:
             - name: FULLNAME
               value: {{ include "jitsu.fullname" . }}

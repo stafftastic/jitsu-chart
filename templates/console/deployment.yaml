@@ -10,11 +10,10 @@ spec:
   replicas: {{ .Values.console.replicaCount }}
   {{- end }}
   revisionHistoryLimit: {{ .Values.console.revisionHistoryLimit }}
+  {{- with .Values.console.strategy }}
   strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 10
-      maxUnavailable: 0
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "jitsu.selectorLabels" . | nindent 6 }}
@@ -39,32 +38,22 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
-        {{- if .Values.tokenGenerator.enabled }}
-        - name: wait-for-tokens
-          {{- with (.Values.console.securityContext | default .Values.global.securityContext) }}
+        {{- with .Values.console.waitFor }}
+        {{- range . }}
+        {{- if (fromYaml (tpl (.enabled | default "true") $ )) }}
+        - name: {{ printf "wait-for-%s" .name | quote }}
+          image: {{ include "jitsu.waitFor.image" $ }}
+          {{- with ($.Values.console.securityContext | default $.Values.global.securityContext) }}
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          image: "{{ .Values.k8sWaitFor.image.repository }}:{{ .Values.k8sWaitFor.image.tag }}"
-          args: ["job-wr", "{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}"]
+          command: ["kubectl", "wait"]
+          args:
+            - {{ tpl .for $ | printf "--for=%s" | quote }}
+            - {{ default "300s" .timeout | printf "--timeout=%s" | quote }}
+            - {{ tpl .resource $ | quote }}
         {{- end }}
-        {{- if .Values.clickhouse.enabled }}
-        - name: wait-for-clickhouse
-          {{- with (.Values.console.securityContext | default .Values.global.securityContext) }}
-          securityContext:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          image: "{{ .Values.k8sWaitFor.image.repository }}:{{ .Values.k8sWaitFor.image.tag }}"
-          args: ["service", "{{ .Release.Name }}-clickhouse"]
         {{- end }}
-        {{- if .Values.migration.enabled }}
-        - name: wait-for-migration
-          {{- with (.Values.console.securityContext | default .Values.global.securityContext) }}
-          securityContext:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          image: "{{ .Values.k8sWaitFor.image.repository }}:{{ .Values.k8sWaitFor.image.tag }}"
-          args: ["job-wr", "{{ include "jitsu.fullname" . }}-migration-{{ include "jitsu.hash" . }}"]
         {{- end }}
       containers:
         - name: {{ .Chart.Name }}

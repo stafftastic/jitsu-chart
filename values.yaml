@@ -132,7 +132,7 @@ console:
     seedUserPasswordFrom: {}
 
     # Enable GitHub OAuth
-    # https://docs.jitsu.com/self-hosting/configuration#github_client_id
+    # https:jitsu-rotor-5f85766d88-2llj8//docs.jitsu.com/self-hosting/configuration#github_client_id
     githubClientId: ""
     githubClientIdFrom: {}
     githubClientSecret: ""
@@ -301,6 +301,24 @@ console:
   revisionHistoryLimit: 2
   volumes: []
   volumeMounts: []
+  strategy: {}
+  waitFor:
+    - name: tokens
+      enabled: '{{ .Values.tokenGenerator.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=true
+    - name: migration
+      enabled: '{{ .Values.migration.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-migration-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=True
+    - name: clickhouse
+      enabled: '{{ .Values.clickhouse.enabled }}'
+      resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
+      for: condition=Ready=true
+    - name: postgresql
+      enabled: '{{ .Values.postgresql.enabled }}'
+      resource: 'pod/{{ .Release.Name }}-postgresql-0'
+      for: condition=Ready=true
 
 bulker:
   enabled: true
@@ -460,6 +478,32 @@ bulker:
   revisionHistoryLimit: 2
   volumes: []
   volumeMounts: []
+  strategy: {}
+  waitFor:
+    - name: tokens
+      enabled: '{{ .Values.tokenGenerator.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=true
+    - name: migration
+      enabled: '{{ .Values.migration.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-migration-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=True
+    - name: console
+      condition: '{{ .Values.console.enabled }}'
+      resource: 'deployments.apps/{{ include "jitsu.fullname" . }}-console'
+      for: condition=Available=true
+    - name: clickhouse
+      enabled: '{{ .Values.clickhouse.enabled }}'
+      resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
+      for: condition=Ready=true
+    - name: kafka
+      enabled: '{{ .Values.kafka.enabled }}'
+      resource: 'pods/{{ .Release.Name }}-kafka-controller-0'
+      for: condition=Ready=true
+    - name: redis
+      enabled: '{{ .Values.redis.enabled }}'
+      resource: 'pods/{{ .Release.Name }}-redis-master-0'
+      for: condition=Ready=true
 
 rotor:
   enabled: true
@@ -593,6 +637,40 @@ rotor:
   revisionHistoryLimit: 2
   volumes: []
   volumeMounts: []
+  strategy: {}
+  waitFor:
+    - name: tokens
+      enabled: '{{ .Values.tokenGenerator.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=true
+    - name: migration
+      enabled: '{{ .Values.migration.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-migration-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=True
+    - name: console
+      condition: '{{ .Values.console.enabled }}'
+      resource: 'deployments.apps/{{ include "jitsu.fullname" . }}-console'
+      for: condition=Available=true
+    - name: bulker
+      enabled: '{{ .Values.bulker.enabled }}'
+      resource: 'deployments.apps/{{ include "jitsu.fullname" . }}-bulker'
+      for: condition=Available=true
+    - name: clickhouse
+      enabled: '{{ .Values.clickhouse.enabled }}'
+      resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
+      for: condition=Ready=true
+    - name: kafka
+      enabled: '{{ .Values.kafka.enabled }}'
+      resource: 'pods/{{ .Release.Name }}-kafka-controller-0'
+      for: condition=Ready=true
+    - name: mongodb
+      enabled: '{{ .Values.mongodb.enabled }}'
+      resource: 'deployments.apps/{{ .Release.Name }}-mongodb'
+      for: condition=Available=true
+    - name: redis
+      enabled: '{{ .Values.redis.enabled }}'
+      resource: 'pods/{{ .Release.Name }}-redis-master-0'
+      for: condition=Ready=true
 
 ingest:
   enabled: true
@@ -733,6 +811,36 @@ ingest:
   revisionHistoryLimit: 2
   volumes: []
   volumeMounts: []
+  strategy: {}
+  waitFor:
+    - name: tokens
+      enabled: '{{ .Values.tokenGenerator.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=true
+    - name: migration
+      enabled: '{{ .Values.migration.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-migration-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=True
+    - name: console
+      condition: '{{ .Values.console.enabled }}'
+      resource: 'deployments.apps/{{ include "jitsu.fullname" . }}-console'
+      for: condition=Available=true
+    - name: rotor
+      enabled: '{{ .Values.rotor.enabled }}'
+      resource: 'deployments.apps/{{ include "jitsu.fullname" . }}-rotor'
+      for: condition=Available=true
+    - name: clickhouse
+      enabled: '{{ .Values.clickhouse.enabled }}'
+      resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
+      for: condition=Ready=true
+    - name: kafka
+      enabled: '{{ .Values.kafka.enabled }}'
+      resource: 'pods/{{ .Release.Name }}-kafka-controller-0'
+      for: condition=Ready=true
+    - name: redis
+      enabled: '{{ .Values.redis.enabled }}'
+      resource: 'pods/{{ .Release.Name }}-redis-master-0'
+      for: condition=Ready=true
 
 syncctl:
   enabled: true
@@ -834,6 +942,20 @@ syncctl:
   revisionHistoryLimit: 2
   volumes: []
   volumeMounts: []
+  strategy: {}
+  waitFor:
+    - name: tokens
+      enabled: '{{ .Values.tokenGenerator.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=true
+    - name: migration
+      enabled: '{{ .Values.migration.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-migration-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=True
+    - name: postgresql
+      enabled: '{{ .Values.postgresql.enabled }}'
+      resource: 'pod/{{ .Release.Name }}-postgresql-0'
+      for: condition=Ready=true
 
 migration:
   enabled: true
@@ -879,6 +1001,19 @@ migration:
   affinity: {}
   volumes: []
   volumeMounts: []
+  waitFor:
+    - name: tokens
+      enabled: '{{ .Values.tokenGenerator.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=true
+    - name: clickhouse
+      enabled: '{{ .Values.clickhouse.enabled }}'
+      resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
+      for: condition=Ready=true
+    - name: postgresql
+      enabled: '{{ .Values.postgresql.enabled }}'
+      resource: 'pod/{{ .Release.Name }}-postgresql-0'
+      for: condition=Ready=true
 
 eventLogInit:
   enabled: true
@@ -907,6 +1042,15 @@ eventLogInit:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  waitFor:
+    - name: tokens
+      enabled: '{{ .Values.tokenGenerator.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=true
+    - name: console
+      condition: '{{ .Values.console.enabled }}'
+      resource: 'deployments.apps/{{ include "jitsu.fullname" . }}-console'
+      for: condition=Available=true
 
 imagePullSecrets: []
 
@@ -914,6 +1058,13 @@ serviceAccount:
   create: true
   annotations: {}
   name: ""
+
+waitFor:
+  # initContainers waiting for conditions on other components
+  enabled: true
+  image:
+    repository: alpine/k8s
+    tag: ""
   rbac:
     create: true
 
@@ -946,6 +1097,7 @@ postgresql:
 
 redis:
   enabled: false
+  architecture: standalone
   auth:
     enabled: true
     password: "jitsu"
@@ -1055,8 +1207,3 @@ clickhouse:
     volumePermissions:
       image:
         repository: bitnamilegacy/os-shell
-
-k8sWaitFor:
-  image:
-    repository: ghcr.io/groundnuty/k8s-wait-for
-    tag: "v2.0"
