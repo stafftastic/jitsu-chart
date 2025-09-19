@@ -31,23 +31,22 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
-        {{- if .Values.tokenGenerator.enabled }}
-        - name: wait-for-tokens
-          {{- with (.Values.migration.securityContext | default .Values.global.securityContext) }}
+        {{- with .Values.migration.waitFor }}
+        {{- range . }}
+        {{- if (fromYaml (tpl (.enabled | default "true") $ )) }}
+        - name: {{ printf "wait-for-%s" .name | quote }}
+          image: {{ include "jitsu.waitFor.image" $ }}
+          {{- with ($.Values.migration.securityContext | default $.Values.global.securityContext) }}
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          image: "{{ .Values.k8sWaitFor.image.repository }}:{{ .Values.k8sWaitFor.image.tag }}"
-          args: ["job-wr", "{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}"]
-          {{- end }}
-        {{- if .Values.postgresql.enabled }}
-        - name: wait-for-postgresql
-          {{- with (.Values.migration.securityContext | default .Values.global.securityContext) }}
-          securityContext:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          image: "{{ .Values.k8sWaitFor.image.repository }}:{{ .Values.k8sWaitFor.image.tag }}"
-          args: ["service", "{{ .Release.Name }}-postgresql"]
+          command: ["kubectl", "wait"]
+          args:
+            - {{ tpl .for $ | printf "--for=%s" | quote }}
+            - {{ default "300s" .timeout | printf "--timeout=%s" | quote }}
+            - {{ tpl .resource $ | quote }}
+        {{- end }}
+        {{- end }}
         {{- end }}
       containers:
         - name: {{ .Chart.Name }}

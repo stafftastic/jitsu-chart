@@ -156,3 +156,12 @@ jitsu
 {{ .Values.config.clickhousePassword }}
 {{- end }}
 {{- end }}
+
+{{- define "jitsu.waitFor.image" -}}
+{{- if .Values.waitFor.image.tag -}}
+"{{ .Values.waitFor.image.repository }}:{{ .Values.waitFor.image.tag }}"
+{{- else -}}
+{{- $v := semver .Capabilities.KubeVersion.Version -}}
+"{{ .Values.waitFor.image.repository }}:{{ printf "%d.%d.%d" $v.Major $v.Minor $v.Patch }}"
+{{- end }}
+{{- end }}
