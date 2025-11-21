@@ -176,7 +176,7 @@ jitsu
   image: {{ include "jitsu.waitFor.image" $global}}
   {{- with ($component.securityContext | default $global.Values.global.securityContext) }}
   securityContext:
-    {{- toYaml . | nindent 12 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
   command: ["kubectl", "wait"]
   args:
