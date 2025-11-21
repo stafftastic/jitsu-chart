@@ -173,7 +173,7 @@ jitsu
 {{- range . }}
 {{- if eq "true" (tpl (.enabled | default "true") $global) }}
 - name: {{ printf "wait-for-%s" .name | quote }}
-  image: {{ include "jitsu.waitFor.image" $global}}
+  image: {{ include "jitsu.waitFor.image" $global }}
   {{- with ($component.securityContext | default $global.Values.global.securityContext) }}
   securityContext:
     {{- toYaml . | nindent 4 }}
