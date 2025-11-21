@@ -165,3 +165,25 @@ jitsu
 "{{ .Values.waitFor.image.repository }}:{{ printf "%d.%d.%d" $v.Major $v.Minor $v.Patch }}"
 {{- end }}
 {{- end }}
+
+{{- define "jitsu.waitFor.initContainers" -}}
+{{- $global := index . 0 }}
+{{- $component := index . 1 }}
+{{- with $component.waitFor }}
+{{- range . }}
+{{- if eq "true" (tpl (.enabled | default "true") $global) }}
+- name: {{ printf "wait-for-%s" .name | quote }}
+  image: {{ include "jitsu.waitFor.image" $global}}
+  {{- with ($component.securityContext | default $global.Values.global.securityContext) }}
+  securityContext:
+    {{- toYaml . | nindent 12 }}
+  {{- end }}
+  command: ["kubectl", "wait"]
+  args:
+    - {{ tpl .for $global | printf "--for=%s" | quote }}
+    - {{ default "300s" .timeout | printf "--timeout=%s" | quote }}
+    - {{ tpl .resource $global | quote }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
