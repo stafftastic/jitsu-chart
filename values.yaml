@@ -489,7 +489,7 @@ bulker:
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-migration-{{ include "jitsu.hash" . }}'
       for: condition=Complete=True
     - name: console
-      condition: '{{ .Values.console.enabled }}'
+      enabled: '{{ .Values.console.enabled }}'
       resource: 'deployments.apps/{{ include "jitsu.fullname" . }}-console'
       for: condition=Available=true
     - name: clickhouse
@@ -648,7 +648,7 @@ rotor:
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-migration-{{ include "jitsu.hash" . }}'
       for: condition=Complete=True
     - name: console
-      condition: '{{ .Values.console.enabled }}'
+      enabled: '{{ .Values.console.enabled }}'
       resource: 'deployments.apps/{{ include "jitsu.fullname" . }}-console'
       for: condition=Available=true
     - name: bulker
@@ -822,7 +822,7 @@ ingest:
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-migration-{{ include "jitsu.hash" . }}'
       for: condition=Complete=True
     - name: console
-      condition: '{{ .Values.console.enabled }}'
+      enabled: '{{ .Values.console.enabled }}'
       resource: 'deployments.apps/{{ include "jitsu.fullname" . }}-console'
       for: condition=Available=true
     - name: rotor
@@ -1048,7 +1048,7 @@ eventLogInit:
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}'
       for: condition=Complete=true
     - name: console
-      condition: '{{ .Values.console.enabled }}'
+      enabled: '{{ .Values.console.enabled }}'
       resource: 'deployments.apps/{{ include "jitsu.fullname" . }}-console'
       for: condition=Available=true
 

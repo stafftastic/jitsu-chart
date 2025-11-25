@@ -21,3 +21,11 @@
 .idea/
 *.tmproj
 .vscode/
+# Nix build result
+result
+# Direnv cache
+.direnv/
+# Tracked files that aren't useful outside of development
+flake.nix
+flake.lock
+.editorconfig

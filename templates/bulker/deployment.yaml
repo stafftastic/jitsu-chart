@@ -38,23 +38,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       initContainers:
-        {{- with .Values.bulker.waitFor }}
-        {{- range . }}
-        {{- if (fromYaml (tpl (.enabled | default "true") $ )) }}
-        - name: {{ printf "wait-for-%s" .name | quote }}
-          image: {{ include "jitsu.waitFor.image" $ }}
-          {{- with ($.Values.bulker.securityContext | default $.Values.global.securityContext) }}
-          securityContext:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          command: ["kubectl", "wait"]
-          args:
-            - {{ tpl .for $ | printf "--for=%s" | quote }}
-            - {{ default "300s" .timeout | printf "--timeout=%s" | quote }}
-            - {{ tpl .resource $ | quote }}
-        {{- end }}
-        {{- end }}
-        {{- end }}
+        {{- include "jitsu.waitFor.initContainers" (list $ .Values.bulker) | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
           {{- with (.Values.bulker.securityContext | default .Values.global.securityContext) }}
