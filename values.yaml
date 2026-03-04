@@ -2,6 +2,9 @@ nameOverride: ""
 
 fullnameOverride: ""
 
+# Labels to add to all deployed objects
+commonLabels: {}
+
 # Common configuration values shared across multiple components.
 config:
   # Set to false to disable config abstractions for all services in order to configure them manually.

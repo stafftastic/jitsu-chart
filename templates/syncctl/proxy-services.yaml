@@ -12,6 +12,8 @@ kind: Service
 metadata:
   name: {{ . | quote }}
   namespace: {{ $.Values.syncctl.config.kubernetesNamespace }}
+  labels:
+    {{- include "jitsu.labels" $ | nindent 4 }}
 spec:
   type: ExternalName
   externalName: {{ printf "%s.%s.svc.%s" . $.Release.Namespace ($.Values.syncctl.clusterDomain | default "cluster.local") | quote }}

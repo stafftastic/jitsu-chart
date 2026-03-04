@@ -40,6 +40,16 @@ helm.sh/chart: {{ include "jitsu.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{ include "jitsu.commonLabels" . }}
+{{- end }}
+
+{{/*
+User provided labels applied to all objects
+*/}}
+{{- define "jitsu.commonLabels" -}}
+{{- with .Values.commonLabels }}
+{{- toYaml . }}
+{{- end }}
 {{- end }}
 
 {{/*

@@ -27,6 +27,7 @@ spec:
       labels:
         {{- include "jitsu.selectorLabels" . | nindent 8 }}
         {{- include "jitsu.bulker.selectorLabels" . | nindent 8 }}
+        {{- include "jitsu.commonLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
