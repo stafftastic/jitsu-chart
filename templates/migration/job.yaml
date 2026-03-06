@@ -15,7 +15,7 @@ spec:
     metadata:
       labels:
         {{- include "jitsu.selectorLabels" . | nindent 8 }}
-        {{- include "jitsu.commonLabels" . | nindent 8 }}
+        {{- include "jitsu.globalLabels" . | nindent 8 }}
       {{- with (merge (deepCopy .Values.migration.podAnnotations) .Values.global.podAnnotations) }}
       annotations:
         {{- toYaml . | nindent 8 }}
