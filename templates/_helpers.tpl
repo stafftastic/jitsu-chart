@@ -43,7 +43,9 @@ Common labels
 {{- if .Chart.AppVersion -}}
 {{- $labels = merge $labels (dict "app.kubernetes.io/version" (.Chart.AppVersion | toString)) -}}
 {{- end -}}
-{{- toYaml $labels -}}
+{{- range $key, $value := $labels }}
+{{ $key }}: {{ $value | quote }}
+{{- end -}}
 {{- end -}}
 
 {{/*
