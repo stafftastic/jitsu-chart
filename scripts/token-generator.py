@@ -47,7 +47,7 @@ def getSecret(fullname):
     )
     if proc.returncode == 0:
         return json.loads(proc.stdout)
-    return None 
+    return None
 
 def updateSecret(secret):
     subprocess.run(
@@ -74,7 +74,7 @@ def generateTokenSet(service, globalHashSecret):
 
 def validateTokenSet(service, token, hashes, globalHashSecret):
     if service == "console":
-        prefix, token = token.split(":")[1]
+        prefix, token = token.split(":")
         if prefix != "service-admin-account":
             raise ValueError
     for hash in hashes.split(","):

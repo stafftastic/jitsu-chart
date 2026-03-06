@@ -142,6 +142,16 @@ app.kubernetes.io/component: bulker
   value: {{ . | quote }}
 {{- end }}
 
+{{- with .logFormat }}
+- name: BULKER_LOG_FORMAT
+  value: {{ . | quote }}
+{{- end }}
+
+{{- if or .kafkaBootstrapServersFrom $.Values.config.kafkaBootstrapServersFrom }}
+- name: BULKER_KAFKA_BOOTSTRAP_SERVERS
+  valueFrom:
+    {{- toYaml (.kafkaBootstrapServersFrom | default $.Values.config.kafkaBootstrapServersFrom) | nindent 4 }}
+{{- else }}
 {{- if and (not .kafkaBootstrapServers) (not $.Values.config.kafkaBootstrapServers) $.Values.kafka.enabled }}
 - name: BULKER_KAFKA_BOOTSTRAP_SERVERS
   value: "{{ $.Release.Name }}-kafka:9092"
@@ -149,6 +159,7 @@ app.kubernetes.io/component: bulker
 {{- with (.kafkaBootstrapServers | default $.Values.config.kafkaBootstrapServers) }}
 - name: BULKER_KAFKA_BOOTSTRAP_SERVERS
   value: {{ . | quote }}
+{{- end }}
 {{- end }}
 
 {{- with (.kafkaSsl | default $.Values.config.kafkaSsl) }}

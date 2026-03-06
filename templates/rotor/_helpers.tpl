@@ -176,6 +176,11 @@ app.kubernetes.io/component: rotor
 {{- end }}
 {{- end }}
 
+{{- if or .kafkaBootstrapServersFrom $.Values.config.kafkaBootstrapServersFrom }}
+- name: KAFKA_BOOTSTRAP_SERVERS
+  valueFrom:
+    {{- toYaml (.kafkaBootstrapServersFrom | default $.Values.config.kafkaBootstrapServersFrom) | nindent 4 }}
+{{- else }}
 {{- if and (not .kafkaBootstrapServers) (not $.Values.config.kafkaBootstrapServers) $.Values.kafka.enabled }}
 - name: KAFKA_BOOTSTRAP_SERVERS
   value: {{ printf "%s-kafka:9092" $.Release.Name | quote }}
@@ -183,6 +188,7 @@ app.kubernetes.io/component: rotor
 {{- with (.kafkaBootstrapServers | default $.Values.config.kafkaBootstrapServers) }}
 - name: KAFKA_BOOTSTRAP_SERVERS
   value: {{ . | quote }}
+{{- end }}
 {{- end }}
 
 {{- with (.kafkaSsl | default $.Values.config.kafkaSsl) }}

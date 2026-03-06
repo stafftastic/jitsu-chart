@@ -20,6 +20,7 @@ config:
   # Global Kafka configuration. Leave empty if using Kafka subchart.
   # List of hosts in the format of: host:port,...
   kafkaBootstrapServers: ""
+  kafkaBootstrapServersFrom: {}
   # Enable/disable SSL
   kafkaSsl: ""
   # Dict or JSON string with SASL configuration. Leave empty to disable.
@@ -329,7 +330,6 @@ bulker:
     # UUID of bulker instance
     # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_instance_id
     instanceId: ""
-    instanceIdFrom: {}
 
     # Leave empty to configure automatically.
     # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_config_source
@@ -373,6 +373,7 @@ bulker:
     # Leave empty to automatically configure.
     # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_kafka_bootstrap_servers
     kafkaBootstrapServers: ""
+    kafkaBootstrapServersFrom: {}
 
     # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_kafka_ssl
     kafkaSsl: "false"
@@ -436,6 +437,10 @@ bulker:
 
     # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#connection-to-redis-optional
     eventsLogMaxSize: ""
+
+    # Log format. One of "text", "json".
+    # https://github.com/jitsucom/bulker/blob/c5548cf95c939f078f1a8faa48dbb2e299505789/jitsubase/appbase/app_base.go#L54-L55
+    logFormat: "text"
   replicaCount: 1
   image:
     repository: jitsucom/bulker
@@ -562,6 +567,7 @@ rotor:
     # Leave empty to configure automatically if config.kafkaBootstrapServers is set or Kafka subchart is being used.
     # https://docs.jitsu.com/self-hosting/configuration#kafka_bootstrap_servers
     kafkaBootstrapServers: ""
+    kafkaBootstrapServersFrom: {}
 
     # https://docs.jitsu.com/self-hosting/configuration#kafka_ssl
     kafkaSsl: "false"
@@ -716,6 +722,7 @@ ingest:
     # Leave empty to configure automatically when Kafka subchart is enabled or config.kafkaBootstrapServers is set.
     # https://docs.jitsu.com/self-hosting/configuration#ingest_kafka_bootstrap_servers
     kafkaBootstrapServers: ""
+    kafkaBootstrapServersFrom: {}
 
     # https://docs.jitsu.com/self-hosting/configuration#ingest_kafka_ssl
     kafkaSsl: ""
@@ -1059,9 +1066,8 @@ serviceAccount:
   annotations: {}
   name: ""
 
+# initContainers waiting for conditions on other components
 waitFor:
-  # initContainers waiting for conditions on other components
-  enabled: true
   image:
     repository: alpine/k8s
     tag: ""
