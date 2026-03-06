@@ -52,8 +52,8 @@ Common labels
 User provided labels applied to all objects
 */}}
 {{- define "jitsu.globalLabels" -}}
-{{- with .Values.global.labels }}
-{{- toYaml . }}
+{{- range $key, $value := .Values.global.labels }}
+{{ $key }}: {{ $value | quote }}
 {{- end }}
 {{- end }}
 
