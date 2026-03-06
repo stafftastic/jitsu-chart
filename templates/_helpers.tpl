@@ -36,7 +36,7 @@ Common labels
 {{- define "jitsu.labels" -}}
 {{- $global := .Values.global.labels | default (dict) -}}
 {{- $selector := include "jitsu.selectorLabels" . | fromYaml | default (dict) -}}
-{{- $labels := merge $global $selector (dict
+{{- $labels := merge (dict) $global $selector (dict
   "helm.sh/chart" (include "jitsu.chart" .)
   "app.kubernetes.io/managed-by" .Release.Service
 ) -}}
