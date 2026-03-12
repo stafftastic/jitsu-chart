@@ -95,6 +95,8 @@ tokenGenerator:
   affinity: {}
 
 global:
+  # Labels to add to all deployed objects
+  labels: {}
   podAnnotations: {}
   podSecurityContext: {}
   securityContext: {}

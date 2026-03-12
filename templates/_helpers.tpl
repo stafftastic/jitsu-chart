@@ -34,12 +34,25 @@ Create chart name and version as used by the chart label.
 Common labels
 */}}
 {{- define "jitsu.labels" -}}
-helm.sh/chart: {{ include "jitsu.chart" . }}
-{{ include "jitsu.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+{{- $global := .Values.global.labels -}}
+{{- $selector := include "jitsu.selectorLabels" . | fromYaml -}}
+{{- $labels := merge (dict) $global $selector (dict
+  "helm.sh/chart" (include "jitsu.chart" .)
+  "app.kubernetes.io/managed-by" .Release.Service
+) -}}
+{{- if .Chart.AppVersion -}}
+{{- $labels = merge $labels (dict "app.kubernetes.io/version" (.Chart.AppVersion | toString)) -}}
+{{- end -}}
+{{- toYaml $labels }}
+{{- end -}}
+
+{{/*
+User provided labels applied to all objects
+*/}}
+{{- define "jitsu.globalLabels" -}}
+{{- with .Values.global.labels }}
+{{- toYaml . }}
 {{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*

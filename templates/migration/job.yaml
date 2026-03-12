@@ -14,6 +14,7 @@ spec:
   template:
     metadata:
       labels:
+        {{- include "jitsu.globalLabels" . | nindent 8 }}
         {{- include "jitsu.selectorLabels" . | nindent 8 }}
       {{- with (merge (deepCopy .Values.migration.podAnnotations) .Values.global.podAnnotations) }}
       annotations:

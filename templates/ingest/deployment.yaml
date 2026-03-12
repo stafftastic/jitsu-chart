@@ -25,6 +25,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
+        {{- include "jitsu.globalLabels" . | nindent 8 }}
         {{- include "jitsu.selectorLabels" . | nindent 8 }}
         {{- include "jitsu.ingest.selectorLabels" . | nindent 8 }}
     spec:
