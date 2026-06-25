@@ -332,28 +332,6 @@ app.kubernetes.io/component: console
 {{- end }}
 {{- end }}
 
-{{- if .clickhouseUsernameFrom }}
-- name: CLICKHOUSE_USERNAME
-  valueFrom:
-    {{- toYaml .clickhouseUsernameFrom | nindent 4 }}
-{{- else }}
-{{- with .clickhouseUsername }}
-- name: CLICKHOUSE_USERNAME
-  value: {{ . | quote }}
-{{- end }}
-{{- end }}
-
-{{- if .clickhousePasswordFrom }}
-- name: CLICKHOUSE_PASSWORD
-  valueFrom:
-    {{- toYaml .clickhousePasswordFrom | nindent 4 }}
-{{- else }}
-{{- with .clickhousePassword }}
-- name: CLICKHOUSE_PASSWORD
-  value: {{ . | quote }}
-{{- end }}
-{{- end }}
-
 {{- with .logFormat }}
 - name: LOG_FORMAT
   value: {{ . | quote }}
