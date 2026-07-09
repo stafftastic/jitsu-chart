@@ -321,17 +321,6 @@ app.kubernetes.io/component: console
 {{- end }}
 {{- end }}
 
-{{- if .clickhouseUrlFrom }}
-- name: CLICKHOUSE_URL
-  valueFrom:
-    {{- toYaml .clickhouseUrlFrom | nindent 4 }}
-{{- else }}
-{{- with .clickhouseUrl }}
-- name: CLICKHOUSE_URL
-  value: {{ . | quote }}
-{{- end }}
-{{- end }}
-
 {{- with .logFormat }}
 - name: LOG_FORMAT
   value: {{ . | quote }}
