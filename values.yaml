@@ -141,6 +141,16 @@ console:
     githubClientSecret: ""
     githubClientSecretFrom: {}
 
+    # Generic OIDC configuration
+    authOidcProvider: {}
+      # issuer: ""
+      # clientId: ""
+      # clientSecret: ""
+    authOidcProviderFrom: {}
+
+    # Scope of the auth session cookie
+    authCookieDomain: ""
+
     # Disable sign-up
     # https://github.com/jitsucom/jitsu/blob/newjitsu/docker/README.md#further-steps
     disableSignup: "false"
