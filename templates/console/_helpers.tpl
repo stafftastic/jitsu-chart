@@ -331,6 +331,22 @@ app.kubernetes.io/component: console
   value: {{ . | quote }}
 {{- end }}
 
+{{- if .authOidcProviderFrom }}
+- name: AUTH_OIDC_PROVIDER
+  valueFrom:
+    {{- toYaml .authOidcProviderFrom | nindent 4 }}
+{{- else }}
+{{- with .authOidcProvider }}
+- name: AUTH_OIDC_PROVIDER
+  value: {{ toJson . | quote }}
+{{- end }}
+{{- end }}
+
+{{- with .authCookieDomain }}
+- name: AUTH_COOKIE_DOMAIN
+  value: {{ . | quote }}
+{{- end }}
+
 {{- if $.Values.migration.enabled }}
 - name: UPDATE_DB
   value: "false"
