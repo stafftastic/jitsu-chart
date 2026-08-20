@@ -1,0 +1,35 @@
+{{- if and .Values.profiles.enabled .Values.profiles.serviceMonitor.enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "jitsu.fullname" . }}-profiles
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+    {{- include "jitsu.profiles.selectorLabels" . | nindent 4 }}
+    {{- with .Values.profiles.serviceMonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with .Values.serviceMonitors.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  endpoints:
+    - path: /metrics
+      port: metrics
+      scheme: http
+      interval: {{ .Values.profiles.serviceMonitor.interval | default .Values.serviceMonitors.interval }}
+      relabelings:
+        {{- with .Values.profiles.serviceMonitor.relabelings }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        {{- with .Values.serviceMonitors.relabelings }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      {{- include "jitsu.selectorLabels" . | nindent 6 }}
+      {{- include "jitsu.profiles.selectorLabels" . | nindent 6 }}
+{{- end -}}

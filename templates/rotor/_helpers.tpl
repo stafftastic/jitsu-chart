@@ -211,6 +211,20 @@ app.kubernetes.io/component: rotor
 {{- end }}
 {{- end }}
 
+{{- if and (not .functionsServerUrlTemplate) $.Values.operator.enabled }}
+- name: FUNCTIONS_SERVER_URL_TEMPLATE
+  value: {{ include "jitsu.functionsServerUrlTemplate" $ | quote }}
+{{- end }}
+{{- with .functionsServerUrlTemplate }}
+- name: FUNCTIONS_SERVER_URL_TEMPLATE
+  value: {{ . | quote }}
+{{- end }}
+
+{{- with .functionsServerTimeoutMs }}
+- name: FUNCTIONS_SERVER_TIMEOUT_MS
+  value: {{ . | quote }}
+{{- end }}
+
 {{- with .metricsDestinationId }}
 - name: METRICS_DESTINATION_ID
   value: {{ . | quote }}

@@ -170,6 +170,20 @@ jitsu
 {{- end }}
 {{- end }}
 
+{{/*
+URL template used by console, rotor and ingest to reach the per-workspace
+functions-server Services created by the operator. ${workspaceId} is a
+literal placeholder substituted by Jitsu at runtime.
+*/}}
+{{- define "jitsu.functionsServerUrlTemplate" -}}
+{{- if .Values.operator.enabled -}}
+{{- printf "http://fs-${workspaceId}.%s:%d"
+  (.Values.operator.config.kubernetesNamespace | default .Release.Namespace)
+  (.Values.operator.config.functionsServerPort | default 3456 | int)
+-}}
+{{- end }}
+{{- end }}
+
 {{- define "jitsu.waitFor.image" -}}
 {{- if .Values.waitFor.image.tag -}}
 "{{ .Values.waitFor.image.repository }}:{{ .Values.waitFor.image.tag }}"

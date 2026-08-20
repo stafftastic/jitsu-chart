@@ -9,7 +9,7 @@ metadata:
 rules:
   - apiGroups: [""]
     resources: ["secrets"]
-    verbs: ["create","delete"]
+    verbs: ["get","create","update","delete"]
   - apiGroups: [""]
     resources: ["configmaps"]
     verbs: ["delete"]
@@ -19,4 +19,7 @@ rules:
   - apiGroups: [""]
     resources: ["pods/log"]
     verbs: ["get"]
+  - apiGroups: ["batch"]
+    resources: ["cronjobs"]
+    verbs: ["get","list","watch","create","update","delete"]
 {{- end }}
