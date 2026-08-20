@@ -1344,7 +1344,15 @@ seed:
     pullPolicy: IfNotPresent
     tag: ""
   restartPolicy: Never
-  command: [node, /app/webapps/console/build/manage.js, seed]
+  # The management CLI expects @prisma/client on the module path, but the
+  # console image only ships it inside the pnpm store, so locate it there.
+  command:
+    - sh
+    - -c
+    - |
+      set -eu
+      export NODE_PATH="$(ls -d /app/node_modules/.pnpm/@prisma+client*/node_modules | head -n 1)"
+      exec node /app/webapps/console/build/manage.js seed
   env: []
   envFrom: []
   jobAnnotations: {}

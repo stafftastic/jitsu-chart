@@ -1,7 +1,0 @@
-ingress:
-  className: nginx
-  host: jitsu.localhost
-console:
-  config:
-    seedUserEmail: me@example.com
-    seedUserPassword: letmein
