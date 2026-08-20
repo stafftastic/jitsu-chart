@@ -1335,6 +1335,12 @@ eventLogInit:
     # Set to false to disable config abstractions in order to configure manually.
     enabled: true
 
+    # Create the ClickHouse metrics database before initializing the events
+    # log. Required since Jitsu 2.14 unless the database already exists, as
+    # the console can no longer create it itself. Set to false if the
+    # configured ClickHouse user is not allowed to create databases.
+    createDatabase: true
+
     # Leave empty to configure automatically
     consoleEndpoint: ""
 

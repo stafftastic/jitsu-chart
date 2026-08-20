@@ -33,6 +33,39 @@ spec:
       {{- end }}
       initContainers:
         {{- include "jitsu.waitFor.initContainers" (list $ .Values.eventLogInit) | nindent 8 }}
+        {{- if and .Values.config.enabled .Values.eventLogInit.config.enabled .Values.eventLogInit.config.createDatabase }}
+        # Since Jitsu 2.14 the console's ClickHouse client pins its session to
+        # the metrics database, so the console can no longer bootstrap the
+        # database itself — it has to exist before any console command runs.
+        - name: create-database
+          {{- with (.Values.eventLogInit.securityContext | default .Values.global.securityContext) }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.eventLogInit.image.repository }}:{{ .Values.eventLogInit.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.eventLogInit.image.pullPolicy }}
+          command:
+            - sh
+            - -c
+            - |
+              set -eu
+              QUERY="CREATE DATABASE IF NOT EXISTS \`${CLICKHOUSE_METRICS_SCHEMA:-$CLICKHOUSE_DATABASE}\`"
+              if [ -n "${CLICKHOUSE_CLUSTER:-}" ]; then
+                QUERY="$QUERY ON CLUSTER \`$CLICKHOUSE_CLUSTER\`"
+              fi
+              if [ "${CLICKHOUSE_SSL:-false}" = "true" ]; then
+                PROTOCOL=https
+              else
+                PROTOCOL=http
+              fi
+              curl --silent --show-error --fail-with-body \
+                -H "X-ClickHouse-User: $CLICKHOUSE_USERNAME" \
+                -H "X-ClickHouse-Key: $CLICKHOUSE_PASSWORD" \
+                --data-binary "$QUERY" \
+                "$PROTOCOL://$CLICKHOUSE_HOST/"
+          env:
+            {{- include "jitsu.eventLogInit.clickhouseEnv" . | nindent 12 }}
+        {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           {{- with (.Values.eventLogInit.securityContext | default .Values.global.securityContext) }}
