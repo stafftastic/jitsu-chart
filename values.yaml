@@ -1369,17 +1369,40 @@ seed:
       resource: 'pod/{{ .Release.Name }}-postgresql-0'
       for: condition=Ready=true
 
+# Creates the ClickHouse metrics database. Required since Jitsu 2.14 unless
+# the database already exists, as the console can no longer create it itself.
+# Set enabled to false if the configured ClickHouse user is not allowed to
+# create databases; in that case the database must be provisioned externally.
+clickhouseInit:
+  enabled: true
+  config:
+    # Set to false to disable config abstractions in order to configure manually.
+    enabled: true
+  image:
+    repository: jitsucom/console
+    pullPolicy: IfNotPresent
+    tag: ""
+  env: []
+  envFrom: []
+  jobAnnotations: {}
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  waitFor:
+    - name: clickhouse
+      enabled: '{{ .Values.clickhouse.enabled }}'
+      resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
+      for: condition=Ready=true
+
 eventLogInit:
   enabled: true
   config:
     # Set to false to disable config abstractions in order to configure manually.
     enabled: true
-
-    # Create the ClickHouse metrics database before initializing the events
-    # log. Required since Jitsu 2.14 unless the database already exists, as
-    # the console can no longer create it itself. Set to false if the
-    # configured ClickHouse user is not allowed to create databases.
-    createDatabase: true
 
     # Leave empty to configure automatically
     consoleEndpoint: ""
@@ -1406,6 +1429,10 @@ eventLogInit:
     - name: tokens
       enabled: '{{ .Values.tokenGenerator.enabled }}'
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=true
+    - name: clickhouse-init
+      enabled: '{{ .Values.clickhouseInit.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-clickhouse-init-{{ include "jitsu.hash" . }}'
       for: condition=Complete=true
     - name: console
       enabled: '{{ .Values.console.enabled }}'

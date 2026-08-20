@@ -1,10 +1,10 @@
 {{/*
-ClickHouse connection environment for the create-database initContainer.
-Mirrors the console's ClickHouse configuration, since the events-log tables
-are created in the database the console connects to (the metrics schema,
-which since Jitsu 2.14 must exist before the console can issue any command).
+ClickHouse connection environment for the clickhouse-init job. Mirrors the
+console's ClickHouse configuration, since the events-log tables are created
+in the database the console connects to (the metrics schema, which since
+Jitsu 2.14 must exist before the console can issue any command).
 */}}
-{{- define "jitsu.eventLogInit.clickhouseEnv" -}}
+{{- define "jitsu.clickhouseInit.env" -}}
 {{- with .Values.console.config -}}
 {{- if or .clickhouseHostFrom $.Values.config.clickhouseHttpHostFrom }}
 - name: CLICKHOUSE_HOST
