@@ -1,0 +1,74 @@
+{{- if and .Values.seed.enabled (or
+  .Values.console.config.seedUserEmail
+  .Values.console.config.seedUserEmailFrom) }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "jitsu.fullname" . }}-seed-{{ include "jitsu.hash" . }}
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+  {{- with .Values.seed.jobAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        {{- include "jitsu.globalLabels" . | nindent 8 }}
+        {{- include "jitsu.selectorLabels" . | nindent 8 }}
+      {{- with (merge (deepCopy .Values.seed.podAnnotations) .Values.global.podAnnotations) }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      restartPolicy: {{ .Values.seed.restartPolicy | quote }}
+      serviceAccountName: {{ include "jitsu.serviceAccountName" . }}
+      {{- with (.Values.seed.podSecurityContext | default .Values.global.podSecurityContext) }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+        {{- include "jitsu.waitFor.initContainers" (list $ .Values.seed) | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- with (.Values.seed.securityContext | default .Values.global.securityContext) }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.seed.image.repository }}:{{ .Values.seed.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.seed.image.pullPolicy }}
+          command: {{ .Values.seed.command | toYaml | nindent 12 }}
+          {{- if .Values.seed.envFrom }}
+          envFrom:
+            {{- toYaml .Values.seed.envFrom | nindent 12 }}
+          {{- end }}
+          env:
+            {{- if and .Values.config.enabled .Values.seed.config.enabled }}
+            {{- include "jitsu.seed.env" . | nindent 12 }}
+            {{- end }}
+            {{- with .Values.seed.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with (.Values.seed.resources | default .Values.global.resources) }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with (.Values.seed.nodeSelector | default .Values.global.nodeSelector) }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with (.Values.seed.affinity | default .Values.global.affinity) }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with (.Values.seed.tolerations | default .Values.global.tolerations) }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

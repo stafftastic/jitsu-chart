@@ -1329,6 +1329,46 @@ migration:
       resource: 'pod/{{ .Release.Name }}-postgresql-0'
       for: condition=Ready=true
 
+# Creates the seed admin user (console.config.seedUserEmail/-Password) via
+# the console management CLI. Since Jitsu 2.14 seeding no longer happens at
+# console startup. Upstream only seeds while the user database is empty, so
+# this is a no-op on installations that already have users. Only deployed
+# when console.config.seedUserEmail (or seedUserEmailFrom) is set.
+seed:
+  enabled: true
+  config:
+    # Set to false to disable config abstractions in order to configure manually.
+    enabled: true
+  image:
+    repository: jitsucom/console
+    pullPolicy: IfNotPresent
+    tag: ""
+  restartPolicy: Never
+  command: [node, /app/webapps/console/build/manage.js, seed]
+  env: []
+  envFrom: []
+  jobAnnotations: {}
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  waitFor:
+    - name: tokens
+      enabled: '{{ .Values.tokenGenerator.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=true
+    - name: migration
+      enabled: '{{ .Values.migration.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-migration-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=True
+    - name: postgresql
+      enabled: '{{ .Values.postgresql.enabled }}'
+      resource: 'pod/{{ .Release.Name }}-postgresql-0'
+      for: condition=Ready=true
+
 eventLogInit:
   enabled: true
   config:

@@ -208,6 +208,11 @@ The console now requires a `JWT_SECRET`. When using the token generator (enabled
 generated and added to the token secret automatically on upgrade. If you manage tokens manually,
 set `console.config.jwtSecret` (or `jwtSecretFrom`).
 
+The console no longer creates the seed user (`console.config.seedUserEmail`/`-Password`) at
+startup. The chart now runs the console management CLI in a dedicated `seed` job instead, which
+only takes effect while the user database is empty. The seed user must change its password on
+first login.
+
 Also note the following upstream behavior changes: the auth session cookie is host-only by default
 (set `console.config.authCookieDomain` to share sessions across subdomains), and the console API is
 now rate-limited by default.
