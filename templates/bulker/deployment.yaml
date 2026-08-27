@@ -55,15 +55,11 @@ spec:
             - name: metrics
               containerPort: {{ .Values.bulker.service.metricsPort }}
               protocol: TCP
-          {{- if .Values.console.probes.enabled }}
+          {{- if .Values.bulker.probes.enabled }}
           livenessProbe:
-            httpGet:
-              port: http
-              path: /health
+            {{- toYaml (mergeOverwrite (dict "httpGet" (dict "port" "http" "path" "/health")) (.Values.bulker.probes.liveness | default dict)) | nindent 12 }}
           readinessProbe:
-            httpGet:
-              port: http
-              path: /ready
+            {{- toYaml (mergeOverwrite (dict "httpGet" (dict "port" "http" "path" "/ready")) (.Values.bulker.probes.readiness | default dict)) | nindent 12 }}
           startupProbe:
             httpGet:
               port: http

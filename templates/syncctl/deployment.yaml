@@ -54,13 +54,9 @@ spec:
               protocol: TCP
           {{- if .Values.syncctl.probes.enabled }}
           livenessProbe:
-            httpGet:
-              port: http
-              path: /health
+            {{- toYaml (mergeOverwrite (dict "httpGet" (dict "port" "http" "path" "/health")) (.Values.syncctl.probes.liveness | default dict)) | nindent 12 }}
           readinessProbe:
-            httpGet:
-              port: http
-              path: /health
+            {{- toYaml (mergeOverwrite (dict "httpGet" (dict "port" "http" "path" "/health")) (.Values.syncctl.probes.readiness | default dict)) | nindent 12 }}
           {{- end }}
           {{- if .Values.syncctl.envFrom }}
           envFrom:

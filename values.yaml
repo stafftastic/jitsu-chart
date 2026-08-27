@@ -270,6 +270,19 @@ console:
     #     - jitsu.example.com
   probes:
     enabled: true
+    # Overrides merged over the probe defaults above, so only the fields you set change.
+    # Useful when the probed endpoint depends on an external service: the console's
+    # /api/healthcheck, for example, fails while PostgreSQL is unreachable, and the kubelet
+    # default of timeoutSeconds 1 / failureThreshold 3 then restarts a container that is
+    # itself healthy.
+    #
+    #   liveness:
+    #     failureThreshold: 6
+    #     timeoutSeconds: 5
+    #   readiness:
+    #     timeoutSeconds: 5
+    liveness: {}
+    readiness: {}
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -465,6 +478,9 @@ bulker:
     metricsPort: 9091
   probes:
     enabled: true
+    # See the comment on console.probes for how these overrides are merged.
+    liveness: {}
+    readiness: {}
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -625,6 +641,9 @@ rotor:
     metricsPort: 9091
   probes:
     enabled: true
+    # See the comment on console.probes for how these overrides are merged.
+    liveness: {}
+    readiness: {}
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -800,6 +819,9 @@ ingest:
     #     - jitsu.example.com
   probes:
     enabled: true
+    # See the comment on console.probes for how these overrides are merged.
+    liveness: {}
+    readiness: {}
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -939,6 +961,9 @@ syncctl:
     port: 3043
   probes:
     enabled: true
+    # See the comment on console.probes for how these overrides are merged.
+    liveness: {}
+    readiness: {}
   autoscaling:
     enabled: false
     minReplicas: 1
