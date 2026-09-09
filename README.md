@@ -198,8 +198,9 @@ explicit functions class feature flag use `config.defaultFunctionsClass` (defaul
 meaning all workspaces share one functions-server deployment), overridable per service via
 `console.config`, `ingest.config` and `operator.config`.
 
-A new `profiles` deployment (the rotor image in profiles mode) schedules Profile Builder runs. If
-you don't use the Profile Builder feature you can set `profiles.enabled` to `false`.
+A new `profiles` StatefulSet (the rotor image in profiles mode) schedules Profile Builder runs.
+Each replica receives its stable pod ordinal as `INSTANCE_INDEX`, so it can be scaled beyond one
+replica. If you don't use the Profile Builder feature you can set `profiles.enabled` to `false`.
 
 Connector syncs are now scheduled as Kubernetes CronJobs reconciled by syncctl instead of Google
 Cloud Scheduler. `console.config.googleSchedulerKey` (and its `From` variant) has been removed —

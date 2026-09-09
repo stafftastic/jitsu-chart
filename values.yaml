@@ -1220,8 +1220,9 @@ profiles:
     databaseUrl: ""
     databaseUrlFrom: {}
 
-    # Number of profile builder instances. Must match replicaCount when
-    # scaling beyond one replica.
+    # Number of profile builder instances. Defaults to replicaCount. Used as
+    # the partition count when the priority topics are first created; Kafka
+    # topics are not repartitioned automatically when scaling up later.
     instancesCount: ""
 
     # Timeout overrides for profile builder operations.
@@ -1263,7 +1264,7 @@ profiles:
   revisionHistoryLimit: 2
   volumes: []
   volumeMounts: []
-  strategy: {}
+  updateStrategy: {}
   waitFor:
     - name: tokens
       enabled: '{{ .Values.tokenGenerator.enabled }}'

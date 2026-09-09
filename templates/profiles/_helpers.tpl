@@ -24,10 +24,8 @@ environment variables specific to the profiles mode are defined here.
   value: {{ .databaseUrl | default (include "jitsu.databaseUrl" $) | quote }}
 {{- end }}
 
-{{- with .instancesCount }}
 - name: INSTANCES_COUNT
-  value: {{ . | quote }}
-{{- end }}
+  value: {{ .instancesCount | default $.Values.profiles.replicaCount | quote }}
 
 {{- with .mongodbTimeoutMs }}
 - name: MONGODB_TIMEOUT_MS
