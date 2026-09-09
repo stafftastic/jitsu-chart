@@ -1,15 +1,7 @@
-{{/*
-Profiles selector labels
-*/}}
 {{- define "jitsu.profiles.selectorLabels" -}}
 app.kubernetes.io/component: profiles
 {{- end }}
 
-{{/*
-Profile Builder runs the rotor image in "profiles" mode and shares the
-backend configuration of the rotor (jitsu.rotor.env). Only the extra
-environment variables specific to the profiles mode are defined here.
-*/}}
 {{- define "jitsu.profiles.env" -}}
 {{- with .Values.profiles.config -}}
 - name: ROTOR_MODE

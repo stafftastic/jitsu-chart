@@ -1,10 +1,3 @@
-{{/*
-Environment for the seed job. Since Jitsu 2.14 the seed admin user is no
-longer created at console startup, but by the console's management CLI
-(manage.js seed). The CLI hashes the password with GLOBAL_HASH_SECRET and
-validates DATABASE_URL and JWT_SECRET, so those must match the console's
-configuration for the login to work.
-*/}}
 {{- define "jitsu.seed.env" -}}
 {{- with .Values.console.config -}}
 {{- if or .databaseUrlFrom $.Values.config.databaseUrlFrom }}

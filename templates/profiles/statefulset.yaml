@@ -6,9 +6,6 @@ metadata:
   labels:
     {{- include "jitsu.labels" . | nindent 4 }}
 spec:
-  # A StatefulSet gives each replica a stable ordinal, which is passed to the
-  # pod as INSTANCE_INDEX. Instance 0 schedules full profile rebuilds; the
-  # other instances only consume their share of the priority topics.
   serviceName: {{ include "jitsu.fullname" . }}-profiles
   podManagementPolicy: Parallel
   replicas: {{ .Values.profiles.replicaCount }}
