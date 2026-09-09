@@ -111,20 +111,8 @@ app.kubernetes.io/component: syncctl
 {{- end }}
 {{- end }}
 
-{{- if .kubernetesNamespaceFrom }}
 - name: SYNCCTL_KUBERNETES_NAMESPACE
-  valueFrom:
-    {{- toYaml .kubernetesNamespaceFrom | nindent 4 }}
-{{- else }}
-{{- if not .kubernetesNamespace }}
-- name: SYNCCTL_KUBERNETES_NAMESPACE
-  value: "{{ $.Release.Namespace }}"
-{{- end }}
-{{- with .kubernetesNamespace }}
-- name: SYNCCTL_KUBERNETES_NAMESPACE
-  value: {{ . | quote }}
-{{- end }}
-{{- end }}
+  value: {{ .kubernetesNamespace | default $.Release.Namespace | quote }}
 
 {{- if and (not .repositoryBaseUrl) $.Values.console.enabled $.Values.tokenGenerator.enabled }}
 - name: SYNCCTL_REPOSITORY_BASE_URL

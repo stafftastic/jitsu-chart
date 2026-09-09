@@ -90,20 +90,8 @@ app.kubernetes.io/component: operator
   value: {{ . | quote }}
 {{- end }}
 
-{{- if .kubernetesNamespaceFrom }}
 - name: OPERATOR_KUBERNETES_NAMESPACE
-  valueFrom:
-    {{- toYaml .kubernetesNamespaceFrom | nindent 4 }}
-{{- else }}
-{{- if not .kubernetesNamespace }}
-- name: OPERATOR_KUBERNETES_NAMESPACE
-  value: "{{ $.Release.Namespace }}"
-{{- end }}
-{{- with .kubernetesNamespace }}
-- name: OPERATOR_KUBERNETES_NAMESPACE
-  value: {{ . | quote }}
-{{- end }}
-{{- end }}
+  value: {{ .kubernetesNamespace | default $.Release.Namespace | quote }}
 
 {{- with .kubernetesNodeSelector }}
 - name: OPERATOR_KUBERNETES_NODE_SELECTOR

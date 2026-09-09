@@ -965,7 +965,6 @@ syncctl:
     # this namespace.
     # https://docs.jitsu.com/self-hosting/configuration#syncctl_task_timeout_hours
     kubernetesNamespace: ""
-    kubernetesNamespaceFrom: {}
 
     # https://docs.jitsu.com/self-hosting/configuration#syncctl_task_timeout_hours
     taskTimeoutHours: ""
@@ -1101,7 +1100,6 @@ operator:
     # operator.config.kubernetesClientConfig is unset a Role and RoleBinding
     # will be created in this namespace.
     kubernetesNamespace: ""
-    kubernetesNamespaceFrom: {}
 
     # nodeSelector for functions-server pods; dict or JSON string.
     kubernetesNodeSelector: ""
