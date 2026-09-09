@@ -299,15 +299,31 @@ app.kubernetes.io/component: console
   value: {{ . | quote }}
 {{- end }}
 
-{{- if .googleSchedulerKeyFrom }}
-- name: GOOGLE_SCHEDULER_KEY
+{{- if .jwtSecretFrom }}
+- name: JWT_SECRET
   valueFrom:
-    {{- toYaml .googleSchedulerKeyFrom | nindent 4 }}
+    {{- toYaml .jwtSecretFrom | nindent 4 }}
 {{- else }}
-{{- with .googleSchedulerKey }}
-- name: GOOGLE_SCHEDULER_KEY
+{{- if and (not .jwtSecret) $.Values.tokenGenerator.enabled }}
+- name: JWT_SECRET
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "jitsu.fullname" $ }}-tokens
+      key: jwtSecret
+{{- end }}
+{{- with .jwtSecret }}
+- name: JWT_SECRET
   value: {{ . | quote }}
 {{- end }}
+{{- end }}
+
+{{- if and (not .functionsServerUrlTemplate) $.Values.operator.enabled }}
+- name: FUNCTIONS_SERVER_URL_TEMPLATE
+  value: {{ include "jitsu.functionsServerUrlTemplate" $ | quote }}
+{{- end }}
+{{- with .functionsServerUrlTemplate }}
+- name: FUNCTIONS_SERVER_URL_TEMPLATE
+  value: {{ . | quote }}
 {{- end }}
 
 {{- if .clickhouseMetricsSchemaFrom }}
@@ -319,6 +335,11 @@ app.kubernetes.io/component: console
 - name: CLICKHOUSE_METRICS_SCHEMA
   value: {{ . | quote }}
 {{- end }}
+{{- end }}
+
+{{- with (.defaultFunctionsClass | default $.Values.config.defaultFunctionsClass) }}
+- name: DEFAULT_FUNCTIONS_CLASS
+  value: {{ . | quote }}
 {{- end }}
 
 {{- with .logFormat }}

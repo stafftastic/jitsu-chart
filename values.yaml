@@ -54,6 +54,13 @@ config:
   globalHashSecret: ""
   globalHashSecretFrom: {}
 
+  # Functions class for workspaces without an explicit feature flag.
+  # One of "dedicated", "free" or "premium". Workspaces without a class are
+  # ignored by the operator and their events are dropped, so this defaults
+  # to "free" (all workspaces share one functions-server deployment).
+  # Used by console, ingest and operator; overridable per service.
+  defaultFunctionsClass: "free"
+
   # Use these values to override service URLs if deployed externally.
   bulkerUrl: ""
   rotorUrl: ""
@@ -218,10 +225,15 @@ console:
     syncctlAuthKey: ""
     syncctlAuthKeyFrom: {}
 
-    # Enables Connectors Sync Scheduler feature. Google Service Account Key in JSON format.
-    # https://docs.jitsu.com/self-hosting/configuration#syncctl_auth_key
-    googleSchedulerKey: ""
-    googleSchedulerKeyFrom: {}
+    # Secret used to sign JWT tokens. Required by the console since Jitsu 2.14.
+    # Configured automatically when tokenGenerator.enabled is true.
+    jwtSecret: ""
+    jwtSecretFrom: {}
+
+    # URL template used to reach per-workspace functions servers, with a
+    # literal ${workspaceId} as placeholder. Leave empty to configure
+    # automatically when the operator is enabled.
+    functionsServerUrlTemplate: ""
 
     # ClickHouse configuration
     # https://docs.jitsu.com/self-hosting/configuration#clickhouse_metrics_schema
@@ -243,6 +255,10 @@ console:
     clickhousePassword: ""
     clickhousePasswordFrom: {}
     clickhouseSsl: ""
+
+    # Functions class assigned to workspaces without an explicit feature
+    # flag. Leave empty to use config.defaultFunctionsClass.
+    defaultFunctionsClass: ""
 
     # Log format. One of "text", "json".
     # https://docs.jitsu.com/self-hosting/configuration#log_format-1
@@ -328,6 +344,10 @@ console:
       enabled: '{{ .Values.clickhouse.enabled }}'
       resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
       for: condition=Ready=true
+    - name: clickhouse-init
+      enabled: '{{ .Values.clickhouseInit.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-clickhouse-init-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=true
     - name: postgresql
       enabled: '{{ .Values.postgresql.enabled }}'
       resource: 'pod/{{ .Release.Name }}-postgresql-0'
@@ -513,6 +533,10 @@ bulker:
       enabled: '{{ .Values.clickhouse.enabled }}'
       resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
       for: condition=Ready=true
+    - name: clickhouse-init
+      enabled: '{{ .Values.clickhouseInit.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-clickhouse-init-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=true
     - name: kafka
       enabled: '{{ .Values.kafka.enabled }}'
       resource: 'pods/{{ .Release.Name }}-kafka-controller-0'
@@ -593,6 +617,14 @@ rotor:
     # https://docs.jitsu.com/self-hosting/configuration#mongodb_url
     mongodbUrl: ""
     mongodbUrlFrom: {}
+
+    # URL template used to reach per-workspace functions servers, with a
+    # literal ${workspaceId} as placeholder. Leave empty to configure
+    # automatically when the operator is enabled.
+    functionsServerUrlTemplate: ""
+
+    # Timeout for functions-server calls in milliseconds.
+    functionsServerTimeoutMs: ""
 
     # https://docs.jitsu.com/self-hosting/configuration#metrics_destination_id
     metricsDestinationId: ""
@@ -677,6 +709,10 @@ rotor:
       enabled: '{{ .Values.clickhouse.enabled }}'
       resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
       for: condition=Ready=true
+    - name: clickhouse-init
+      enabled: '{{ .Values.clickhouseInit.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-clickhouse-init-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=true
     - name: kafka
       enabled: '{{ .Values.kafka.enabled }}'
       resource: 'pods/{{ .Release.Name }}-kafka-controller-0'
@@ -766,6 +802,15 @@ ingest:
     rotorAuthKey: ""
     rotorAuthKeyFrom: ""
 
+    # URL template used to reach per-workspace functions servers, with a
+    # literal ${workspaceId} as placeholder. Leave empty to configure
+    # automatically when the operator is enabled.
+    functionsServerUrlTemplate: ""
+
+    # Functions class assumed for workspaces without an explicit feature
+    # flag. Leave empty to use config.defaultFunctionsClass.
+    defaultFunctionsClass: ""
+
     # Leave empty to configure automatically when Redis subchart is enabled or config.redisUrl is set.
     # https://docs.jitsu.com/self-hosting/configuration#ingest_redis_url
     redisUrl: ""
@@ -852,6 +897,10 @@ ingest:
       enabled: '{{ .Values.clickhouse.enabled }}'
       resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
       for: condition=Ready=true
+    - name: clickhouse-init
+      enabled: '{{ .Values.clickhouseInit.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-clickhouse-init-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=true
     - name: kafka
       enabled: '{{ .Values.kafka.enabled }}'
       resource: 'pods/{{ .Release.Name }}-kafka-controller-0'
@@ -916,10 +965,45 @@ syncctl:
     # this namespace.
     # https://docs.jitsu.com/self-hosting/configuration#syncctl_task_timeout_hours
     kubernetesNamespace: ""
-    kubernetesNamespaceFrom: {}
 
     # https://docs.jitsu.com/self-hosting/configuration#syncctl_task_timeout_hours
     taskTimeoutHours: ""
+
+    # Console export endpoints used to poll scheduled syncs. Since Jitsu 2.14
+    # scheduled syncs run as Kubernetes CronJobs reconciled by syncctl.
+    # Leave empty to configure automatically.
+    repositoryBaseUrl: ""
+
+    # Leave empty to configure automatically.
+    repositoryAuthToken: ""
+    repositoryAuthTokenFrom: {}
+
+    # How often to poll the console for scheduled syncs.
+    repositoryRefreshPeriodSec: ""
+
+    # Bump to force a one-shot re-patch of every managed CronJob.
+    cronTemplateRevision: ""
+
+    # Caps the total time a sync Job can take before it is killed.
+    jobActiveDeadlineSeconds: ""
+
+    # Number of retries of a failed sync Job.
+    jobBackoffLimit: ""
+
+    # Caps the sub-minute start jitter of scheduled syncs. Set to 0 to disable.
+    jitterMaxSeconds: ""
+
+    # Task log retention (number of tasks kept per sync and max age in days).
+    # Moved from the console to syncctl in Jitsu 2.14.
+    syncTaskLogSize: ""
+    syncTaskLogAge: ""
+
+    # Nango credentials for OAuth token refresh in sync pods.
+    nangoApiHost: ""
+    nangoSecretKey: ""
+    nangoSecretKeyFrom: {}
+    googleAdsDeveloperToken: ""
+    googleAdsDeveloperTokenFrom: {}
 
     # https://docs.jitsu.com/self-hosting/configuration#syncctl_log_format
     logFormat: "text"
@@ -971,6 +1055,245 @@ syncctl:
       enabled: '{{ .Values.migration.enabled }}'
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-migration-{{ include "jitsu.hash" . }}'
       for: condition=Complete=True
+    - name: postgresql
+      enabled: '{{ .Values.postgresql.enabled }}'
+      resource: 'pod/{{ .Release.Name }}-postgresql-0'
+      for: condition=Ready=true
+
+# The operator reconciles per-workspace functions-server deployments in
+# Kubernetes. Required for event delivery since Jitsu 2.14: rotor routes
+# events through functions servers and drops events of connections without
+# functions-server routing information.
+operator:
+  enabled: true
+  config:
+    # Set to false to disable config abstractions in order to configure manually.
+    enabled: true
+
+    # Leave empty to use global jitsu.databaseUrl
+    databaseUrl: ""
+    databaseUrlFrom: {}
+
+    # Console export endpoints. Leave empty to configure automatically.
+    repositoryBaseUrl: ""
+
+    # Leave empty to configure automatically.
+    repositoryAuthToken: ""
+    repositoryAuthTokenFrom: {}
+
+    # How often to poll the console for configuration changes.
+    repositoryRefreshPeriodSec: ""
+
+    # MongoDB persistent store for functions servers. When set, a mongobetween
+    # proxy sidecar is added to functions-server pods. Leave empty to
+    # configure automatically when the MongoDB subchart is used.
+    mongodbUrl: ""
+    mongodbUrlFrom: {}
+
+    # Kubernetes access. Leave empty to use the in-cluster service account.
+    kubernetesClientConfig: ""
+    kubernetesClientConfigFrom: {}
+    kubernetesContext: ""
+
+    # Namespace to deploy functions servers to. Leave empty to use the
+    # deployment namespace. If operator.serviceAccount.rbac.create is true and
+    # operator.config.kubernetesClientConfig is unset a Role and RoleBinding
+    # will be created in this namespace.
+    kubernetesNamespace: ""
+
+    # nodeSelector for functions-server pods; dict or JSON string.
+    kubernetesNodeSelector: ""
+
+    # Service account, tolerations, resources and topology spread constraints
+    # for functions-server pods; dicts/lists or JSON strings.
+    podsServiceAccount: ""
+    podsTolerations: ""
+    podsResources: ""
+    podsResourcesPremium: ""
+    podsResourcesFree: ""
+    podsTopologySpreadConstraints: ""
+
+    # Leave empty to default to jitsucom/functions-server:{{ .Values.operator.image.tag | default .Chart.AppVersion }}
+    functionsServerImage: ""
+    functionsServerPort: ""
+
+    # Service type of the functions-server services.
+    serviceType: ""
+
+    # Functions class assigned to workspaces without an explicit feature
+    # flag. Leave empty to use config.defaultFunctionsClass.
+    defaultFunctionsClass: ""
+
+    # Minimum replicas of functions-server deployments. Upstream defaults to
+    # 2 (4 for premium); set to 1 here for a minimal footprint.
+    minReplicas: "1"
+    minReplicasPremium: ""
+    minReplicasFree: "1"
+
+    # Number of shards for free tier deployments.
+    freeShards: ""
+
+    # HPA configuration for functions-server deployments.
+    hpaEnabled: ""
+    hpaMaxReplicas: ""
+    hpaTargetCpuUtilization: ""
+
+    # Mongobetween sidecar image.
+    mongobetweenImage: ""
+
+    # Log format. One of "text", "json".
+    logFormat: "text"
+  serviceAccount:
+    create: true
+    annotations: {}
+    name: ""
+    rbac:
+      create: true
+  replicaCount: 1
+  image:
+    repository: jitsucom/operator
+    pullPolicy: IfNotPresent
+    tag: ""
+  service:
+    type: ClusterIP
+    port: 3052
+    metricsPort: 9091
+  probes:
+    enabled: true
+  podDisruptionBudget:
+    enabled: true
+    maxUnavailable: 1
+  env: []
+  envFrom: []
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  topologySpreadConstraints: ~
+  serviceMonitor:
+    enabled: false
+    labels: {}
+    interval: ~
+    relabelings:
+      - action: replace
+        targetLabel: service
+        replacement: operator
+  revisionHistoryLimit: 2
+  volumes: []
+  volumeMounts: []
+  strategy: {}
+  waitFor:
+    - name: tokens
+      enabled: '{{ .Values.tokenGenerator.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=true
+    - name: migration
+      enabled: '{{ .Values.migration.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-migration-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=True
+    - name: console
+      enabled: '{{ .Values.console.enabled }}'
+      resource: 'deployments.apps/{{ include "jitsu.fullname" . }}-console'
+      for: condition=Available=true
+    - name: postgresql
+      enabled: '{{ .Values.postgresql.enabled }}'
+      resource: 'pod/{{ .Release.Name }}-postgresql-0'
+      for: condition=Ready=true
+    - name: mongodb
+      enabled: '{{ .Values.mongodb.enabled }}'
+      resource: 'deployments.apps/{{ .Release.Name }}-mongodb'
+      for: condition=Available=true
+
+# Profile Builder scheduler. Runs the rotor image in "profiles" mode and
+# shares the rotor backend configuration (rotor.config). Only needed when
+# using the Profile Builder feature.
+profiles:
+  enabled: true
+  config:
+    # Set to false to disable config abstractions in order to configure manually.
+    enabled: true
+
+    # Leave empty to use global jitsu.databaseUrl
+    databaseUrl: ""
+    databaseUrlFrom: {}
+
+    # Number of profile builder instances. Defaults to replicaCount. Used as
+    # the partition count when the priority topics are first created; Kafka
+    # topics are not repartitioned automatically when scaling up later.
+    instancesCount: ""
+
+    # Timeout overrides for profile builder operations.
+    mongodbTimeoutMs: ""
+    warehouseTimeoutMs: ""
+    udfTimeoutMs: ""
+  replicaCount: 1
+  image:
+    repository: jitsucom/rotor
+    pullPolicy: IfNotPresent
+    tag: ""
+  service:
+    type: ClusterIP
+    port: 3401
+    metricsPort: 9091
+  probes:
+    enabled: true
+  podDisruptionBudget:
+    enabled: true
+    maxUnavailable: 1
+  env: []
+  envFrom: []
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  topologySpreadConstraints: ~
+  serviceMonitor:
+    enabled: false
+    labels: {}
+    interval: ~
+    relabelings:
+      - action: replace
+        targetLabel: service
+        replacement: profiles
+  revisionHistoryLimit: 2
+  volumes: []
+  volumeMounts: []
+  updateStrategy: {}
+  waitFor:
+    - name: tokens
+      enabled: '{{ .Values.tokenGenerator.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=true
+    - name: migration
+      enabled: '{{ .Values.migration.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-migration-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=True
+    - name: console
+      enabled: '{{ .Values.console.enabled }}'
+      resource: 'deployments.apps/{{ include "jitsu.fullname" . }}-console'
+      for: condition=Available=true
+    - name: bulker
+      enabled: '{{ .Values.bulker.enabled }}'
+      resource: 'deployments.apps/{{ include "jitsu.fullname" . }}-bulker'
+      for: condition=Available=true
+    - name: clickhouse
+      enabled: '{{ .Values.clickhouse.enabled }}'
+      resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
+      for: condition=Ready=true
+    - name: kafka
+      enabled: '{{ .Values.kafka.enabled }}'
+      resource: 'pods/{{ .Release.Name }}-kafka-controller-0'
+      for: condition=Ready=true
+    - name: mongodb
+      enabled: '{{ .Values.mongodb.enabled }}'
+      resource: 'deployments.apps/{{ .Release.Name }}-mongodb'
+      for: condition=Available=true
     - name: postgresql
       enabled: '{{ .Values.postgresql.enabled }}'
       resource: 'pod/{{ .Release.Name }}-postgresql-0'
@@ -1029,9 +1352,90 @@ migration:
       enabled: '{{ .Values.clickhouse.enabled }}'
       resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
       for: condition=Ready=true
+    - name: clickhouse-init
+      enabled: '{{ .Values.clickhouseInit.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-clickhouse-init-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=true
     - name: postgresql
       enabled: '{{ .Values.postgresql.enabled }}'
       resource: 'pod/{{ .Release.Name }}-postgresql-0'
+      for: condition=Ready=true
+
+# Creates the seed admin user (console.config.seedUserEmail/-Password) via
+# the console management CLI. Since Jitsu 2.14 seeding no longer happens at
+# console startup. Upstream only seeds while the user database is empty, so
+# this is a no-op on installations that already have users. Only deployed
+# when console.config.seedUserEmail (or seedUserEmailFrom) is set.
+seed:
+  enabled: true
+  config:
+    # Set to false to disable config abstractions in order to configure manually.
+    enabled: true
+  image:
+    repository: jitsucom/console
+    pullPolicy: IfNotPresent
+    tag: ""
+  restartPolicy: Never
+  # The management CLI expects @prisma/client on the module path, but the
+  # console image only ships it inside the pnpm store, so locate it there.
+  command:
+    - sh
+    - -c
+    - |
+      set -eu
+      export NODE_PATH="$(ls -d /app/node_modules/.pnpm/@prisma+client*/node_modules | head -n 1)"
+      exec node /app/webapps/console/build/manage.js seed
+  env: []
+  envFrom: []
+  jobAnnotations: {}
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  waitFor:
+    - name: tokens
+      enabled: '{{ .Values.tokenGenerator.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=true
+    - name: migration
+      enabled: '{{ .Values.migration.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-migration-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=True
+    - name: postgresql
+      enabled: '{{ .Values.postgresql.enabled }}'
+      resource: 'pod/{{ .Release.Name }}-postgresql-0'
+      for: condition=Ready=true
+
+# Creates the ClickHouse metrics database. Required since Jitsu 2.14 unless
+# the database already exists, as the console can no longer create it itself.
+# Set enabled to false if the configured ClickHouse user is not allowed to
+# create databases; in that case the database must be provisioned externally.
+clickhouseInit:
+  enabled: true
+  config:
+    # Set to false to disable config abstractions in order to configure manually.
+    enabled: true
+  image:
+    repository: jitsucom/console
+    pullPolicy: IfNotPresent
+    tag: ""
+  env: []
+  envFrom: []
+  jobAnnotations: {}
+  podAnnotations: {}
+  podSecurityContext: {}
+  securityContext: {}
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  waitFor:
+    - name: clickhouse
+      enabled: '{{ .Values.clickhouse.enabled }}'
+      resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
       for: condition=Ready=true
 
 eventLogInit:
@@ -1065,6 +1469,10 @@ eventLogInit:
     - name: tokens
       enabled: '{{ .Values.tokenGenerator.enabled }}'
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=true
+    - name: clickhouse-init
+      enabled: '{{ .Values.clickhouseInit.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-clickhouse-init-{{ include "jitsu.hash" . }}'
       for: condition=Complete=true
     - name: console
       enabled: '{{ .Values.console.enabled }}'

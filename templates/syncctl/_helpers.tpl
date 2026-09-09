@@ -111,17 +111,97 @@ app.kubernetes.io/component: syncctl
 {{- end }}
 {{- end }}
 
-{{- if .kubernetesNamespaceFrom }}
 - name: SYNCCTL_KUBERNETES_NAMESPACE
-  valueFrom:
-    {{- toYaml .kubernetesNamespaceFrom | nindent 4 }}
-{{- else }}
-{{- if not .kubernetesNamespace }}
-- name: SYNCCTL_KUBERNETES_NAMESPACE
-  value: "{{ $.Release.Namespace }}"
+  value: {{ .kubernetesNamespace | default $.Release.Namespace | quote }}
+
+{{- if and (not .repositoryBaseUrl) $.Values.console.enabled $.Values.tokenGenerator.enabled }}
+- name: SYNCCTL_REPOSITORY_BASE_URL
+  value: {{ printf "http://%s-console:%d/api/admin/export"
+    (include "jitsu.fullname" $)
+    (int $.Values.console.service.port)
+  | quote }}
 {{- end }}
-{{- with .kubernetesNamespace }}
-- name: SYNCCTL_KUBERNETES_NAMESPACE
+{{- with .repositoryBaseUrl }}
+- name: SYNCCTL_REPOSITORY_BASE_URL
+  value: {{ . | quote }}
+{{- end }}
+
+{{- if .repositoryAuthTokenFrom }}
+- name: SYNCCTL_REPOSITORY_AUTH_TOKEN
+  valueFrom:
+    {{- toYaml .repositoryAuthTokenFrom | nindent 4 }}
+{{- else }}
+{{- if and (not .repositoryAuthToken) $.Values.console.enabled $.Values.tokenGenerator.enabled }}
+- name: SYNCCTL_REPOSITORY_AUTH_TOKEN
+  valueFrom:
+    secretKeyRef:
+      name: {{ include "jitsu.fullname" $ }}-tokens
+      key: consoleAuthToken
+{{- end }}
+{{- with .repositoryAuthToken }}
+- name: SYNCCTL_REPOSITORY_AUTH_TOKEN
+  value: {{ . | quote }}
+{{- end }}
+{{- end }}
+
+{{- with .repositoryRefreshPeriodSec }}
+- name: SYNCCTL_REPOSITORY_REFRESH_PERIOD_SEC
+  value: {{ . | quote }}
+{{- end }}
+
+{{- with .cronTemplateRevision }}
+- name: SYNCCTL_CRON_TEMPLATE_REVISION
+  value: {{ . | quote }}
+{{- end }}
+
+{{- with .jobActiveDeadlineSeconds }}
+- name: SYNCCTL_JOB_ACTIVE_DEADLINE_SECONDS
+  value: {{ . | quote }}
+{{- end }}
+
+{{- with .jobBackoffLimit }}
+- name: SYNCCTL_JOB_BACKOFF_LIMIT
+  value: {{ . | quote }}
+{{- end }}
+
+{{- with .jitterMaxSeconds }}
+- name: SYNCCTL_JITTER_MAX_SECONDS
+  value: {{ . | quote }}
+{{- end }}
+
+{{- with .syncTaskLogSize }}
+- name: SYNCCTL_SYNC_TASK_LOG_SIZE
+  value: {{ . | quote }}
+{{- end }}
+
+{{- with .syncTaskLogAge }}
+- name: SYNCCTL_SYNC_TASK_LOG_AGE
+  value: {{ . | quote }}
+{{- end }}
+
+{{- with .nangoApiHost }}
+- name: SYNCCTL_NANGO_API_HOST
+  value: {{ . | quote }}
+{{- end }}
+
+{{- if .nangoSecretKeyFrom }}
+- name: SYNCCTL_NANGO_SECRET_KEY
+  valueFrom:
+    {{- toYaml .nangoSecretKeyFrom | nindent 4 }}
+{{- else }}
+{{- with .nangoSecretKey }}
+- name: SYNCCTL_NANGO_SECRET_KEY
+  value: {{ . | quote }}
+{{- end }}
+{{- end }}
+
+{{- if .googleAdsDeveloperTokenFrom }}
+- name: SYNCCTL_GOOGLE_ADS_DEVELOPER_TOKEN
+  valueFrom:
+    {{- toYaml .googleAdsDeveloperTokenFrom | nindent 4 }}
+{{- else }}
+{{- with .googleAdsDeveloperToken }}
+- name: SYNCCTL_GOOGLE_ADS_DEVELOPER_TOKEN
   value: {{ . | quote }}
 {{- end }}
 {{- end }}

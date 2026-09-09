@@ -108,6 +108,12 @@ def __main__():
         globalHashSecret = secrets.token_urlsafe(SECRET_LENGTH)
         secret["data"]["globalHashSecret"] = b64encode(globalHashSecret)
 
+    try:
+        b64decode(secret["data"].get("jwtSecret"))
+    except:
+        log("No JWT secret found, generating one...")
+        secret["data"]["jwtSecret"] = b64encode(secrets.token_urlsafe(SECRET_LENGTH))
+
     for service in services:
         try:
             validateTokenSet(

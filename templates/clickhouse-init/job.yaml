@@ -1,0 +1,90 @@
+{{- if .Values.clickhouseInit.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "jitsu.fullname" . }}-clickhouse-init-{{ include "jitsu.hash" . }}
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+  {{- with .Values.clickhouseInit.jobAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        {{- include "jitsu.globalLabels" . | nindent 8 }}
+        {{- include "jitsu.selectorLabels" . | nindent 8 }}
+      {{- with (merge (deepCopy .Values.clickhouseInit.podAnnotations) .Values.global.podAnnotations) }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      restartPolicy: "Never"
+      serviceAccountName: {{ include "jitsu.serviceAccountName" . }}
+      {{- with (.Values.clickhouseInit.podSecurityContext | default .Values.global.podSecurityContext) }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+        {{- include "jitsu.waitFor.initContainers" (list $ .Values.clickhouseInit) | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- with (.Values.clickhouseInit.securityContext | default .Values.global.securityContext) }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.clickhouseInit.image.repository }}:{{ .Values.clickhouseInit.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.clickhouseInit.image.pullPolicy }}
+          command:
+            - sh
+            - -c
+            - |
+              set -eu
+              QUERY="CREATE DATABASE IF NOT EXISTS \`${CLICKHOUSE_METRICS_SCHEMA:-$CLICKHOUSE_DATABASE}\`"
+              if [ -n "${CLICKHOUSE_CLUSTER:-}" ]; then
+                QUERY="$QUERY ON CLUSTER \`$CLICKHOUSE_CLUSTER\`"
+              fi
+              if [ "${CLICKHOUSE_SSL:-false}" = "true" ]; then
+                PROTOCOL=https
+              else
+                PROTOCOL=http
+              fi
+              curl --silent --show-error --fail-with-body \
+                -H "X-ClickHouse-User: $CLICKHOUSE_USERNAME" \
+                -H "X-ClickHouse-Key: $CLICKHOUSE_PASSWORD" \
+                --data-binary "$QUERY" \
+                "$PROTOCOL://$CLICKHOUSE_HOST/"
+          {{- if .Values.clickhouseInit.envFrom }}
+          envFrom:
+            {{- toYaml .Values.clickhouseInit.envFrom | nindent 12 }}
+          {{- end }}
+          env:
+            {{- if and .Values.config.enabled .Values.clickhouseInit.config.enabled }}
+            {{- include "jitsu.clickhouseInit.env" . | nindent 12 }}
+            {{- end }}
+            {{- with .Values.clickhouseInit.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with (.Values.clickhouseInit.resources | default .Values.global.resources) }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with (.Values.clickhouseInit.nodeSelector | default .Values.global.nodeSelector) }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with (.Values.clickhouseInit.affinity | default .Values.global.affinity) }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with (.Values.clickhouseInit.tolerations | default .Values.global.tolerations) }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

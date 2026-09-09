@@ -1,0 +1,109 @@
+{{- if .Values.operator.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "jitsu.fullname" . }}-operator
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.operator.replicaCount }}
+  revisionHistoryLimit: {{ .Values.operator.revisionHistoryLimit }}
+  {{- with .Values.operator.strategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "jitsu.selectorLabels" . | nindent 6 }}
+      {{- include "jitsu.operator.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with (merge (deepCopy .Values.operator.podAnnotations) .Values.global.podAnnotations) }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "jitsu.globalLabels" . | nindent 8 }}
+        {{- include "jitsu.selectorLabels" . | nindent 8 }}
+        {{- include "jitsu.operator.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "jitsu.operator.serviceAccountName" . }}
+      {{- with (.Values.operator.podSecurityContext | default .Values.global.podSecurityContext) }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      initContainers:
+        {{- include "jitsu.waitFor.initContainers" (list $ .Values.operator) | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- with (.Values.operator.securityContext | default .Values.global.securityContext) }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          image: "{{ .Values.operator.image.repository }}:{{ .Values.operator.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.operator.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.operator.service.port }}
+              protocol: TCP
+            - name: metrics
+              containerPort: {{ .Values.operator.service.metricsPort }}
+              protocol: TCP
+          {{- if .Values.operator.probes.enabled }}
+          livenessProbe:
+            httpGet:
+              port: http
+              path: /health
+          readinessProbe:
+            httpGet:
+              port: http
+              path: /health
+          {{- end }}
+          {{- if .Values.operator.envFrom }}
+          envFrom:
+            {{- toYaml .Values.operator.envFrom | nindent 12 }}
+          {{- end }}
+          env:
+            {{- if and .Values.config.enabled .Values.operator.config.enabled }}
+            {{- include "jitsu.operator.env" . | nindent 12 }}
+            {{- end }}
+            {{- with .Values.operator.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          {{- with (.Values.operator.resources | default .Values.global.resources) }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with (concat .Values.operator.volumeMounts .Values.global.volumeMounts) }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with (.Values.operator.nodeSelector | default .Values.global.nodeSelector) }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with (.Values.operator.affinity | default .Values.global.affinity) }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with (.Values.operator.tolerations | default .Values.global.tolerations) }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.operator.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- if kindIs "string" . }}
+        {{- tpl . $ | nindent 8 }}
+        {{- else }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      {{- end }}
+      {{- with (concat .Values.operator.volumes .Values.global.volumes) }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

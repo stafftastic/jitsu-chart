@@ -183,6 +183,42 @@ version greater or equal to one mentioned below, additional steps may be require
 only encompasses breaking changes within the chart itself. New versions of Jitsu may still introduce
 breaking changes not covered here.
 
+### v3.0.0
+This release updates Jitsu to v2.14.0, which moves two core subsystems to Kubernetes-native
+architectures. See the [Jitsu v2.14.0 release
+notes](https://github.com/jitsucom/jitsu/releases/tag/2.14.0) for full details.
+
+User functions and profile builders no longer run inside the rotor. They run in dedicated
+functions-server deployments reconciled by the new mandatory operator service deployed by this
+chart. **The operator is required for event delivery** — connections without functions-server
+routing information are dropped by the rotor. The operator creates functions-server deployments,
+services, configmaps, HPAs and PDBs in the release namespace by default (configurable via
+`operator.config.kubernetesNamespace`), with RBAC set up automatically. Workspaces without an
+explicit functions class feature flag use `config.defaultFunctionsClass` (default: `free`,
+meaning all workspaces share one functions-server deployment), overridable per service via
+`console.config`, `ingest.config` and `operator.config`.
+
+A new `profiles` StatefulSet (the rotor image in profiles mode) schedules Profile Builder runs.
+Each replica receives its stable pod ordinal as `INSTANCE_INDEX`, so it can be scaled beyond one
+replica. If you don't use the Profile Builder feature you can set `profiles.enabled` to `false`.
+
+Connector syncs are now scheduled as Kubernetes CronJobs reconciled by syncctl instead of Google
+Cloud Scheduler. `console.config.googleSchedulerKey` (and its `From` variant) has been removed —
+no replacement configuration is needed. New tuning options are available under `syncctl.config`.
+
+The console now requires a `JWT_SECRET`. When using the token generator (enabled by default) it is
+generated and added to the token secret automatically on upgrade. If you manage tokens manually,
+set `console.config.jwtSecret` (or `jwtSecretFrom`).
+
+The console no longer creates the seed user (`console.config.seedUserEmail`/`-Password`) at
+startup. The chart now runs the console management CLI in a dedicated `seed` job instead, which
+only takes effect while the user database is empty. The seed user must change its password on
+first login.
+
+Also note the following upstream behavior changes: the auth session cookie is host-only by default
+(set `console.config.authCookieDomain` to share sessions across subdomains), and the console API is
+now rate-limited by default.
+
 ### v2.0.0
 This release sets the default ClickHouse database to `newjitsu_metrics` as some components did not
 behave correctly with the old default (`default`). If you have data you wish to keep in the old

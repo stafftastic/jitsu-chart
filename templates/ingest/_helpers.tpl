@@ -200,6 +200,20 @@ app.kubernetes.io/component: ingest
 {{- end }}
 {{- end }}
 
+{{- if and (not .functionsServerUrlTemplate) $.Values.operator.enabled }}
+- name: INGEST_FUNCTIONS_SERVER_URL_TEMPLATE
+  value: {{ include "jitsu.functionsServerUrlTemplate" $ | quote }}
+{{- end }}
+{{- with .functionsServerUrlTemplate }}
+- name: INGEST_FUNCTIONS_SERVER_URL_TEMPLATE
+  value: {{ . | quote }}
+{{- end }}
+
+{{- with (.defaultFunctionsClass | default $.Values.config.defaultFunctionsClass) }}
+- name: INGEST_DEFAULT_FUNCTIONS_CLASS
+  value: {{ . | quote }}
+{{- end }}
+
 {{- if and (not .rotorUrl) (not $.Values.config.rotorUrl) $.Values.rotor.enabled }}
 - name: INGEST_ROTOR_URL
   value: {{ printf "http://%s-rotor:%d" (include "jitsu.fullname" $) (int $.Values.rotor.service.port) | quote }}

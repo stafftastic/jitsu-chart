@@ -1,0 +1,20 @@
+{{- if and .Values.profiles.podDisruptionBudget.enabled .Values.profiles.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "jitsu.fullname" . }}-profiles
+  labels:
+    {{- include "jitsu.labels" . | nindent 4 }}
+    {{- include "jitsu.profiles.selectorLabels" . | nindent 4 }}
+spec:
+  {{- with .Values.profiles.podDisruptionBudget.minAvailable }}
+  minAvailable: {{ . }}
+  {{- end }}
+  {{- with .Values.profiles.podDisruptionBudget.maxUnavailable }}
+  maxUnavailable: {{ . }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "jitsu.selectorLabels" . | nindent 6 }}
+      {{- include "jitsu.profiles.selectorLabels" . | nindent 6 }}
+{{- end }}
