@@ -1,6 +1,10 @@
-{{- if and .Values.seed.enabled (or
-  .Values.console.config.seedUserEmail
-  .Values.console.config.seedUserEmailFrom) }}
+{{- if and .Values.seed.enabled
+  (or
+    .Values.console.config.seedUserEmail
+    .Values.console.config.seedUserEmailFrom)
+  (or
+    .Values.console.config.seedUserPassword
+    .Values.console.config.seedUserPasswordFrom) }}
 apiVersion: batch/v1
 kind: Job
 metadata:
