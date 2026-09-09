@@ -337,6 +337,11 @@ app.kubernetes.io/component: console
 {{- end }}
 {{- end }}
 
+{{- with (.defaultFunctionsClass | default $.Values.config.defaultFunctionsClass) }}
+- name: DEFAULT_FUNCTIONS_CLASS
+  value: {{ . | quote }}
+{{- end }}
+
 {{- with .logFormat }}
 - name: LOG_FORMAT
   value: {{ . | quote }}

@@ -177,7 +177,7 @@ app.kubernetes.io/component: operator
   value: {{ . | quote }}
 {{- end }}
 
-{{- with .defaultFunctionsClass }}
+{{- with (.defaultFunctionsClass | default $.Values.config.defaultFunctionsClass) }}
 - name: OPERATOR_DEFAULT_FUNCTIONS_CLASS
   value: {{ . | quote }}
 {{- end }}

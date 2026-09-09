@@ -209,6 +209,11 @@ app.kubernetes.io/component: ingest
   value: {{ . | quote }}
 {{- end }}
 
+{{- with (.defaultFunctionsClass | default $.Values.config.defaultFunctionsClass) }}
+- name: INGEST_DEFAULT_FUNCTIONS_CLASS
+  value: {{ . | quote }}
+{{- end }}
+
 {{- if and (not .rotorUrl) (not $.Values.config.rotorUrl) $.Values.rotor.enabled }}
 - name: INGEST_ROTOR_URL
   value: {{ printf "http://%s-rotor:%d" (include "jitsu.fullname" $) (int $.Values.rotor.service.port) | quote }}

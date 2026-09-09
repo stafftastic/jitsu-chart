@@ -194,8 +194,9 @@ chart. **The operator is required for event delivery** — connections without f
 routing information are dropped by the rotor. The operator creates functions-server deployments,
 services, configmaps, HPAs and PDBs in the release namespace by default (configurable via
 `operator.config.kubernetesNamespace`), with RBAC set up automatically. Workspaces without an
-explicit functions class feature flag use `operator.config.defaultFunctionsClass` (default:
-`free`, meaning all workspaces share one functions-server deployment).
+explicit functions class feature flag use `config.defaultFunctionsClass` (default: `free`,
+meaning all workspaces share one functions-server deployment), overridable per service via
+`console.config`, `ingest.config` and `operator.config`.
 
 A new `profiles` deployment (the rotor image in profiles mode) schedules Profile Builder runs. If
 you don't use the Profile Builder feature you can set `profiles.enabled` to `false`.

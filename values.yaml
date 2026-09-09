@@ -54,6 +54,13 @@ config:
   globalHashSecret: ""
   globalHashSecretFrom: {}
 
+  # Functions class for workspaces without an explicit feature flag.
+  # One of "dedicated", "free" or "premium". Workspaces without a class are
+  # ignored by the operator and their events are dropped, so this defaults
+  # to "free" (all workspaces share one functions-server deployment).
+  # Used by console, ingest and operator; overridable per service.
+  defaultFunctionsClass: "free"
+
   # Use these values to override service URLs if deployed externally.
   bulkerUrl: ""
   rotorUrl: ""
@@ -248,6 +255,10 @@ console:
     clickhousePassword: ""
     clickhousePasswordFrom: {}
     clickhouseSsl: ""
+
+    # Functions class assigned to workspaces without an explicit feature
+    # flag. Leave empty to use config.defaultFunctionsClass.
+    defaultFunctionsClass: ""
 
     # Log format. One of "text", "json".
     # https://docs.jitsu.com/self-hosting/configuration#log_format-1
@@ -796,6 +807,10 @@ ingest:
     # automatically when the operator is enabled.
     functionsServerUrlTemplate: ""
 
+    # Functions class assumed for workspaces without an explicit feature
+    # flag. Leave empty to use config.defaultFunctionsClass.
+    defaultFunctionsClass: ""
+
     # Leave empty to configure automatically when Redis subchart is enabled or config.redisUrl is set.
     # https://docs.jitsu.com/self-hosting/configuration#ingest_redis_url
     redisUrl: ""
@@ -1107,11 +1122,9 @@ operator:
     # Service type of the functions-server services.
     serviceType: ""
 
-    # Functions class for workspaces without an explicit feature flag.
-    # One of "dedicated", "free" or "premium". Workspaces without a class are
-    # ignored by the operator and their events are dropped, so this defaults
-    # to "free" (all workspaces share one functions-server deployment).
-    defaultFunctionsClass: "free"
+    # Functions class assigned to workspaces without an explicit feature
+    # flag. Leave empty to use config.defaultFunctionsClass.
+    defaultFunctionsClass: ""
 
     # Minimum replicas of functions-server deployments. Upstream defaults to
     # 2 (4 for premium); set to 1 here for a minimal footprint.
