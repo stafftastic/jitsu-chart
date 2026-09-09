@@ -333,6 +333,10 @@ console:
       enabled: '{{ .Values.clickhouse.enabled }}'
       resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
       for: condition=Ready=true
+    - name: clickhouse-init
+      enabled: '{{ .Values.clickhouseInit.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-clickhouse-init-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=true
     - name: postgresql
       enabled: '{{ .Values.postgresql.enabled }}'
       resource: 'pod/{{ .Release.Name }}-postgresql-0'
@@ -518,6 +522,10 @@ bulker:
       enabled: '{{ .Values.clickhouse.enabled }}'
       resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
       for: condition=Ready=true
+    - name: clickhouse-init
+      enabled: '{{ .Values.clickhouseInit.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-clickhouse-init-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=true
     - name: kafka
       enabled: '{{ .Values.kafka.enabled }}'
       resource: 'pods/{{ .Release.Name }}-kafka-controller-0'
@@ -690,6 +698,10 @@ rotor:
       enabled: '{{ .Values.clickhouse.enabled }}'
       resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
       for: condition=Ready=true
+    - name: clickhouse-init
+      enabled: '{{ .Values.clickhouseInit.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-clickhouse-init-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=true
     - name: kafka
       enabled: '{{ .Values.kafka.enabled }}'
       resource: 'pods/{{ .Release.Name }}-kafka-controller-0'
@@ -870,6 +882,10 @@ ingest:
       enabled: '{{ .Values.clickhouse.enabled }}'
       resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
       for: condition=Ready=true
+    - name: clickhouse-init
+      enabled: '{{ .Values.clickhouseInit.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-clickhouse-init-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=true
     - name: kafka
       enabled: '{{ .Values.kafka.enabled }}'
       resource: 'pods/{{ .Release.Name }}-kafka-controller-0'
@@ -1324,6 +1340,10 @@ migration:
       enabled: '{{ .Values.clickhouse.enabled }}'
       resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
       for: condition=Ready=true
+    - name: clickhouse-init
+      enabled: '{{ .Values.clickhouseInit.enabled }}'
+      resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-clickhouse-init-{{ include "jitsu.hash" . }}'
+      for: condition=Complete=true
     - name: postgresql
       enabled: '{{ .Values.postgresql.enabled }}'
       resource: 'pod/{{ .Release.Name }}-postgresql-0'
