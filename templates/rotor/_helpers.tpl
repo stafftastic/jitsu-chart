@@ -183,7 +183,7 @@ app.kubernetes.io/component: rotor
 {{- else }}
 {{- if and (not .kafkaBootstrapServers) (not $.Values.config.kafkaBootstrapServers) $.Values.kafka.enabled }}
 - name: KAFKA_BOOTSTRAP_SERVERS
-  value: {{ printf "%s-kafka:9092" $.Release.Name | quote }}
+  value: {{ printf "%s-kafka:9092" (include "jitsu.fullname" $) | quote }}
 {{- end }}
 {{- with (.kafkaBootstrapServers | default $.Values.config.kafkaBootstrapServers) }}
 - name: KAFKA_BOOTSTRAP_SERVERS

@@ -1,0 +1,40 @@
+{{- define "jitsu.postgresql.container" -}}
+ports:
+  - name: postgres
+    containerPort: 5432
+env:
+  - name: POSTGRES_DB
+    value: {{ .Values.postgresql.auth.database | quote }}
+  - name: POSTGRES_USER
+    value: {{ .Values.postgresql.auth.username | quote }}
+  - name: POSTGRES_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: {{ include "jitsu.fullname" . }}-postgres
+        key: password
+readinessProbe:
+  exec:
+    command: ["sh", "-c", 'pg_isready -h 127.0.0.1 -U "$POSTGRES_USER" -d "$POSTGRES_DB"']
+livenessProbe:
+  tcpSocket:
+    port: postgres
+  initialDelaySeconds: 30
+{{- end }}
+
+{{- if .Values.postgresql.enabled }}
+{{- $ctx := dict
+  "root" .
+  "name" (printf "%s-postgres" (include "jitsu.fullname" .))
+  "component" "postgres"
+  "values" .Values.postgresql
+  "mountPath" "/var/lib/postgresql"
+  "container" (include "jitsu.postgresql.container" .)
+  "data" (dict "password" .Values.postgresql.auth.password)
+  "ports" (dict "postgres" 5432)
+}}
+{{- include "jitsu.dependency.secret" $ctx }}
+---
+{{ include "jitsu.dependency.service" $ctx }}
+---
+{{ include "jitsu.dependency.statefulset" $ctx }}
+{{- end }}

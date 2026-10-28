@@ -4,7 +4,7 @@
   (not .Values.syncctl.config.kubernetesClientConfig)
 }}
 {{- range list
-  (printf "%s-postgresql" .Release.Name)
+  (printf "%s-postgres" (include "jitsu.fullname" .))
 }}
 ---
 apiVersion: v1

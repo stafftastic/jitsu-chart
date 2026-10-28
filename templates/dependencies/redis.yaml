@@ -1,0 +1,42 @@
+{{- define "jitsu.redis.container" -}}
+args:
+  - redis-server
+  - --requirepass
+  - $(REDIS_PASSWORD)
+  - --appendonly
+  - "yes"
+ports:
+  - name: redis
+    containerPort: 6379
+env:
+  - name: REDIS_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: {{ include "jitsu.fullname" . }}-redis
+        key: password
+readinessProbe:
+  exec:
+    command: ["sh", "-c", 'REDISCLI_AUTH="$REDIS_PASSWORD" redis-cli ping | grep -q PONG']
+livenessProbe:
+  tcpSocket:
+    port: redis
+  initialDelaySeconds: 30
+{{- end }}
+
+{{- if .Values.redis.enabled }}
+{{- $ctx := dict
+  "root" .
+  "name" (printf "%s-redis" (include "jitsu.fullname" .))
+  "component" "redis"
+  "values" .Values.redis
+  "mountPath" "/data"
+  "container" (include "jitsu.redis.container" .)
+  "data" (dict "password" .Values.redis.auth.password)
+  "ports" (dict "redis" 6379)
+}}
+{{- include "jitsu.dependency.secret" $ctx }}
+---
+{{ include "jitsu.dependency.service" $ctx }}
+---
+{{ include "jitsu.dependency.statefulset" $ctx }}
+{{- end }}
