@@ -8,16 +8,16 @@ config:
   enabled: true
 
   # Postgres database URL in the format of: postgres://username:password@host:port/database?options
-  # Will be configured automatically if left empty and using the PostgreSQL subchart.
+  # Will be configured automatically if left empty and using the PostgreSQL dependency.
   databaseUrl: ""
   databaseUrlFrom: {}
 
   # Global Redis URL in the format of: redis://:password@host:port
-  # Will be configured automatically if left empty and using the Redis subchart.
+  # Will be configured automatically if left empty and using the Redis dependency.
   redisUrl: ""
   redisUrlFrom: {}
 
-  # Global Kafka configuration. Leave empty if using Kafka subchart.
+  # Global Kafka configuration. Leave empty if using Kafka dependency.
   # List of hosts in the format of: host:port,...
   kafkaBootstrapServers: ""
   kafkaBootstrapServersFrom: {}
@@ -27,12 +27,12 @@ config:
   kafkaSasl: ""
   kafkaSaslFrom: {}
 
-  # Global MongoDB URL. Leave empty if using MongoDB subchart.
+  # Global MongoDB URL. Leave empty if using MongoDB dependency.
   mongodbUrl: ""
   mongodbUrlFrom: {}
 
   # Global Clickhouse configuration.
-  # Will be configured automatically if left empty and using the Clickhouse subchart.
+  # Will be configured automatically if left empty and using the Clickhouse dependency.
   # HTTP/TCP endpoints are separate as different components require the use of different protocols.
   clickhouseHttpHost: ""
   clickhouseHttpHostFrom: {}
@@ -240,7 +240,7 @@ console:
     clickhouseMetricsSchema: ""
     clickhouseMetricsSchemaFrom: {}
 
-    # Leave empty to configure automatically when using Clickhouse subchart.
+    # Leave empty to configure automatically when using Clickhouse dependency.
     clickhouseHost: ""
     clickhouseHostFrom: {}
     # Required to create a replicated Events Log table when using a
@@ -342,7 +342,7 @@ console:
       for: condition=Complete=True
     - name: clickhouse
       enabled: '{{ .Values.clickhouse.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
+      resource: 'pods/{{ include "jitsu.dependency.name" (list . "clickhouse") }}-0'
       for: condition=Ready=true
     - name: clickhouse-init
       enabled: '{{ .Values.clickhouseInit.enabled }}'
@@ -350,7 +350,7 @@ console:
       for: condition=Complete=true
     - name: postgresql
       enabled: '{{ .Values.postgresql.enabled }}'
-      resource: 'pod/{{ .Release.Name }}-postgresql-0'
+      resource: 'pods/{{ include "jitsu.dependency.name" (list . "postgres") }}-0'
       for: condition=Ready=true
 
 bulker:
@@ -418,7 +418,7 @@ bulker:
     kafkaSasl: ""
     kafkaSaslFrom: {}
 
-    # Leave empty to configure automatically when using Clickhouse subchart.
+    # Leave empty to configure automatically when using Clickhouse dependency.
     clickhouseHost: ""
     clickhouseHostFrom: {}
     clickhouseDatabase: ""
@@ -462,7 +462,7 @@ bulker:
     # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#bulker_kafka_topic_replication_factor
     kafkaTopicReplicationFactor: ""
 
-    # Store history of processed events in Redis. Leave empty to configure automatically if config.redisUrl is set and/or Redis subchart is being used.
+    # Store history of processed events in Redis. Leave empty to configure automatically if config.redisUrl is set and/or Redis dependency is being used.
     # https://github.com/jitsucom/bulker/blob/main/.docs/server-config.md#connection-to-redis-optional
     redisUrl: ""
     redisUrlFrom: {}
@@ -531,7 +531,7 @@ bulker:
       for: condition=Available=true
     - name: clickhouse
       enabled: '{{ .Values.clickhouse.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
+      resource: 'pods/{{ include "jitsu.dependency.name" (list . "clickhouse") }}-0'
       for: condition=Ready=true
     - name: clickhouse-init
       enabled: '{{ .Values.clickhouseInit.enabled }}'
@@ -539,11 +539,11 @@ bulker:
       for: condition=Complete=true
     - name: kafka
       enabled: '{{ .Values.kafka.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-kafka-controller-0'
+      resource: 'pods/{{ include "jitsu.dependency.name" (list . "kafka") }}-0'
       for: condition=Ready=true
     - name: redis
       enabled: '{{ .Values.redis.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-redis-master-0'
+      resource: 'pods/{{ include "jitsu.dependency.name" (list . "redis") }}-0'
       for: condition=Ready=true
 
 rotor:
@@ -575,12 +575,12 @@ rotor:
     tokenSecretFrom: {}
 
 
-    # Leave empty to configure automatically if config.redisUrl is set or Redis subchart is being used.
+    # Leave empty to configure automatically if config.redisUrl is set or Redis dependency is being used.
     # https://docs.jitsu.com/self-hosting/configuration#redis_url
     redisUrl: ""
     redisUrlFrom: {}
 
-    # Leave empty to configure automatically when using Clickhouse subchart.
+    # Leave empty to configure automatically when using Clickhouse dependency.
     clickhouseHost: ""
     clickhouseHostFrom: {}
     clickhouseDatabase: ""
@@ -600,7 +600,7 @@ rotor:
     bulkerAuthKey: ""
     bulkerAuthKeyFrom: {}
 
-    # Leave empty to configure automatically if config.kafkaBootstrapServers is set or Kafka subchart is being used.
+    # Leave empty to configure automatically if config.kafkaBootstrapServers is set or Kafka dependency is being used.
     # https://docs.jitsu.com/self-hosting/configuration#kafka_bootstrap_servers
     kafkaBootstrapServers: ""
     kafkaBootstrapServersFrom: {}
@@ -613,7 +613,7 @@ rotor:
     kafkaSasl: ""
     kafkaSaslFrom: {}
 
-    # Leave empty to configure automatically if MongoDB subchart is being used.
+    # Leave empty to configure automatically if MongoDB dependency is being used.
     # https://docs.jitsu.com/self-hosting/configuration#mongodb_url
     mongodbUrl: ""
     mongodbUrlFrom: {}
@@ -707,7 +707,7 @@ rotor:
       for: condition=Available=true
     - name: clickhouse
       enabled: '{{ .Values.clickhouse.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
+      resource: 'pods/{{ include "jitsu.dependency.name" (list . "clickhouse") }}-0'
       for: condition=Ready=true
     - name: clickhouse-init
       enabled: '{{ .Values.clickhouseInit.enabled }}'
@@ -715,15 +715,15 @@ rotor:
       for: condition=Complete=true
     - name: kafka
       enabled: '{{ .Values.kafka.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-kafka-controller-0'
+      resource: 'pods/{{ include "jitsu.dependency.name" (list . "kafka") }}-0'
       for: condition=Ready=true
     - name: mongodb
       enabled: '{{ .Values.mongodb.enabled }}'
-      resource: 'deployments.apps/{{ .Release.Name }}-mongodb'
-      for: condition=Available=true
+      resource: 'pods/{{ include "jitsu.dependency.name" (list . "mongodb") }}-0'
+      for: condition=Ready=true
     - name: redis
       enabled: '{{ .Values.redis.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-redis-master-0'
+      resource: 'pods/{{ include "jitsu.dependency.name" (list . "redis") }}-0'
       for: condition=Ready=true
 
 ingest:
@@ -767,7 +767,7 @@ ingest:
     # https://docs.jitsu.com/self-hosting/configuration#ingest_repository_refresh_period_sec
     repositoryRefreshPeriodSec: ""
 
-    # Leave empty to configure automatically when Kafka subchart is enabled or config.kafkaBootstrapServers is set.
+    # Leave empty to configure automatically when Kafka dependency is enabled or config.kafkaBootstrapServers is set.
     # https://docs.jitsu.com/self-hosting/configuration#ingest_kafka_bootstrap_servers
     kafkaBootstrapServers: ""
     kafkaBootstrapServersFrom: {}
@@ -782,7 +782,7 @@ ingest:
     kafkaSasl: ""
     kafkaSaslFrom: {}
 
-    # Leave empty to configure automatically when using Clickhouse subchart.
+    # Leave empty to configure automatically when using Clickhouse dependency.
     clickhouseHost: ""
     clickhouseHostFrom: {}
     clickhouseDatabase: ""
@@ -811,7 +811,7 @@ ingest:
     # flag. Leave empty to use config.defaultFunctionsClass.
     defaultFunctionsClass: ""
 
-    # Leave empty to configure automatically when Redis subchart is enabled or config.redisUrl is set.
+    # Leave empty to configure automatically when Redis dependency is enabled or config.redisUrl is set.
     # https://docs.jitsu.com/self-hosting/configuration#ingest_redis_url
     redisUrl: ""
     redisUrlFrom: {}
@@ -895,7 +895,7 @@ ingest:
       for: condition=Available=true
     - name: clickhouse
       enabled: '{{ .Values.clickhouse.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
+      resource: 'pods/{{ include "jitsu.dependency.name" (list . "clickhouse") }}-0'
       for: condition=Ready=true
     - name: clickhouse-init
       enabled: '{{ .Values.clickhouseInit.enabled }}'
@@ -903,11 +903,11 @@ ingest:
       for: condition=Complete=true
     - name: kafka
       enabled: '{{ .Values.kafka.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-kafka-controller-0'
+      resource: 'pods/{{ include "jitsu.dependency.name" (list . "kafka") }}-0'
       for: condition=Ready=true
     - name: redis
       enabled: '{{ .Values.redis.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-redis-master-0'
+      resource: 'pods/{{ include "jitsu.dependency.name" (list . "redis") }}-0'
       for: condition=Ready=true
 
 syncctl:
@@ -917,7 +917,7 @@ syncctl:
   # using the service account to talk to Kubernetes.
   createNamespace: true
 
-  # If using the Postgres subchart and a separate namespace for syncctl workloads, we need to
+  # If using the Postgres dependency and a separate namespace for syncctl workloads, we need to
   # create proxy services to Postgres and the Bulker in the new namespace. If you're not using
   # the default cluster domain "cluster.local" this can be overridden here.
   clusterDomain: ""
@@ -940,7 +940,7 @@ syncctl:
     rawAuthTokens: ""
     rawAuthTokensFrom: {}
 
-    # Leave empty to configure automatically when Postgres subchart is used or config.databaseUrl is set.
+    # Leave empty to configure automatically when Postgres dependency is used or config.databaseUrl is set.
     # https://docs.jitsu.com/self-hosting/configuration#syncctl_database_url
     databaseUrl: ""
     databaseUrlFrom: {}
@@ -1057,7 +1057,7 @@ syncctl:
       for: condition=Complete=True
     - name: postgresql
       enabled: '{{ .Values.postgresql.enabled }}'
-      resource: 'pod/{{ .Release.Name }}-postgresql-0'
+      resource: 'pods/{{ include "jitsu.dependency.name" (list . "postgres") }}-0'
       for: condition=Ready=true
 
 # The operator reconciles per-workspace functions-server deployments in
@@ -1086,7 +1086,7 @@ operator:
 
     # MongoDB persistent store for functions servers. When set, a mongobetween
     # proxy sidecar is added to functions-server pods. Leave empty to
-    # configure automatically when the MongoDB subchart is used.
+    # configure automatically when the MongoDB dependency is used.
     mongodbUrl: ""
     mongodbUrlFrom: {}
 
@@ -1200,12 +1200,12 @@ operator:
       for: condition=Available=true
     - name: postgresql
       enabled: '{{ .Values.postgresql.enabled }}'
-      resource: 'pod/{{ .Release.Name }}-postgresql-0'
+      resource: 'pods/{{ include "jitsu.dependency.name" (list . "postgres") }}-0'
       for: condition=Ready=true
     - name: mongodb
       enabled: '{{ .Values.mongodb.enabled }}'
-      resource: 'deployments.apps/{{ .Release.Name }}-mongodb'
-      for: condition=Available=true
+      resource: 'pods/{{ include "jitsu.dependency.name" (list . "mongodb") }}-0'
+      for: condition=Ready=true
 
 # Profile Builder scheduler. Runs the rotor image in "profiles" mode and
 # shares the rotor backend configuration (rotor.config). Only needed when
@@ -1284,19 +1284,19 @@ profiles:
       for: condition=Available=true
     - name: clickhouse
       enabled: '{{ .Values.clickhouse.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
+      resource: 'pods/{{ include "jitsu.dependency.name" (list . "clickhouse") }}-0'
       for: condition=Ready=true
     - name: kafka
       enabled: '{{ .Values.kafka.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-kafka-controller-0'
+      resource: 'pods/{{ include "jitsu.dependency.name" (list . "kafka") }}-0'
       for: condition=Ready=true
     - name: mongodb
       enabled: '{{ .Values.mongodb.enabled }}'
-      resource: 'deployments.apps/{{ .Release.Name }}-mongodb'
-      for: condition=Available=true
+      resource: 'pods/{{ include "jitsu.dependency.name" (list . "mongodb") }}-0'
+      for: condition=Ready=true
     - name: postgresql
       enabled: '{{ .Values.postgresql.enabled }}'
-      resource: 'pod/{{ .Release.Name }}-postgresql-0'
+      resource: 'pods/{{ include "jitsu.dependency.name" (list . "postgres") }}-0'
       for: condition=Ready=true
 
 migration:
@@ -1350,7 +1350,7 @@ migration:
       for: condition=Complete=true
     - name: clickhouse
       enabled: '{{ .Values.clickhouse.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
+      resource: 'pods/{{ include "jitsu.dependency.name" (list . "clickhouse") }}-0'
       for: condition=Ready=true
     - name: clickhouse-init
       enabled: '{{ .Values.clickhouseInit.enabled }}'
@@ -1358,7 +1358,7 @@ migration:
       for: condition=Complete=true
     - name: postgresql
       enabled: '{{ .Values.postgresql.enabled }}'
-      resource: 'pod/{{ .Release.Name }}-postgresql-0'
+      resource: 'pods/{{ include "jitsu.dependency.name" (list . "postgres") }}-0'
       for: condition=Ready=true
 
 # Creates the seed admin user (console.config.seedUserEmail/-Password) via
@@ -1406,7 +1406,7 @@ seed:
       for: condition=Complete=True
     - name: postgresql
       enabled: '{{ .Values.postgresql.enabled }}'
-      resource: 'pod/{{ .Release.Name }}-postgresql-0'
+      resource: 'pods/{{ include "jitsu.dependency.name" (list . "postgres") }}-0'
       for: condition=Ready=true
 
 # Creates the ClickHouse metrics database. Required since Jitsu 2.14 unless
@@ -1435,7 +1435,7 @@ clickhouseInit:
   waitFor:
     - name: clickhouse
       enabled: '{{ .Values.clickhouse.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
+      resource: 'pods/{{ include "jitsu.dependency.name" (list . "clickhouse") }}-0'
       for: condition=Ready=true
 
 eventLogInit:
@@ -1502,134 +1502,97 @@ serviceMonitors:
       targetLabel: job
       replacement: jitsu
 
+# Minimal single-replica deployments of Jitsu's dependencies, intended for evaluation, testing and
+# development. For production, disable these and point the chart at externally managed instances.
+# Each dependency accepts: image, resources, persistence, nodeSelector, tolerations and affinity.
 postgresql:
   enabled: true
+  image:
+    repository: postgres
+    tag: "18.6"
+    pullPolicy: IfNotPresent
   auth:
     database: "jitsu"
     username: "jitsu"
     password: "jitsu"
-
-  # Temporary workaround until we have a replacement for Bitnami
-  # components ready.
-  image:
-    repository: bitnamilegacy/postgresql
-  volumePermissions:
-    image:
-      repository: bitnamilegacy/os-shell
-  metrics:
-    image:
-      repository: bitnamilegacy/postgres-exporter
-
+  persistence:
+    enabled: true
+    size: 8Gi
+    storageClass: ""
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
 
 redis:
   enabled: false
-  architecture: standalone
-  auth:
-    enabled: true
-    password: "jitsu"
-
-  # Temporary workaround until we have a replacement for Bitnami
-  # components ready.
   image:
-    repository: bitnamilegacy/redis
-  sentinel:
-    image:
-      repository: bitnamilegacy/redis-sentinel
-  metrics:
-    image:
-      repository: bitnamilegacy/redis-exporter
-  volumePermissions:
-    image:
-      repository: bitnamilegacy/os-shell
-  kubectl:
-    image:
-      repository: bitnamilegacy/kubectl
-  sysctl:
-    image:
-      repository: bitnamilegacy/os-shell
+    repository: redis
+    tag: "8.2.11"
+    pullPolicy: IfNotPresent
+  auth:
+    password: "jitsu"
+  persistence:
+    enabled: true
+    size: 8Gi
+    storageClass: ""
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
 
 mongodb:
   enabled: true
-  auth:
-    enabled: true
-    databases: ["jitsu"]
-    usernames: ["jitsu"]
-    passwords: ["jitsu"]
-
-  # Temporary workaround until we have a replacement for Bitnami
-  # components ready.
   image:
-    repository: bitnamilegacy/mongodb
-  tls:
-    image:
-      repository: bitnamilegacy/nginx
-  externalAccess:
-    autoDiscovery:
-      image.repository: bitnamilegacy/kubectl
-    dnsCheck:
-      image:
-        repository: bitnamilegacy/kubectl
-  volumePermissions:
-    image:
-      repository: bitnamilegacy/os-shell
-  metrics:
-    image:
-      repository: bitnamilegacy/mongodb-exporter
+    repository: mongo
+    tag: "8.0.34"
+    pullPolicy: IfNotPresent
+  # The user is created as a root user and authenticates against the admin database.
+  auth:
+    database: "jitsu"
+    username: "jitsu"
+    password: "jitsu"
+  persistence:
+    enabled: true
+    size: 8Gi
+    storageClass: ""
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
 
 kafka:
   enabled: true
-  overrideConfiguration:
-    offsets.topic.replication.factor: 1
-  controller:
-    replicaCount: 1
-    resources:
-      requests: {}
-      limits: {}
-  listeners:
-    interbroker:
-      protocol: PLAINTEXT
-    controller:
-      protocol: PLAINTEXT
-    client:
-      protocol: PLAINTEXT
-    external:
-      external: PLAINTEXT
-
-  # Temporary workaround until we have a replacement for Bitnami
-  # components ready.
   image:
-    repository: bitnamilegacy/kafka
-  defaultInitContainers:
-    volumePermissions:
-      image:
-        repository: bitnamilegacy/os-shell
-    autoDiscovery:
-      image:
-        repository: bitnamilegacy/os-shell
-  metrics:
-    jmx:
-      image:
-        repository: bitnamilegacy/jmx-exporter
+    repository: apache/kafka
+    tag: "4.1.2"
+    pullPolicy: IfNotPresent
+  # KRaft cluster ID, a base64-encoded UUID. Changing it on an existing volume prevents Kafka from
+  # starting.
+  clusterId: "Kc-y87dsQlm08t2taHcoTg"
+  persistence:
+    enabled: true
+    size: 8Gi
+    storageClass: ""
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
 
 clickhouse:
   enabled: true
-  shards: 1
-  replicaCount: 1
+  image:
+    repository: clickhouse/clickhouse-server
+    tag: "26.8.36"
+    pullPolicy: IfNotPresent
   auth:
     username: "jitsu"
     password: "jitsu"
-  zookeeper:
-    enabled: false
-  keeper:
-    enabled: false
-
-  # Temporary workaround until we have a replacement for Bitnami
-  # components ready.
-    image:
-      repository: bitnamilegacy/clickhouse-keeper
-  image:
-    repository: bitnamilegacy/clickhouse
-  defaultInitContainers:
-    volumePermissions:
-      image:
-        repository: bitnamilegacy/os-shell
+  persistence:
+    enabled: true
+    size: 8Gi
+    storageClass: ""
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}

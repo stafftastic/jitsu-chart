@@ -1,0 +1,42 @@
+{{- define "jitsu.mongodb.container" -}}
+ports:
+  - name: mongodb
+    containerPort: 27017
+env:
+  - name: MONGO_INITDB_ROOT_USERNAME
+    value: {{ .Values.mongodb.auth.username | quote }}
+  - name: MONGO_INITDB_ROOT_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: {{ include "jitsu.dependency.name" (list . "mongodb") }}
+        key: password
+startupProbe:
+  tcpSocket:
+    port: mongodb
+  periodSeconds: 5
+  failureThreshold: 120
+readinessProbe:
+  tcpSocket:
+    port: mongodb
+livenessProbe:
+  tcpSocket:
+    port: mongodb
+{{- end }}
+
+{{- if .Values.mongodb.enabled }}
+{{- $ctx := dict
+  "root" .
+  "name" (include "jitsu.dependency.name" (list . "mongodb"))
+  "component" "mongodb"
+  "values" .Values.mongodb
+  "mountPath" "/data/db"
+  "container" (include "jitsu.mongodb.container" .)
+  "data" (dict "password" .Values.mongodb.auth.password)
+  "ports" (dict "mongodb" 27017)
+}}
+{{- include "jitsu.dependency.secret" $ctx }}
+---
+{{ include "jitsu.dependency.service" $ctx }}
+---
+{{ include "jitsu.dependency.statefulset" $ctx }}
+{{- end }}

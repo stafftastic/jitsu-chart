@@ -2,7 +2,7 @@
 
 [:warning: Read this before upgrading](#upgrading)
 
-[:warning: Read this before using in production](#bitnami)
+[:warning: Read this before using in production](#dependencies)
 
 ## TL;DR
 ```bash
@@ -17,8 +17,8 @@ EOF
 ```
 
 For a production deployment it is recommended to read through `values.yaml` and make conscious
-decisions in order to ensure the deployment is secure, reliable and scalable. Dependencies are
-minimally configured and do not provide high-availability out of the box.
+decisions in order to ensure the deployment is secure, reliable and scalable. The bundled
+dependencies are not suitable for production, see [Dependencies](#dependencies).
 
 ## Basic Configuration
 `values.yaml`:
@@ -28,7 +28,7 @@ postgresql:
     password: "changeMe"
 mongodb:
   auth:
-    passwords: ["changeMe"]
+    password: "changeMe"
 clickhouse:
   auth:
     password: "changeMe"
@@ -54,12 +54,19 @@ See [values.yaml](values.yaml) for more configuration options.
 
 ## Dependencies
 This chart deploys the following dependencies by default in order to provide an easy out-of-the-box
-experience, however for production it is recommended you deploy these separately:
+experience:
 
 * Postgres
 * Kafka
 * MongoDB
 * Clickhouse
+
+Redis can optionally be enabled with `redis.enabled`.
+
+These are single-replica StatefulSets using the official upstream images with minimal
+configuration. They are intended for evaluation, testing and development: they are not highly
+available, not tuned, not backed up, and the chart only exposes a handful of options for them
+(image, credentials, persistence, resources and scheduling). **Do not use them in production.**
 
 In order to use your own instances of these, disable them in with their respective options:
 ```yaml
@@ -106,7 +113,7 @@ config:
 For the full list of variables that support this syntax, see `values.yaml`.
 
 Many of the configuration values will be set automatically when left empty, such as connection
-parameters for services deployed by the subcharts, tokens and URLs for inter-service communication
+parameters for the bundled dependencies, tokens and URLs for inter-service communication
 and values that can be directly derived from other values. When this is the case it is noted in the
 comments above the value. Links are also provided to relevant upstream documentation.
 
@@ -154,34 +161,45 @@ wish to run these ephemeral and to some degree user-controlled workloads in a se
 can set `syncctl.config.kubernetesNamespace` to the desired namespace, and the chart will create the
 namespace, service proxies for the bulker and databse, and the necessary RBAC resources for you.
 
-## Ensuring Idempotence
-If using tools that render the chart without access to the cluster, such as Argo CD, set
-`kafka.kraft.clusterId` to a random string to ensure it's not regnerated every time. This is only
-necessary if you're using the Kafka subchart.
-
-## Bitnami
-This chart depends on Helm charts from [Bitnami Helm Charts](https://github.com/bitnami/charts).
-The intended use of these included dependencies is to provide an immediately functioning Jitsu
-deployment for use in evaluation, testing and development.
-
-Bitnami is retiring its public catalog of Helm charts and container images, meaning none of these
-components will receive updates. We have already switched over to `bitnamilegacy` images, which will
-remain available, but again receive no updates.
-
-**These dependencies should not be used in production, will not receive updates and will be removed
-from the chart.**
-
-See [Dependencies](#dependencies) for instructions on how to provide connection details to your own
-externally managed dependencies.
-
-See https://github.com/bitnami/charts/issues/35164 for information on the changes to Bitnami's
-public catalog.
-
 ## Upgrading
 It's not necessary to go through all intermediate versions when upgrading, however if upgrading to a
 version greater or equal to one mentioned below, additional steps may be required. This generally
 only encompasses breaking changes within the chart itself. New versions of Jitsu may still introduce
 breaking changes not covered here.
+
+### v4.0.0
+The Bitnami subcharts for PostgreSQL, Redis, MongoDB, Kafka and ClickHouse have been replaced with
+minimal templates in this chart using the official upstream images. If you use external instances
+for all dependencies, no action is needed beyond removing any Bitnami-specific values.
+
+**Data is not migrated.** The new workloads use new names and new volumes, so upgrading starts
+every bundled dependency from scratch. The PersistentVolumeClaims of the Bitnami PostgreSQL, Redis,
+Kafka and ClickHouse StatefulSets are left in place, so you can copy data over manually (e.g. with
+`pg_dump`/`pg_restore`) and delete them afterwards.
+
+**The Bitnami MongoDB PersistentVolumeClaim is deleted by the upgrade.** Take a `mongodump` before
+upgrading, or keep the claim by annotating it first:
+
+```bash
+kubectl annotate pvc <release>-mongodb helm.sh/resource-policy=keep
+``` Kafka only holds in-flight events and ClickHouse only holds metrics and
+event logs, so these can usually be discarded.
+
+Values for the dependencies have been reduced to `enabled`, `image`, `auth`, `persistence`,
+`resources`, `nodeSelector`, `tolerations` and `affinity`. All other Bitnami options are ignored.
+Notable changes:
+
+* `mongodb.auth.usernames`, `passwords` and `databases` are replaced by the singular `username`,
+  `password` and `database`. The user is now a root user authenticating against `admin`.
+* `kafka.kraft.clusterId` is replaced by `kafka.clusterId`, which has a static default.
+* `clickhouse.shards`, `replicaCount`, `keeper` and `zookeeper` are gone; ClickHouse runs as a
+  single node. `clickhouse.auth.username` and `password` are now respected by the connection
+  settings, which previously always used `jitsu`.
+* Resources are now prefixed with the chart's full name rather than the release name and are
+  called `<fullname>-postgres`, `-redis`, `-mongodb`, `-kafka` and `-clickhouse`. If you
+  referenced the old service names, e.g. `<release>-postgresql` or `<release>-redis-master`,
+  update them. Custom `waitFor` entries pointing at the old pods need updating too.
+* PostgreSQL is now version 18 and MongoDB version 8.0.
 
 ### v3.0.0
 This release updates Jitsu to v2.14.0, which moves two core subsystems to Kubernetes-native

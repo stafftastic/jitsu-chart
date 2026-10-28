@@ -12,7 +12,7 @@ WARNING: You are using the default password for {{ . }}.
 {{- $warned = true }}
 {{- include "jitsu.warn-default-password" "PostgreSQL" }}
 {{- end }}
-{{- if and .Values.mongodb.enabled (eq (index .Values.mongodb.auth.passwords 0) "jitsu") }}
+{{- if and .Values.mongodb.enabled (eq .Values.mongodb.auth.password "jitsu") }}
 {{- $warned = true }}
 {{- include "jitsu.warn-default-password" "MongoDB" }}
 {{- end }}

@@ -4,7 +4,7 @@
   (not .Values.syncctl.config.kubernetesClientConfig)
 }}
 {{- range list
-  (printf "%s-postgresql" .Release.Name)
+  (include "jitsu.dependency.name" (list . "postgres"))
 }}
 ---
 apiVersion: v1

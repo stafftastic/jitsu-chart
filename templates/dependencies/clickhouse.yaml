@@ -1,0 +1,49 @@
+{{- define "jitsu.clickhouse.container" -}}
+ports:
+  - name: http
+    containerPort: 8123
+  - name: tcp
+    containerPort: 9000
+env:
+  - name: CLICKHOUSE_USER
+    value: {{ .Values.clickhouse.auth.username | quote }}
+  - name: CLICKHOUSE_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: {{ include "jitsu.dependency.name" (list . "clickhouse") }}
+        key: password
+  - name: CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT
+    value: "1"
+startupProbe:
+  httpGet:
+    port: http
+    path: /ping
+  periodSeconds: 5
+  failureThreshold: 120
+readinessProbe:
+  httpGet:
+    port: http
+    path: /ping
+livenessProbe:
+  httpGet:
+    port: http
+    path: /ping
+{{- end }}
+
+{{- if .Values.clickhouse.enabled }}
+{{- $ctx := dict
+  "root" .
+  "name" (include "jitsu.dependency.name" (list . "clickhouse"))
+  "component" "clickhouse"
+  "values" .Values.clickhouse
+  "mountPath" "/var/lib/clickhouse"
+  "container" (include "jitsu.clickhouse.container" .)
+  "data" (dict "password" .Values.clickhouse.auth.password)
+  "ports" (dict "http" 8123 "tcp" 9000)
+}}
+{{- include "jitsu.dependency.secret" $ctx }}
+---
+{{ include "jitsu.dependency.service" $ctx }}
+---
+{{ include "jitsu.dependency.statefulset" $ctx }}
+{{- end }}
