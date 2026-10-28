@@ -8,21 +8,25 @@ env:
   - name: MONGO_INITDB_ROOT_PASSWORD
     valueFrom:
       secretKeyRef:
-        name: {{ include "jitsu.fullname" . }}-mongodb
+        name: {{ include "jitsu.dependency.name" (list . "mongodb") }}
         key: password
+startupProbe:
+  tcpSocket:
+    port: mongodb
+  periodSeconds: 5
+  failureThreshold: 120
 readinessProbe:
   tcpSocket:
     port: mongodb
 livenessProbe:
   tcpSocket:
     port: mongodb
-  initialDelaySeconds: 30
 {{- end }}
 
 {{- if .Values.mongodb.enabled }}
 {{- $ctx := dict
   "root" .
-  "name" (printf "%s-mongodb" (include "jitsu.fullname" .))
+  "name" (include "jitsu.dependency.name" (list . "mongodb"))
   "component" "mongodb"
   "values" .Values.mongodb
   "mountPath" "/data/db"

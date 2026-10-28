@@ -173,9 +173,16 @@ minimal templates in this chart using the official upstream images. If you use e
 for all dependencies, no action is needed beyond removing any Bitnami-specific values.
 
 **Data is not migrated.** The new workloads use new names and new volumes, so upgrading starts
-every bundled dependency from scratch. The Bitnami PersistentVolumeClaims are left in place, so you
-can copy data over manually (e.g. with `pg_dump`/`pg_restore` and `mongodump`/`mongorestore`) and
-delete them afterwards. Kafka only holds in-flight events and ClickHouse only holds metrics and
+every bundled dependency from scratch. The PersistentVolumeClaims of the Bitnami PostgreSQL, Redis,
+Kafka and ClickHouse StatefulSets are left in place, so you can copy data over manually (e.g. with
+`pg_dump`/`pg_restore`) and delete them afterwards.
+
+**The Bitnami MongoDB PersistentVolumeClaim is deleted by the upgrade.** Take a `mongodump` before
+upgrading, or keep the claim by annotating it first:
+
+```bash
+kubectl annotate pvc <release>-mongodb helm.sh/resource-policy=keep
+``` Kafka only holds in-flight events and ClickHouse only holds metrics and
 event logs, so these can usually be discarded.
 
 Values for the dependencies have been reduced to `enabled`, `image`, `auth`, `persistence`,

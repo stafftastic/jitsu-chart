@@ -1,3 +1,12 @@
+{{/*
+Leaves room for the controller-revision-hash label the StatefulSet controller derives from it.
+*/}}
+{{- define "jitsu.dependency.name" -}}
+{{- $suffix := index . 1 }}
+{{- $prefix := include "jitsu.fullname" (index . 0) | trunc (int (sub 51 (len $suffix))) | trimSuffix "-" }}
+{{- printf "%s-%s" $prefix $suffix }}
+{{- end }}
+
 {{- define "jitsu.dependency.selectorLabels" -}}
 {{ include "jitsu.selectorLabels" .root }}
 app.kubernetes.io/component: {{ .component }}
@@ -78,7 +87,7 @@ spec:
           image: "{{ $values.image.repository }}:{{ $values.image.tag }}"
           imagePullPolicy: {{ $values.image.pullPolicy }}
           {{- .container | nindent 10 }}
-          {{- with $values.resources }}
+          {{- with ($values.resources | default $root.Values.global.resources) }}
           resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}

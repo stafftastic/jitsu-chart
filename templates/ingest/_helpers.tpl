@@ -167,7 +167,7 @@ app.kubernetes.io/component: ingest
 {{- else }}
 {{- if and (not .kafkaBootstrapServers) (not $.Values.config.kafkaBootstrapServers) $.Values.kafka.enabled }}
 - name: INGEST_KAFKA_BOOTSTRAP_SERVERS
-  value: {{ printf "%s-kafka:9092" (include "jitsu.fullname" $) | quote }}
+  value: {{ printf "%s:9092" (include "jitsu.dependency.name" (list $ "kafka")) | quote }}
 {{- end }}
 {{- with (.kafkaBootstrapServers | default $.Values.config.kafkaBootstrapServers) }}
 - name: INGEST_KAFKA_BOOTSTRAP_SERVERS

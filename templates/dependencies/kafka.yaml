@@ -11,12 +11,14 @@ env:
     value: "1"
   - name: KAFKA_PROCESS_ROLES
     value: "broker,controller"
+  # The LOCAL listener lets the readiness probe reach the broker without going through the Service,
+  # which has no endpoints until the pod is ready.
   - name: KAFKA_LISTENERS
-    value: "PLAINTEXT://:9092,CONTROLLER://:9093"
+    value: "PLAINTEXT://:9092,CONTROLLER://:9093,LOCAL://127.0.0.1:9094"
   - name: KAFKA_ADVERTISED_LISTENERS
-    value: {{ printf "PLAINTEXT://%s-kafka:9092" (include "jitsu.fullname" .) | quote }}
+    value: {{ printf "PLAINTEXT://%s:9092,LOCAL://localhost:9094" (include "jitsu.dependency.name" (list . "kafka")) | quote }}
   - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
-    value: "PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT"
+    value: "PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT,LOCAL:PLAINTEXT"
   - name: KAFKA_CONTROLLER_LISTENER_NAMES
     value: "CONTROLLER"
   - name: KAFKA_INTER_BROKER_LISTENER_NAME
@@ -35,19 +37,25 @@ env:
     value: "1"
   - name: KAFKA_SHARE_COORDINATOR_STATE_TOPIC_MIN_ISR
     value: "1"
-readinessProbe:
+startupProbe:
   tcpSocket:
     port: kafka
+  periodSeconds: 5
+  failureThreshold: 120
+readinessProbe:
+  exec:
+    command: ["/opt/kafka/bin/kafka-broker-api-versions.sh", "--bootstrap-server", "localhost:9094"]
+  periodSeconds: 15
+  timeoutSeconds: 10
 livenessProbe:
   tcpSocket:
     port: kafka
-  initialDelaySeconds: 60
 {{- end }}
 
 {{- if .Values.kafka.enabled }}
 {{- $ctx := dict
   "root" .
-  "name" (printf "%s-kafka" (include "jitsu.fullname" .))
+  "name" (include "jitsu.dependency.name" (list . "kafka"))
   "component" "kafka"
   "values" .Values.kafka
   "mountPath" "/var/lib/kafka"

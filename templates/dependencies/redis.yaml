@@ -12,21 +12,25 @@ env:
   - name: REDIS_PASSWORD
     valueFrom:
       secretKeyRef:
-        name: {{ include "jitsu.fullname" . }}-redis
+        name: {{ include "jitsu.dependency.name" (list . "redis") }}
         key: password
 readinessProbe:
   exec:
     command: ["sh", "-c", 'REDISCLI_AUTH="$REDIS_PASSWORD" redis-cli ping | grep -q PONG']
+startupProbe:
+  tcpSocket:
+    port: redis
+  periodSeconds: 5
+  failureThreshold: 60
 livenessProbe:
   tcpSocket:
     port: redis
-  initialDelaySeconds: 30
 {{- end }}
 
 {{- if .Values.redis.enabled }}
 {{- $ctx := dict
   "root" .
-  "name" (printf "%s-redis" (include "jitsu.fullname" .))
+  "name" (include "jitsu.dependency.name" (list . "redis"))
   "component" "redis"
   "values" .Values.redis
   "mountPath" "/data"

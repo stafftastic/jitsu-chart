@@ -97,7 +97,7 @@ Create the name of the service account to use
 {{ printf "postgres://%s:%s@%s:%d/%s?schema=newjitsu"
   .username
   .password
-  (printf "%s-postgres" (include "jitsu.fullname" $))
+  (include "jitsu.dependency.name" (list $ "postgres"))
   5432
   .database
 }}
@@ -112,7 +112,7 @@ Create the name of the service account to use
 {{- with $.Values.redis -}}
 {{ printf "redis://:%s@%s:%d"
   .auth.password
-  (printf "%s-redis" (include "jitsu.fullname" $))
+  (include "jitsu.dependency.name" (list $ "redis"))
   6379
 }}
 {{- end }}
@@ -127,7 +127,7 @@ Create the name of the service account to use
 {{ printf "mongodb://%s:%s@%s:%d/%s?authSource=admin"
   .username
   .password
-  (printf "%s-mongodb" (include "jitsu.fullname" $))
+  (include "jitsu.dependency.name" (list $ "mongodb"))
   27017
   .database
 }}
@@ -139,7 +139,7 @@ Create the name of the service account to use
 
 {{- define "jitsu.clickhouseHttpHost" -}}
 {{- if and (not .Values.config.clickhouseHttpHost) .Values.clickhouse.enabled -}}
-{{ include "jitsu.fullname" . }}-clickhouse:8123
+{{ include "jitsu.dependency.name" (list . "clickhouse") }}:8123
 {{- else -}}
 {{ .Values.config.clickhouseHttpHost }}
 {{- end }}

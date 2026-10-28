@@ -10,21 +10,25 @@ env:
   - name: POSTGRES_PASSWORD
     valueFrom:
       secretKeyRef:
-        name: {{ include "jitsu.fullname" . }}-postgres
+        name: {{ include "jitsu.dependency.name" (list . "postgres") }}
         key: password
+startupProbe:
+  exec:
+    command: ["sh", "-c", 'pg_isready -h 127.0.0.1 -U "$POSTGRES_USER" -d "$POSTGRES_DB"']
+  periodSeconds: 5
+  failureThreshold: 120
 readinessProbe:
   exec:
     command: ["sh", "-c", 'pg_isready -h 127.0.0.1 -U "$POSTGRES_USER" -d "$POSTGRES_DB"']
 livenessProbe:
   tcpSocket:
     port: postgres
-  initialDelaySeconds: 30
 {{- end }}
 
 {{- if .Values.postgresql.enabled }}
 {{- $ctx := dict
   "root" .
-  "name" (printf "%s-postgres" (include "jitsu.fullname" .))
+  "name" (include "jitsu.dependency.name" (list . "postgres"))
   "component" "postgres"
   "values" .Values.postgresql
   "mountPath" "/var/lib/postgresql"

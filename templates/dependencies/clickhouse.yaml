@@ -10,10 +10,16 @@ env:
   - name: CLICKHOUSE_PASSWORD
     valueFrom:
       secretKeyRef:
-        name: {{ include "jitsu.fullname" . }}-clickhouse
+        name: {{ include "jitsu.dependency.name" (list . "clickhouse") }}
         key: password
   - name: CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT
     value: "1"
+startupProbe:
+  httpGet:
+    port: http
+    path: /ping
+  periodSeconds: 5
+  failureThreshold: 120
 readinessProbe:
   httpGet:
     port: http
@@ -22,13 +28,12 @@ livenessProbe:
   httpGet:
     port: http
     path: /ping
-  initialDelaySeconds: 30
 {{- end }}
 
 {{- if .Values.clickhouse.enabled }}
 {{- $ctx := dict
   "root" .
-  "name" (printf "%s-clickhouse" (include "jitsu.fullname" .))
+  "name" (include "jitsu.dependency.name" (list . "clickhouse"))
   "component" "clickhouse"
   "values" .Values.clickhouse
   "mountPath" "/var/lib/clickhouse"
