@@ -10,9 +10,9 @@ dependencies:
   version: 32.4.3
 - name: mongodb
   repository: oci://registry-1.docker.io/bitnamicharts
-  version: 16.5.45
+  version: 20.0.14
 - name: clickhouse
   repository: oci://registry-1.docker.io/bitnamicharts
   version: 9.4.4
-digest: sha256:65d492c821ef46bd5dabef105c40f86700aab138cf9b972dc00156e6e92a0446
-generated: "2025-08-27T18:08:16.969902901+02:00"
+digest: sha256:96a9f9c71d5253aa5c4744fea9531872d79aca55c27aa6a5a534ba7b815d0b45
+generated: "2026-10-29T01:52:29.871798753Z"
