@@ -21,7 +21,7 @@ dependencies:
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: kafka.enabled
   - name: mongodb
-    version: 16.5.45
+    version: 20.0.14
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: mongodb.enabled
   - name: clickhouse
