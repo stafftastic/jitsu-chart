@@ -4,7 +4,7 @@ dependencies:
   version: 16.7.26
 - name: redis
   repository: oci://registry-1.docker.io/bitnamicharts
-  version: 22.0.6
+  version: 28.3.10
 - name: kafka
   repository: oci://registry-1.docker.io/bitnamicharts
   version: 32.4.3
@@ -14,5 +14,5 @@ dependencies:
 - name: clickhouse
   repository: oci://registry-1.docker.io/bitnamicharts
   version: 9.4.4
-digest: sha256:65d492c821ef46bd5dabef105c40f86700aab138cf9b972dc00156e6e92a0446
-generated: "2025-08-27T18:08:16.969902901+02:00"
+digest: sha256:b0639d87bf132baac9cfb14b6e72956437da5b6055fbb26bb7a6a05f5f2dcf24
+generated: "2026-10-29T01:55:08.415547576Z"
