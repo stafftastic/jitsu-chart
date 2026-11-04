@@ -74,7 +74,7 @@
               dontFixup = true;
               outputHashMode = "recursive";
               outputHashAlgo = "sha256";
-              outputHash = "sha256-3tZiwFsYPBXHTKSqaYGMilY7exPxJAqxvB3rKnJ3fRw=";
+              outputHash = "sha256-2+UtJ9eJM8PaMMmcyDD4ZGSk6PllFdVfOrdYXVaelx0=";
             };
 
             nativeBuildInputs = [ pkgs.kubernetes-helm ];
