@@ -118,6 +118,18 @@
                 actionlint ${./.github/workflows}/*.yaml
                 touch $out
               '';
+          action-pins = pkgs.runCommandLocal "action-pins" { } ''
+            unpinned=$(find ${./.github/workflows} -name '*.y*ml' -exec grep -nHE '^[[:space:]-]*uses:' {} + \
+              | grep -vE '^[^:]+:[0-9]+:[[:space:]-]*uses:[[:space:]]+\./[^[:space:]]*[[:space:]]*$' \
+              | grep -vE '^[^:]+:[0-9]+:[[:space:]-]*uses:[[:space:]]+[A-Za-z0-9_.-]+/[A-Za-z0-9_./-]+@[0-9a-f]{40} # [^[:space:]]+[[:space:]]*$' \
+              | grep -vE '^[^:]+:[0-9]+:[[:space:]-]*uses:[[:space:]]+docker://[^[:space:]@#]+@sha256:[0-9a-f]{64}[[:space:]]*$' || true)
+            if [ -n "$unpinned" ]; then
+              echo "pin these as <action>@<commit> # <tag> (docker:// as @sha256:<digest>):"
+              echo "$unpinned"
+              exit 1
+            fi
+            touch $out
+          '';
           ci-coverage =
             pkgs.runCommandLocal "jitsu-chart-ci-coverage"
               {
