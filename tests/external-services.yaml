@@ -1,0 +1,65 @@
+config:
+  clickhouseHttpHost: clickhouse.example.svc.cluster.local:8123
+  clickhouseCluster: default
+  clickhouseDatabase: jitsu_metrics
+  clickhouseUsername: jitsu
+  clickhousePasswordFrom:
+    secretKeyRef:
+      name: jitsu-external
+      key: clickhouse-password
+  databaseUrlFrom:
+    secretKeyRef:
+      name: jitsu-external
+      key: database-url
+  kafkaBootstrapServers: kafka.example.svc.cluster.local:9092
+  mongodbUrlFrom:
+    secretKeyRef:
+      name: jitsu-external
+      key: mongodb-url
+  redisUrlFrom:
+    secretKeyRef:
+      name: jitsu-external
+      key: redis-url
+
+console:
+  config:
+    disableSignup: true
+    jitsuPublicUrl: https://jitsu.example.com
+    jitsuIngestPublicUrl: https://jitsu.example.com
+
+ingress:
+  enabled: false
+
+bulker:
+  serviceMonitor:
+    enabled: true
+
+ingest:
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+  serviceMonitor:
+    enabled: true
+
+rotor:
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+
+syncctl:
+  enabled: false
+
+postgresql:
+  enabled: false
+
+redis:
+  enabled: false
+
+mongodb:
+  enabled: false
+
+kafka:
+  enabled: false
+
+clickhouse:
+  enabled: false

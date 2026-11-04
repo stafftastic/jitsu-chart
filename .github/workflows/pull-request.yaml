@@ -1,0 +1,76 @@
+name: Pull request
+
+on:
+  pull_request: {}
+
+concurrency:
+  group: ${{github.workflow}}-${{github.event.pull_request.number}}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: nix develop -c bash --noprofile --norc -eo pipefail {0}
+
+jobs:
+  lint:
+    name: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: cachix/install-nix-action@v31.11.3
+      - name: Build the lint flake checks
+        run: nix build -L --keep-going .#checks.x86_64-linux.actionlint .#checks.x86_64-linux.ci-coverage .#checks.x86_64-linux.helm-lint .#checks.x86_64-linux.nix-lint
+
+  format:
+    name: format
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: cachix/install-nix-action@v31.11.3
+      - name: Build the format flake checks
+        run: nix build -L --keep-going .#checks.x86_64-linux.formatting
+
+  typecheck:
+    name: typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: cachix/install-nix-action@v31.11.3
+      - name: Validate the rendered manifests against the Kubernetes schemas
+        run: nix build -L --keep-going .#checks.x86_64-linux.kubeconform
+
+  test:
+    name: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: cachix/install-nix-action@v31.11.3
+      - name: Check the rendered manifests
+        run: nix build -L --keep-going .#checks.x86_64-linux.template
+
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+      - uses: cachix/install-nix-action@v31.11.3
+      - name: Package the chart
+        run: nix build -L --keep-going .#checks.x86_64-linux.package
