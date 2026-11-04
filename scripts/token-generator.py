@@ -12,14 +12,18 @@ SECRET_LENGTH = 32
 TOKEN_LENGTH = 32
 SALT_LENGTH = 32
 
+
 def log(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
+
 
 def b64encode(s):
     return base64.b64encode(s.encode()).decode()
 
+
 def b64decode(s):
     return base64.b64decode(s).decode()
+
 
 def newSecret(fullname, labels):
     return {
@@ -33,21 +37,16 @@ def newSecret(fullname, labels):
         "data": {},
     }
 
+
 def getSecret(fullname):
     proc = subprocess.run(
-        [
-            "kubectl",
-            "get",
-            "secret",
-            f"{fullname}-tokens",
-            "-o",
-            "json"
-        ],
-        capture_output=True
+        ["kubectl", "get", "secret", f"{fullname}-tokens", "-o", "json"],
+        capture_output=True,
     )
     if proc.returncode == 0:
         return json.loads(proc.stdout)
     return None
+
 
 def updateSecret(secret):
     subprocess.run(
@@ -61,6 +60,7 @@ def updateSecret(secret):
         check=True,
     )
 
+
 def generateTokenSet(service, globalHashSecret):
     token = secrets.token_urlsafe(TOKEN_LENGTH)
     salt = secrets.token_urlsafe(SALT_LENGTH)
@@ -72,6 +72,7 @@ def generateTokenSet(service, globalHashSecret):
         f"{service}AuthTokens": b64encode(f"{salt}.{hash}"),
     }
 
+
 def validateTokenSet(service, token, hashes, globalHashSecret):
     if service == "console":
         prefix, token = token.split(":")
@@ -79,9 +80,13 @@ def validateTokenSet(service, token, hashes, globalHashSecret):
             raise ValueError
     for hash in hashes.split(","):
         salt, hash = hash.split(".")
-        if hash == hashlib.sha512(f"{token}{salt}{globalHashSecret}".encode()).hexdigest():
+        if (
+            hash
+            == hashlib.sha512(f"{token}{salt}{globalHashSecret}".encode()).hexdigest()
+        ):
             return
     raise ValueError
+
 
 def __main__():
     services = [
@@ -120,7 +125,7 @@ def __main__():
                 service,
                 b64decode(secret["data"].get(f"{service}AuthToken")),
                 b64decode(secret["data"].get(f"{service}AuthTokens")),
-                globalHashSecret
+                globalHashSecret,
             )
             log(f"Token for {service} is valid.")
         except:

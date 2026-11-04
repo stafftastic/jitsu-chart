@@ -203,7 +203,6 @@ console:
     rotorAuthKey: ""
     rotorAuthKeyFrom: ""
 
-
     # Public domain where ingest service is available. Leave empty to configure automatically.
     # https://docs.jitsu.com/self-hosting/configuration#ingest_host
     ingestHost: ""
@@ -273,7 +272,7 @@ console:
     port: 3000
   ingress:
     enabled: false
-    className: ''
+    className: ""
     annotations: {}
     hosts:
       - host: jitsu.example.com
@@ -333,24 +332,24 @@ console:
   strategy: {}
   waitFor:
     - name: tokens
-      enabled: '{{ .Values.tokenGenerator.enabled }}'
+      enabled: "{{ .Values.tokenGenerator.enabled }}"
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}'
       for: condition=Complete=true
     - name: migration
-      enabled: '{{ .Values.migration.enabled }}'
+      enabled: "{{ .Values.migration.enabled }}"
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-migration-{{ include "jitsu.hash" . }}'
       for: condition=Complete=True
     - name: clickhouse
-      enabled: '{{ .Values.clickhouse.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
+      enabled: "{{ .Values.clickhouse.enabled }}"
+      resource: "pods/{{ .Release.Name }}-clickhouse-shard0-0"
       for: condition=Ready=true
     - name: clickhouse-init
-      enabled: '{{ .Values.clickhouseInit.enabled }}'
+      enabled: "{{ .Values.clickhouseInit.enabled }}"
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-clickhouse-init-{{ include "jitsu.hash" . }}'
       for: condition=Complete=true
     - name: postgresql
-      enabled: '{{ .Values.postgresql.enabled }}'
-      resource: 'pod/{{ .Release.Name }}-postgresql-0'
+      enabled: "{{ .Values.postgresql.enabled }}"
+      resource: "pod/{{ .Release.Name }}-postgresql-0"
       for: condition=Ready=true
 
 bulker:
@@ -518,32 +517,32 @@ bulker:
   strategy: {}
   waitFor:
     - name: tokens
-      enabled: '{{ .Values.tokenGenerator.enabled }}'
+      enabled: "{{ .Values.tokenGenerator.enabled }}"
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}'
       for: condition=Complete=true
     - name: migration
-      enabled: '{{ .Values.migration.enabled }}'
+      enabled: "{{ .Values.migration.enabled }}"
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-migration-{{ include "jitsu.hash" . }}'
       for: condition=Complete=True
     - name: console
-      enabled: '{{ .Values.console.enabled }}'
+      enabled: "{{ .Values.console.enabled }}"
       resource: 'deployments.apps/{{ include "jitsu.fullname" . }}-console'
       for: condition=Available=true
     - name: clickhouse
-      enabled: '{{ .Values.clickhouse.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
+      enabled: "{{ .Values.clickhouse.enabled }}"
+      resource: "pods/{{ .Release.Name }}-clickhouse-shard0-0"
       for: condition=Ready=true
     - name: clickhouse-init
-      enabled: '{{ .Values.clickhouseInit.enabled }}'
+      enabled: "{{ .Values.clickhouseInit.enabled }}"
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-clickhouse-init-{{ include "jitsu.hash" . }}'
       for: condition=Complete=true
     - name: kafka
-      enabled: '{{ .Values.kafka.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-kafka-controller-0'
+      enabled: "{{ .Values.kafka.enabled }}"
+      resource: "pods/{{ .Release.Name }}-kafka-controller-0"
       for: condition=Ready=true
     - name: redis
-      enabled: '{{ .Values.redis.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-redis-master-0'
+      enabled: "{{ .Values.redis.enabled }}"
+      resource: "pods/{{ .Release.Name }}-redis-master-0"
       for: condition=Ready=true
 
 rotor:
@@ -573,7 +572,6 @@ rotor:
     # https://docs.jitsu.com/self-hosting/configuration#rotor
     tokenSecret: ""
     tokenSecretFrom: {}
-
 
     # Leave empty to configure automatically if config.redisUrl is set or Redis subchart is being used.
     # https://docs.jitsu.com/self-hosting/configuration#redis_url
@@ -690,40 +688,40 @@ rotor:
   strategy: {}
   waitFor:
     - name: tokens
-      enabled: '{{ .Values.tokenGenerator.enabled }}'
+      enabled: "{{ .Values.tokenGenerator.enabled }}"
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}'
       for: condition=Complete=true
     - name: migration
-      enabled: '{{ .Values.migration.enabled }}'
+      enabled: "{{ .Values.migration.enabled }}"
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-migration-{{ include "jitsu.hash" . }}'
       for: condition=Complete=True
     - name: console
-      enabled: '{{ .Values.console.enabled }}'
+      enabled: "{{ .Values.console.enabled }}"
       resource: 'deployments.apps/{{ include "jitsu.fullname" . }}-console'
       for: condition=Available=true
     - name: bulker
-      enabled: '{{ .Values.bulker.enabled }}'
+      enabled: "{{ .Values.bulker.enabled }}"
       resource: 'deployments.apps/{{ include "jitsu.fullname" . }}-bulker'
       for: condition=Available=true
     - name: clickhouse
-      enabled: '{{ .Values.clickhouse.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
+      enabled: "{{ .Values.clickhouse.enabled }}"
+      resource: "pods/{{ .Release.Name }}-clickhouse-shard0-0"
       for: condition=Ready=true
     - name: clickhouse-init
-      enabled: '{{ .Values.clickhouseInit.enabled }}'
+      enabled: "{{ .Values.clickhouseInit.enabled }}"
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-clickhouse-init-{{ include "jitsu.hash" . }}'
       for: condition=Complete=true
     - name: kafka
-      enabled: '{{ .Values.kafka.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-kafka-controller-0'
+      enabled: "{{ .Values.kafka.enabled }}"
+      resource: "pods/{{ .Release.Name }}-kafka-controller-0"
       for: condition=Ready=true
     - name: mongodb
-      enabled: '{{ .Values.mongodb.enabled }}'
-      resource: 'deployments.apps/{{ .Release.Name }}-mongodb'
+      enabled: "{{ .Values.mongodb.enabled }}"
+      resource: "deployments.apps/{{ .Release.Name }}-mongodb"
       for: condition=Available=true
     - name: redis
-      enabled: '{{ .Values.redis.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-redis-master-0'
+      enabled: "{{ .Values.redis.enabled }}"
+      resource: "pods/{{ .Release.Name }}-redis-master-0"
       for: condition=Ready=true
 
 ingest:
@@ -832,7 +830,7 @@ ingest:
     metricsPort: 9091
   ingress:
     enabled: false
-    className: ''
+    className: ""
     annotations: {}
     hosts:
       - host: data.jitsu.example.com
@@ -878,36 +876,36 @@ ingest:
   strategy: {}
   waitFor:
     - name: tokens
-      enabled: '{{ .Values.tokenGenerator.enabled }}'
+      enabled: "{{ .Values.tokenGenerator.enabled }}"
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}'
       for: condition=Complete=true
     - name: migration
-      enabled: '{{ .Values.migration.enabled }}'
+      enabled: "{{ .Values.migration.enabled }}"
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-migration-{{ include "jitsu.hash" . }}'
       for: condition=Complete=True
     - name: console
-      enabled: '{{ .Values.console.enabled }}'
+      enabled: "{{ .Values.console.enabled }}"
       resource: 'deployments.apps/{{ include "jitsu.fullname" . }}-console'
       for: condition=Available=true
     - name: rotor
-      enabled: '{{ .Values.rotor.enabled }}'
+      enabled: "{{ .Values.rotor.enabled }}"
       resource: 'deployments.apps/{{ include "jitsu.fullname" . }}-rotor'
       for: condition=Available=true
     - name: clickhouse
-      enabled: '{{ .Values.clickhouse.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
+      enabled: "{{ .Values.clickhouse.enabled }}"
+      resource: "pods/{{ .Release.Name }}-clickhouse-shard0-0"
       for: condition=Ready=true
     - name: clickhouse-init
-      enabled: '{{ .Values.clickhouseInit.enabled }}'
+      enabled: "{{ .Values.clickhouseInit.enabled }}"
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-clickhouse-init-{{ include "jitsu.hash" . }}'
       for: condition=Complete=true
     - name: kafka
-      enabled: '{{ .Values.kafka.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-kafka-controller-0'
+      enabled: "{{ .Values.kafka.enabled }}"
+      resource: "pods/{{ .Release.Name }}-kafka-controller-0"
       for: condition=Ready=true
     - name: redis
-      enabled: '{{ .Values.redis.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-redis-master-0'
+      enabled: "{{ .Values.redis.enabled }}"
+      resource: "pods/{{ .Release.Name }}-redis-master-0"
       for: condition=Ready=true
 
 syncctl:
@@ -1048,16 +1046,16 @@ syncctl:
   strategy: {}
   waitFor:
     - name: tokens
-      enabled: '{{ .Values.tokenGenerator.enabled }}'
+      enabled: "{{ .Values.tokenGenerator.enabled }}"
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}'
       for: condition=Complete=true
     - name: migration
-      enabled: '{{ .Values.migration.enabled }}'
+      enabled: "{{ .Values.migration.enabled }}"
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-migration-{{ include "jitsu.hash" . }}'
       for: condition=Complete=True
     - name: postgresql
-      enabled: '{{ .Values.postgresql.enabled }}'
-      resource: 'pod/{{ .Release.Name }}-postgresql-0'
+      enabled: "{{ .Values.postgresql.enabled }}"
+      resource: "pod/{{ .Release.Name }}-postgresql-0"
       for: condition=Ready=true
 
 # The operator reconciles per-workspace functions-server deployments in
@@ -1187,24 +1185,24 @@ operator:
   strategy: {}
   waitFor:
     - name: tokens
-      enabled: '{{ .Values.tokenGenerator.enabled }}'
+      enabled: "{{ .Values.tokenGenerator.enabled }}"
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}'
       for: condition=Complete=true
     - name: migration
-      enabled: '{{ .Values.migration.enabled }}'
+      enabled: "{{ .Values.migration.enabled }}"
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-migration-{{ include "jitsu.hash" . }}'
       for: condition=Complete=True
     - name: console
-      enabled: '{{ .Values.console.enabled }}'
+      enabled: "{{ .Values.console.enabled }}"
       resource: 'deployments.apps/{{ include "jitsu.fullname" . }}-console'
       for: condition=Available=true
     - name: postgresql
-      enabled: '{{ .Values.postgresql.enabled }}'
-      resource: 'pod/{{ .Release.Name }}-postgresql-0'
+      enabled: "{{ .Values.postgresql.enabled }}"
+      resource: "pod/{{ .Release.Name }}-postgresql-0"
       for: condition=Ready=true
     - name: mongodb
-      enabled: '{{ .Values.mongodb.enabled }}'
-      resource: 'deployments.apps/{{ .Release.Name }}-mongodb'
+      enabled: "{{ .Values.mongodb.enabled }}"
+      resource: "deployments.apps/{{ .Release.Name }}-mongodb"
       for: condition=Available=true
 
 # Profile Builder scheduler. Runs the rotor image in "profiles" mode and
@@ -1267,36 +1265,36 @@ profiles:
   updateStrategy: {}
   waitFor:
     - name: tokens
-      enabled: '{{ .Values.tokenGenerator.enabled }}'
+      enabled: "{{ .Values.tokenGenerator.enabled }}"
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}'
       for: condition=Complete=true
     - name: migration
-      enabled: '{{ .Values.migration.enabled }}'
+      enabled: "{{ .Values.migration.enabled }}"
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-migration-{{ include "jitsu.hash" . }}'
       for: condition=Complete=True
     - name: console
-      enabled: '{{ .Values.console.enabled }}'
+      enabled: "{{ .Values.console.enabled }}"
       resource: 'deployments.apps/{{ include "jitsu.fullname" . }}-console'
       for: condition=Available=true
     - name: bulker
-      enabled: '{{ .Values.bulker.enabled }}'
+      enabled: "{{ .Values.bulker.enabled }}"
       resource: 'deployments.apps/{{ include "jitsu.fullname" . }}-bulker'
       for: condition=Available=true
     - name: clickhouse
-      enabled: '{{ .Values.clickhouse.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
+      enabled: "{{ .Values.clickhouse.enabled }}"
+      resource: "pods/{{ .Release.Name }}-clickhouse-shard0-0"
       for: condition=Ready=true
     - name: kafka
-      enabled: '{{ .Values.kafka.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-kafka-controller-0'
+      enabled: "{{ .Values.kafka.enabled }}"
+      resource: "pods/{{ .Release.Name }}-kafka-controller-0"
       for: condition=Ready=true
     - name: mongodb
-      enabled: '{{ .Values.mongodb.enabled }}'
-      resource: 'deployments.apps/{{ .Release.Name }}-mongodb'
+      enabled: "{{ .Values.mongodb.enabled }}"
+      resource: "deployments.apps/{{ .Release.Name }}-mongodb"
       for: condition=Available=true
     - name: postgresql
-      enabled: '{{ .Values.postgresql.enabled }}'
-      resource: 'pod/{{ .Release.Name }}-postgresql-0'
+      enabled: "{{ .Values.postgresql.enabled }}"
+      resource: "pod/{{ .Release.Name }}-postgresql-0"
       for: condition=Ready=true
 
 migration:
@@ -1345,20 +1343,20 @@ migration:
   volumeMounts: []
   waitFor:
     - name: tokens
-      enabled: '{{ .Values.tokenGenerator.enabled }}'
+      enabled: "{{ .Values.tokenGenerator.enabled }}"
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}'
       for: condition=Complete=true
     - name: clickhouse
-      enabled: '{{ .Values.clickhouse.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
+      enabled: "{{ .Values.clickhouse.enabled }}"
+      resource: "pods/{{ .Release.Name }}-clickhouse-shard0-0"
       for: condition=Ready=true
     - name: clickhouse-init
-      enabled: '{{ .Values.clickhouseInit.enabled }}'
+      enabled: "{{ .Values.clickhouseInit.enabled }}"
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-clickhouse-init-{{ include "jitsu.hash" . }}'
       for: condition=Complete=true
     - name: postgresql
-      enabled: '{{ .Values.postgresql.enabled }}'
-      resource: 'pod/{{ .Release.Name }}-postgresql-0'
+      enabled: "{{ .Values.postgresql.enabled }}"
+      resource: "pod/{{ .Release.Name }}-postgresql-0"
       for: condition=Ready=true
 
 # Creates the seed admin user (console.config.seedUserEmail/-Password) via
@@ -1397,16 +1395,16 @@ seed:
   affinity: {}
   waitFor:
     - name: tokens
-      enabled: '{{ .Values.tokenGenerator.enabled }}'
+      enabled: "{{ .Values.tokenGenerator.enabled }}"
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}'
       for: condition=Complete=true
     - name: migration
-      enabled: '{{ .Values.migration.enabled }}'
+      enabled: "{{ .Values.migration.enabled }}"
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-migration-{{ include "jitsu.hash" . }}'
       for: condition=Complete=True
     - name: postgresql
-      enabled: '{{ .Values.postgresql.enabled }}'
-      resource: 'pod/{{ .Release.Name }}-postgresql-0'
+      enabled: "{{ .Values.postgresql.enabled }}"
+      resource: "pod/{{ .Release.Name }}-postgresql-0"
       for: condition=Ready=true
 
 # Creates the ClickHouse metrics database. Required since Jitsu 2.14 unless
@@ -1434,8 +1432,8 @@ clickhouseInit:
   affinity: {}
   waitFor:
     - name: clickhouse
-      enabled: '{{ .Values.clickhouse.enabled }}'
-      resource: 'pods/{{ .Release.Name }}-clickhouse-shard0-0'
+      enabled: "{{ .Values.clickhouse.enabled }}"
+      resource: "pods/{{ .Release.Name }}-clickhouse-shard0-0"
       for: condition=Ready=true
 
 eventLogInit:
@@ -1467,15 +1465,15 @@ eventLogInit:
   affinity: {}
   waitFor:
     - name: tokens
-      enabled: '{{ .Values.tokenGenerator.enabled }}'
+      enabled: "{{ .Values.tokenGenerator.enabled }}"
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-token-generator-{{ include "jitsu.hash" . }}'
       for: condition=Complete=true
     - name: clickhouse-init
-      enabled: '{{ .Values.clickhouseInit.enabled }}'
+      enabled: "{{ .Values.clickhouseInit.enabled }}"
       resource: 'jobs.batch/{{ include "jitsu.fullname" . }}-clickhouse-init-{{ include "jitsu.hash" . }}'
       for: condition=Complete=true
     - name: console
-      enabled: '{{ .Values.console.enabled }}'
+      enabled: "{{ .Values.console.enabled }}"
       resource: 'deployments.apps/{{ include "jitsu.fullname" . }}-console'
       for: condition=Available=true
 
@@ -1519,7 +1517,6 @@ postgresql:
   metrics:
     image:
       repository: bitnamilegacy/postgres-exporter
-
 
 redis:
   enabled: false
@@ -1623,8 +1620,8 @@ clickhouse:
   keeper:
     enabled: false
 
-  # Temporary workaround until we have a replacement for Bitnami
-  # components ready.
+    # Temporary workaround until we have a replacement for Bitnami
+    # components ready.
     image:
       repository: bitnamilegacy/clickhouse-keeper
   image:
