@@ -1,4 +1,4 @@
-name: Publish Helm chart to Google Artifact Registry
+name: Publish Helm chart
 on:
   release:
     types: [published]
@@ -8,22 +8,26 @@ permissions:
 
 defaults:
   run:
-    shell: bash --noprofile --norc -eo pipefail {0}
+    shell: nix develop -c bash --noprofile --norc -eo pipefail {0}
 
 jobs:
   publish:
-    name: Publish Helm chart
+    name: publish
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - name: Checkout
-        uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
-      - name: Publish
-        uses: stafftastic/helm-publish-action@v2.0.0
-        with:
-          registry: registry-1.docker.io
-          repository: stafftasticcharts
-          username: stafftasticpush
-          password: ${{secrets.DOCKER_HUB_TOKEN}}
+      - uses: cachix/install-nix-action@v31.11.3
+      - name: Package the chart built by the flake with the release version
+        run: |
+          mkdir unpacked dist
+          tar -xzf "$(nix build -L --no-link --print-out-paths .#jitsu-chart)/jitsu-0.0.0.tgz" -C unpacked
+          helm package unpacked/jitsu --version "${GITHUB_REF_NAME#v}" --destination dist
+      - name: Log in to Docker Hub
+        env:
+          DOCKER_HUB_TOKEN: ${{secrets.DOCKER_HUB_TOKEN}}
+        run: printf '%s' "$DOCKER_HUB_TOKEN" | helm registry login registry-1.docker.io --username stafftasticpush --password-stdin
+      - name: Push the chart
+        run: helm push dist/jitsu-*.tgz oci://registry-1.docker.io/stafftasticcharts

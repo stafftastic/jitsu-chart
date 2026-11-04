@@ -1,5 +1,6 @@
 config:
   clickhouseHttpHost: clickhouse.example.svc.cluster.local:8123
+  clickhouseTcpHost: clickhouse.example.svc.cluster.local:9000
   clickhouseCluster: default
   clickhouseDatabase: jitsu_metrics
   clickhouseUsername: jitsu
@@ -14,8 +15,8 @@ config:
   kafkaBootstrapServers: kafka.example.svc.cluster.local:9092
   mongodbUrlFrom:
     secretKeyRef:
-      name: jitsu-external
-      key: mongodb-url
+      name: mongodb
+      key: url
   redisUrlFrom:
     secretKeyRef:
       name: jitsu-external
@@ -23,6 +24,11 @@ config:
 
 console:
   config:
+    githubClientId: example-client-id
+    githubClientSecretFrom:
+      secretKeyRef:
+        name: jitsu-external
+        key: github-client-secret
     disableSignup: true
     jitsuPublicUrl: https://jitsu.example.com
     jitsuIngestPublicUrl: https://jitsu.example.com
@@ -30,32 +36,107 @@ console:
 ingress:
   enabled: false
 
+serviceMonitors:
+  labels:
+    instance: default
+
 bulker:
+  podDisruptionBudget:
+    enabled: true
+    maxUnavailable: 1
   serviceMonitor:
     enabled: true
+  topologySpreadConstraints:
+    - maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: DoNotSchedule
+      labelSelector:
+        matchLabels:
+          app.kubernetes.io/component: bulker
+          app.kubernetes.io/instance: jitsu
+          app.kubernetes.io/name: jitsu
+  volumes:
+    - name: jitsu-data
+      secret:
+        secretName: jitsu-jitsu-data
+  volumeMounts:
+    - name: jitsu-data
+      mountPath: /var/run/secrets/jitsu-data
+      readOnly: true
 
 ingest:
+  resources:
+    requests:
+      cpu: 100m
   autoscaling:
     enabled: true
     minReplicas: 2
+  podDisruptionBudget:
+    enabled: true
+    maxUnavailable: 1
   serviceMonitor:
     enabled: true
+  topologySpreadConstraints:
+    - maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: DoNotSchedule
+      labelSelector:
+        matchLabels:
+          app.kubernetes.io/component: ingest
+          app.kubernetes.io/instance: jitsu
+          app.kubernetes.io/name: jitsu
 
 rotor:
+  resources:
+    requests:
+      cpu: 200m
   autoscaling:
     enabled: true
     minReplicas: 2
+  podDisruptionBudget:
+    enabled: true
+    maxUnavailable: 1
+  topologySpreadConstraints:
+    - maxSkew: 1
+      topologyKey: kubernetes.io/hostname
+      whenUnsatisfiable: DoNotSchedule
+      labelSelector:
+        matchLabels:
+          app.kubernetes.io/component: rotor
+          app.kubernetes.io/instance: jitsu
+          app.kubernetes.io/name: jitsu
+  volumes:
+    - name: mongodb-tls
+      secret:
+        secretName: mongodb-tls
+        items:
+          - key: ca.crt
+            path: ca.crt
+  volumeMounts:
+    - name: mongodb-tls
+      mountPath: /etc/mongodb-tls
+      readOnly: true
+
+mongodb:
+  enabled: false
+
+redis:
+  enabled: true
+  auth:
+    existingSecret: jitsu-redis
+  master:
+    resources:
+      requests:
+        memory: 1Gi
+  replica:
+    resources:
+      requests:
+        memory: 1Gi
 
 syncctl:
   enabled: false
 
 postgresql:
-  enabled: false
-
-redis:
-  enabled: false
-
-mongodb:
   enabled: false
 
 kafka:

@@ -35,7 +35,7 @@ expect defaults.yaml "$(env_of Deployment jitsu-console CLICKHOUSE_HOST) | .valu
 
 expect external-services.yaml "$(names Deployment)" \
   "jitsu-bulker jitsu-console jitsu-ingest jitsu-operator jitsu-rotor"
-expect external-services.yaml "$(names StatefulSet)" "jitsu-profiles"
+expect external-services.yaml "$(names StatefulSet)" "jitsu-profiles jitsu-redis-master"
 expect external-services.yaml "$(names Ingress)" ""
 expect external-services.yaml "$(names Secret)" ""
 expect external-services.yaml "$(env_of Deployment jitsu-console DATABASE_URL) | .valueFrom.secretKeyRef | .name + \"/\" + .key" \
@@ -43,7 +43,7 @@ expect external-services.yaml "$(env_of Deployment jitsu-console DATABASE_URL) |
 expect external-services.yaml "$(env_of Deployment jitsu-console CLICKHOUSE_PASSWORD) | .valueFrom.secretKeyRef | .name + \"/\" + .key" \
   "jitsu-external/clickhouse-password"
 expect external-services.yaml "$(env_of Deployment jitsu-rotor MONGODB_URL) | .valueFrom.secretKeyRef | .name + \"/\" + .key" \
-  "jitsu-external/mongodb-url"
+  "mongodb/url"
 expect external-services.yaml "$(env_of Deployment jitsu-rotor KAFKA_BOOTSTRAP_SERVERS) | .value" \
   "kafka.example.svc.cluster.local:9092"
 expect external-services.yaml "$(env_of Deployment jitsu-ingest INGEST_REDIS_URL) | .valueFrom.secretKeyRef | .name + \"/\" + .key" \
@@ -53,6 +53,23 @@ expect external-services.yaml "$(env_of Deployment jitsu-ingest INGEST_CLICKHOUS
 expect external-services.yaml '[select(.kind == "HorizontalPodAutoscaler") | .metadata.name + ":" + (.spec.minReplicas | tostring)] | sort | join(" ")' \
   "jitsu-ingest:2 jitsu-rotor:2"
 expect external-services.yaml "$(names ServiceMonitor)" "jitsu-bulker jitsu-ingest"
+expect external-services.yaml '[select(.kind == "ServiceMonitor") | .metadata.labels.instance] | unique | join(" ")' "default"
+expect external-services.yaml "$(env_of Deployment jitsu-console GITHUB_CLIENT_SECRET) | .valueFrom.secretKeyRef | .name + \"/\" + .key" \
+  "jitsu-external/github-client-secret"
+expect external-services.yaml '[select(.kind == "PodDisruptionBudget" and (.metadata.name == "jitsu-bulker" or .metadata.name == "jitsu-ingest" or .metadata.name == "jitsu-rotor")) | .metadata.name + ":" + (.spec.maxUnavailable | tostring)] | sort | join(" ")' \
+  "jitsu-bulker:1 jitsu-ingest:1 jitsu-rotor:1"
+expect external-services.yaml '[select(.kind == "Deployment" and .spec.template.spec.topologySpreadConstraints) | .metadata.name] | sort | join(" ")' \
+  "jitsu-bulker jitsu-ingest jitsu-rotor"
+expect external-services.yaml 'select(.kind == "Deployment" and .metadata.name == "jitsu-rotor") | .spec.template.spec.containers[0].volumeMounts[] | select(.name == "mongodb-tls") | .mountPath' \
+  "/etc/mongodb-tls"
+expect external-services.yaml 'select(.kind == "Deployment" and .metadata.name == "jitsu-bulker") | .spec.template.spec.volumes[] | select(.name == "jitsu-data") | .secret.secretName' \
+  "jitsu-jitsu-data"
+expect external-services.yaml 'select(.kind == "StatefulSet" and .metadata.name == "jitsu-redis-master") | .spec.template.spec.containers[0].env[] | select(.name == "REDIS_PASSWORD_FILE" or .name == "REDIS_PASSWORD") | .name' \
+  "REDIS_PASSWORD_FILE"
+expect external-services.yaml 'select(.kind == "StatefulSet" and .metadata.name == "jitsu-redis-master") | .spec.template.spec.volumes[] | select(.name == "redis-password") | .secret.secretName' \
+  "jitsu-redis"
+expect external-services.yaml 'select(.kind == "StatefulSet" and .metadata.name == "jitsu-redis-master") | .spec.template.spec.containers[0].resources.requests.memory' \
+  "1Gi"
 
 if [ "$failures" -gt 0 ]; then
   echo "$failures template assertions failed"
