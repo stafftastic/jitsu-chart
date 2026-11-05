@@ -1,4 +1,4 @@
 /charts
-result
+/result*
 .direnv
 .env
