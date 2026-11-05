@@ -9,7 +9,7 @@ appVersion: 2.14.0
 
 dependencies:
   - name: postgresql
-    version: 16.7.27
+    version: 18.12.18
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: postgresql.enabled
   - name: redis
