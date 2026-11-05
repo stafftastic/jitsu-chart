@@ -9,11 +9,11 @@ appVersion: 2.14.0
 
 dependencies:
   - name: postgresql
-    version: 16.7.26
+    version: 16.7.27
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: postgresql.enabled
   - name: redis
-    version: 22.0.6
+    version: 22.0.7
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: redis.enabled
   - name: kafka
