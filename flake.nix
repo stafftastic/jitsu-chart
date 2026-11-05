@@ -1,11 +1,4 @@
 {
-  nixConfig = {
-    extra-substituters = [ "https://nix-cache.stafftastic.dev" ];
-    extra-trusted-public-keys = [
-      "nix-cache.stafftastic.dev-0:ZdsEnndbQcuaXq8woMXaAr3Lbv3yDehleaadHzpcEMI="
-    ];
-  };
-
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
   outputs =
